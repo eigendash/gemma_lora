@@ -529,6 +529,7 @@ def _write_log(output_dir, rows, run_id):
 
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--config", default="", help="optional YAML preset (configs/preset-*.yaml)")
     skip = {"model", "train_file", "output_dir", "device", "resume", "backend", "init_adapter", "force_resume", "chunked_vocab"}
     for fname, f in GRPOConfig.__dataclass_fields__.items():
         if fname in skip:
@@ -544,7 +545,15 @@ def main(argv=None) -> None:
     ap.add_argument("--backend", default="local")
     ap.add_argument("--init-adapter", default="")
     args = ap.parse_args(argv)
-    cfg = GRPOConfig(**{k: v for k, v in vars(args).items() if k in GRPOConfig.__dataclass_fields__})
+
+    cfg_kwargs = {k: v for k, v in vars(args).items() if k in GRPOConfig.__dataclass_fields__ and v is not None}
+    if args.config:
+        import yaml
+
+        with open(args.config) as f:
+            preset = yaml.safe_load(f)
+        cfg_kwargs.update({k: v for k, v in preset.items() if k in GRPOConfig.__dataclass_fields__})
+    cfg = GRPOConfig(**cfg_kwargs)
     train(cfg)
 
 

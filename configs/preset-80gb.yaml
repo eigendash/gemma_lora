@@ -1,0 +1,22 @@
+# Hardware preset: 80 GB VRAM (A100 80GB / H100).
+# Effective batch = 8 * 16 * 1 = 128 (constant). Comfortable fit for the main run.
+model: google/gemma-2-2b
+G: 8
+prompts_per_step: 16
+grad_accum: 1
+total_steps: 2000
+max_new_tokens: 512
+lr: 0.00001
+clip_eps: 0.2
+kl_coef: 0.02
+target_kl: 0.1
+kl_adapt_rate: 2.0
+min_kl_coef: 0.001
+max_kl_coef: 1.0
+lora_r: 16
+lora_alpha: 32
+checkpoint_every: 20
+checkpoint_timer: 600
+chunked_vocab: true
+attn: eager
+dtype: bfloat16

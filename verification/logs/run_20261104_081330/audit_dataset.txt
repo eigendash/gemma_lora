@@ -1,0 +1,50 @@
+$ /Users/dash/Documents/dev/gemma_lora/.venv/bin/python verification/audit_dataset.py /var/folders/_c/kvvj9dgx05v58jrjg411zk0h0000gn/T/tmp.nQYq8jJAMj/a/train.jsonl /var/folders/_c/kvvj9dgx05v58jrjg411zk0h0000gn/T/tmp.nQYq8jJAMj/a/eval.jsonl --per-tier 100
+counts: train=10000 eval=1000
+[train] tiers={'easy': 4000, 'medium': 3000, 'hard': 3000}
+[train] (tier, n_nums)={('easy', 3): 1591, ('easy', 4): 2409, ('hard', 6): 3000, ('medium', 5): 3000}
+[train] easy: target min=10 max=99 median=40.0
+[train] medium: target min=100 max=993 median=304.5
+[train] hard: target min=100 max=994 median=336.0
+[train] duplicate (sorted nums,target) keys: 0
+[train] rows sharing a nums-multiset with another row: 4188
+[train] tier-spec violations=0 pool violations=0 non-positive/non-int targets=0
+[train] stored solution fails INDEPENDENT verifier: 0
+[train] stored solution not using exactly all nums: 0
+[train] stored solution with non-integer or non-positive intermediate: 0
+[train] DEGENERATE target==an input: 0 (0.00%)
+[train] DEGENERATE solvable in ONE op (a op b == target): 637 (6.37%)
+[train]   easy: target==input 0/4000 (0.0%), one-op 536/4000 (13.4%)
+[train]   medium: target==input 0/3000 (0.0%), one-op 53/3000 (1.8%)
+[train]   hard: target==input 0/3000 (0.0%), one-op 48/3000 (1.6%)
+[eval] tiers={'easy': 400, 'medium': 300, 'hard': 300}
+[eval] (tier, n_nums)={('easy', 3): 106, ('easy', 4): 294, ('hard', 6): 300, ('medium', 5): 300}
+[eval] easy: target min=10 max=99 median=45.5
+[eval] medium: target min=100 max=969 median=310.5
+[eval] hard: target min=100 max=981 median=327.0
+[eval] duplicate (sorted nums,target) keys: 0
+[eval] rows sharing a nums-multiset with another row: 72
+[eval] tier-spec violations=0 pool violations=0 non-positive/non-int targets=0
+[eval] stored solution fails INDEPENDENT verifier: 0
+[eval] stored solution not using exactly all nums: 0
+[eval] stored solution with non-integer or non-positive intermediate: 0
+[eval] DEGENERATE target==an input: 0 (0.00%)
+[eval] DEGENERATE solvable in ONE op (a op b == target): 63 (6.30%)
+[eval]   easy: target==input 0/400 (0.0%), one-op 52/400 (13.0%)
+[eval]   medium: target==input 0/300 (0.0%), one-op 8/300 (2.7%)
+[eval]   hard: target==input 0/300 (0.0%), one-op 3/300 (1.0%)
+train/eval overlap on (sorted nums, target): 0
+train/eval share an identical nums-multiset (different target): 570 eval multisets
+
+Independent DFS solver, 100 per tier from train + 100 per tier from eval
+[easy] n=200 unsolved=0 time=0.1s
+[easy] min #ops distribution: {1: 30, 2: 112, 3: 58}
+[easy] search nodes to first solution: median=11.0 mean=37 p90=113
+[easy] project solver agrees with ref (found + valid expr): 200/200
+[medium] n=200 unsolved=0 time=4.7s
+[medium] min #ops distribution: {1: 6, 2: 30, 3: 82, 4: 82}
+[medium] search nodes to first solution: median=493.5 mean=1231 p90=3636
+[hard] n=200 unsolved=0 time=34.8s
+[hard] min #ops distribution: {1: 4, 2: 30, 3: 91, 4: 62, 5: 13}
+[hard] search nodes to first solution: median=980.0 mean=4506 p90=13162
+
+HARD FAILURES: none

@@ -1,0 +1,5 @@
+$ /Users/dash/Documents/dev/gemma_lora/.venv/bin/python verification/crosscheck_external.py
+Matplotlib is building the font cache; this may take a moment.
+[reasoning-gym] n=300 accepted by proj&ref=300 proj!=ref=0 their score_answer==1: 300
+[countdown-tasks-3to4] n=300 ref-solvable=300 proj/ref agree=300 proj expr passes ref_verify=300/300
+RESULT: PASS

@@ -16,7 +16,7 @@ scope for this session.
 | 5 | sft_coldstart.py + tiny smoke + gemma sanity | ✅ done |
 | 6 | train_rl.py + overfit 50 + gemma sanity + resumability | ✅ done |
 | 7 | eval.py on a small subset + hand-computed metrics | ✅ done |
-| 8 | Google Cloud handoff package + HANDOFF.md + REPORT.md skeleton | ⬜ pending |
+| 8 | Cloud-agnostic GPU handoff (vast.ai/RunPod + GCS + GCP CPU) + HANDOFF/REPORT | ✅ done |
 
 ## Log
 
@@ -132,3 +132,14 @@ scope for this session.
   (fixed: floor `kl_coef` at 1e-3 / cap 1.0, `dc6d816`). Post-fix run stable for
   389 steps (KL bounded, no collapse), but correctness stayed ~0.02-0.06 (noisy at
   G=4 on MPS; real gains belong to the cloud G=8 run). Logs: `logs/rl_gemma_part2*.txt`.
+
+- 2026-11-04 — Phase 8: cloud-agnostic GPU handoff. `scripts/bootstrap.sh`
+  (provider-neutral on-start, env-only) + `launch_anywhere.sh` (GPU detect → preset →
+  resume, lockfile) + `publish_code.sh` / `pull_checkpoints.sh` / `watch.sh` /
+  `cost_report.py` / `setup_cuda.sh` / `run_all.sh`; `scripts/gcp/{create_bucket,
+  make_training_key, linux_validation_vm, teardown}.sh` (bucket-level IAM, CPU
+  validation VM); `configs/preset-{24,48,80}gb.yaml` + `smoke_cuda.yaml` (effective
+  batch 128 constant via grad-accum); `.env.example`; `HANDOFF.md` (exact Part 2
+  order + provider notes + cost guard + MPS/CUDA differences); `REPORT.md` skeleton
+  with `[PENDING]` placeholders. All scripts `bash -n` clean (shellcheck not
+  installed). **verification/run_all_checks.sh → 0 failed (fully green).**
