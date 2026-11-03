@@ -13,7 +13,7 @@ scope for this session.
 | 2 | sandbox.py + adversarial tests + 10k stress + latency report | ✅ done |
 | 3 | rollout.py + env_mask/segment/hallucination tests | ✅ done |
 | 4 | rewards.py + reward-hack test suite | ✅ done |
-| 5 | sft_coldstart.py + tiny smoke + gemma sanity | ⬜ pending |
+| 5 | sft_coldstart.py + tiny smoke + gemma sanity | ✅ done |
 | 6 | train_rl.py + overfit 50 + gemma sanity + resumability | ⬜ pending |
 | 7 | eval.py on a small subset + hand-computed metrics | ⬜ pending |
 | 8 | Google Cloud handoff package + HANDOFF.md + REPORT.md skeleton | ⬜ pending |
@@ -91,3 +91,12 @@ scope for this session.
   suite — print(1), print(target), hallucinated output, reused numbers, answer in
   wrong place — all score below the honest correct rollout (1.2). 72 passed / 2
   skipped; verification 1 expected FAIL only.
+
+- 2026-11-04 — Phase 5: `sft_coldstart.py` — programmatic traces (wrong attempt →
+  real sandbox `False` → correction → real `True` → answer; no human CoT) +
+  LoRA SFT. `<output>` masked (label -100) via `rollout.assemble` (segment-wise,
+  never re-tokenized); train-split problems only. 4 tests (trace structure,
+  wrong-attempt != target, output masking, truncation). Smoke runs (`logs/`):
+  Qwen2.5-0.5B 40 steps loss 0.49→0.18 (23 s); gemma-2-2b 8 steps final loss
+  0.151 (24.6 s, no OOM) — pipeline checks, not findings. 76 passed / 2 skipped;
+  verification 1 expected FAIL only.
