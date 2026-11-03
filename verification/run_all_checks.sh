@@ -68,7 +68,7 @@ if [ "${NETWORK:-0}" = "1" ]; then
   run crosscheck_external "$PY" verification/crosscheck_external.py
   run tokenizer_tags "$PY" verification/check_tokenizer_tags.py   # informational; needs HF_TOKEN for gemma
   if command -v uv >/dev/null; then
-    run cuda_requirements_resolve uv pip compile requirements-cuda.txt --python-platform x86_64-manylinux_2_28 --python-version 3.14 -o /dev/null
+    run cuda_requirements_resolve uv pip compile requirements-cuda.txt --python-platform x86_64-manylinux_2_28 --python-version 3.14 -o "$TMP/cuda_resolved.txt"
   fi
 fi
 

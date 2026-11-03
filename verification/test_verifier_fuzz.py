@@ -157,8 +157,8 @@ EDGE = [
     ([5, 3], 2, "-3+5", False, "unary minus (design: rejected)"),
     ([5, 3], 8, "(" * 300 + "5+3" + ")" * 300, False, "over length cap / too deep"),
     ([50, 3, 3, 1], 50, "50", True, "0-op answer accepted when target is an input"),
-    ([10], 10, "1_0", True, "python underscore literal == 10 (benign)"),
-    ([10], 10, "0xA", True, "python hex literal == 10 (benign)"),
+    ([10], 10, "1_0", False, "python underscore literal (rejected by F5 charset whitelist)"),
+    ([10], 10, "0xA", False, "python hex literal (rejected by F5 charset whitelist)"),
     ([5, 3], 8, "5 +\n 3", None, "newline inside expression (record only)"),
 ]
 

@@ -1,0 +1,16 @@
+== verification summary (/Users/dash/Documents/dev/gemma_lora/verification/logs/run_20261104_004156)
+PASS  env
+PASS  project_pytest_1
+PASS  project_pytest_2
+PASS  project_pytest_3
+PASS  determinism
+PASS  audit_dataset
+FAIL  verifier_fuzz (rc=1, see /Users/dash/Documents/dev/gemma_lora/verification/logs/run_20261104_004156/verifier_fuzz.txt)
+PASS  secrets_history
+PASS  gitignore_coverage
+PASS  no_build_artifacts_in_history
+FAIL  deliverables_present (rc=1, see /Users/dash/Documents/dev/gemma_lora/verification/logs/run_20261104_004156/deliverables_present.txt)
+PASS  crosscheck_external
+PASS  tokenizer_tags
+FAIL  cuda_requirements_resolve (rc=2, see /Users/dash/Documents/dev/gemma_lora/verification/logs/run_20261104_004156/cuda_requirements_resolve.txt)
+failed checks: 3

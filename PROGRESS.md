@@ -1,8 +1,8 @@
 # PROGRESS.md
 
 Status of the Countdown GRPO + LoRA build. PART 1 = everything verifiable on the
-Mac + RunPod handoff. PART 2 (full SFT/GRPO/eval at scale) is out of scope for
-this session.
+Mac + a Google Cloud handoff package. PART 2 (the actual cloud runs) is out of
+scope for this session.
 
 ## Phase status
 
@@ -10,12 +10,13 @@ this session.
 |---|---|---|
 | 0 | Environment, RESOURCES.md, scaffold, pinned requirements | ✅ done |
 | 1 | data_generator.py + solver/verifier + tests + dataset cross-check | ✅ done |
-| 2 | sandbox.py + adversarial tests + 10k stress + latency report | ⬜ pending |
+| 2 | sandbox.py + adversarial tests + 10k stress + latency report | ✅ done |
 | 3 | rollout.py + env_mask/segment/hallucination tests | ⬜ pending |
 | 4 | rewards.py + reward-hack test suite | ⬜ pending |
 | 5 | sft_coldstart.py + tiny smoke + gemma sanity | ⬜ pending |
-| 6 | train_rl.py + overfit 50 + gemma sanity | ⬜ pending |
-| 7 | eval.py + RunPod handoff (scripts/configs/HANDOFF/REPORT skeleton) | ⬜ pending |
+| 6 | train_rl.py + overfit 50 + gemma sanity + resumability | ⬜ pending |
+| 7 | eval.py on a small subset + hand-computed metrics | ⬜ pending |
+| 8 | Google Cloud handoff package + HANDOFF.md + REPORT.md skeleton | ⬜ pending |
 
 ## Log
 
@@ -52,3 +53,18 @@ this session.
   gitignore (+`.safetensors`/`checkpoints/`/`.env`), solver-incompleteness note,
   lockfiles, README quickstart fixes, committed `logs/`. 31 tests pass.
   Remaining: **F8** (purge `.mpl-cache` from git history) needs explicit OK.
+
+- 2026-11-04 — F8 applied: `git filter-repo --path .mpl-cache --invert-paths`
+  purged the 584 KB font-cache artifact from history (all 4 later commits re-sha'd,
+  no remote so nothing to re-push).
+
+- 2026-11-04 — Phase 2: `sandbox.py` (persistent spawn pool, hard 50 ms kill +
+  respawn, recycle every N, dedicated per-worker pipe → no stale-result leak) +
+  `sandbox_worker.py` (minimal, no torch/transformers; AST whitelist: no Pow/
+  attribute/subscript/import/f-string/comprehension/lambda, int+bool literals ≤1e12,
+  depth/node caps; restricted `__builtins__` {print,range,len}; 200-char stdout,
+  bounded buffer). 22 sandbox tests (adversarial + timeout-recovery + concurrency +
+  stale-result). 10k stress (`logs/sandbox_stress.txt`): latency p50 0.063 ms /
+  p95 0.083 ms / p99 0.190 ms, ~9.9k exec/s, RSS bounded ~54 MB with no growth.
+  `verification/run_all_checks.sh` (NETWORK=1) → 1 expected FAIL (`deliverables_present`,
+  phases 3–8 missing); F1–F9 all verified applied. 53 tests pass.
