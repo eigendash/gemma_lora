@@ -2,4 +2,4 @@
 # countdown generator/verifier against an independent implementation; it is
 # never imported by runtime code.
 -r requirements-mac.txt
-reasoning-gym
+reasoning-gym==0.1.25

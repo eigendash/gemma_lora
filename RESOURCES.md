@@ -24,7 +24,7 @@ vLLM / bitsandbytes.
 | huggingface-hub | 2.4.0 | |
 | tokenizers | 0.23.3 | (transitive) |
 | vllm | 0.33.0 | **cloud only, untested** (pinned in `requirements-cuda.txt`) |
-| reasoning-gym | (dev only) | **PENDING install**; cross-check only, never a runtime import |
+| reasoning-gym | 0.1.25 (dev only) | cross-check only, never a runtime import |
 
 Pinned files: `requirements-mac.txt` (tested), `requirements-cuda.txt`
 (placeholder pins, **not yet run**), `requirements-dev.txt` (adds reasoning-gym).
@@ -47,8 +47,8 @@ IDs), so the same logic works for Gemma-2.
 
 | Dataset | Location | License | Status |
 |---|---|---|---|
-| Countdown-Tasks-3to4 | `Jiayi-Pan/Countdown-Tasks-3to4` (HF) | **UNSPECIFIED** (no license metadata on model card) | Exists; single parquet `data/train-00000-of-00001.parquet`; lastModified 2025-01-23. **Audit (solvability/dupes/leakage) PENDING — Phase 1.** Use: solver/verifier cross-check + extra held-out slice + optional Easy supplement (deduped). No 5–6 number problems. |
-| reasoning-gym countdown | `open-thought/reasoning-gym` | apache-2.0 | dev-only cross-check of generator/verifier; **PENDING** (Phase 1). |
+| Countdown-Tasks-3to4 | `Jiayi-Pan/Countdown-Tasks-3to4` (HF) | **UNSPECIFIED** (no license metadata on model card) | Audit DONE (Phase 1): 490,364 rows (240,632 × 3-num, 249,732 × 4-num); 449,570 unique `(sorted nums, target)` keys / 40,794 duplicate rows (~8.3%); **100% solvable** on a 2,000-row sample (positive-int intermediates); **31 keys overlap our eval split** → must dedupe before any use as training supplement. No 5–6 number problems. |
+| reasoning-gym countdown | `open-thought/reasoning-gym` | apache-2.0 | dev-only cross-check, installed v0.1.25. Note: its `score_answer` requires using **all** numbers exactly once (`sorted(used)==sorted(nums)`), stricter than our sub-multiset rule; its generator builds left-associative expressions (numbers in [1,100], not the classic pool). |
 
 **Not used by design:** any dataset of human-written chain-of-thought (GSM8K,
 OpenThoughts, distilled R1 traces, …). The spec forbids SFT on human CoT;
