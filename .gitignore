@@ -16,13 +16,22 @@ __pycache__/
 data/*.jsonl
 outputs/
 runs/
+checkpoints/
 *.ckpt
 *.pt
 *.bin
+*.safetensors
 wandb/
+
+# Secrets
+.env
+.env.*
 
 # OS
 .DS_Store
 
 # matplotlib cache (redirected into workspace to avoid ~/.matplotlib)
 .mpl-cache/
+
+# NOTE: small text logs under logs/ are committed on purpose (spec requires
+# logs). Rollout dumps / large logs go under outputs/ (ignored above), not logs/.

@@ -38,16 +38,26 @@ Pinned files: `requirements-mac.txt` (tested), `requirements-cuda.txt`
 | `HuggingFaceTB/SmolLM2-360M` | apache-2.0 | no | checked, not used (see above) |
 | `google/gemma-2-2b` | gemma | **manual (gated)** | Target model. Requires `HF_TOKEN` in env (license accepted by user). Not downloaded yet. |
 
-Protocol-tag tokenization (verified for both Qwen2.5-0.5B and SmolLM2-360M):
-each tag encodes to 3 stable tokens with no byte-fallback (e.g. `</python>` →
-`["</", "python", ">"]`). Stop strings are encoded at runtime (never hard-coded
-IDs), so the same logic works for Gemma-2.
+Protocol-tag tokenization — **context-dependent, must be handled deliberately**
+(audit finding M2, verified 2026-11-04). In *isolation* each tag is 3 tokens,
+but in context the edge tokens merge with neighbours, so segment-wise
+tokenization ≠ joint tokenization (`concat(segment ids) != tokenize(joined)`).
+Measured on Qwen2.5-0.5B: `</python>\n` → `["</","python",">\n"]`,
+`print(x)</python>` → `["print","(x",")</","python",">"]`,
+`</output><answer>` → `["</","output","><","answer",">"]`. `padding_side`:
+Qwen `right`, gemma-2-2b `left`.
+
+**Design constraint for rollout.py:** carry token IDs end to end (never
+re-tokenize a joined string), detect stop strings on *decoded text* (not on a
+fixed token-ID suffix), tokenize the injected `<output>` segment standalone and
+mark it env (label −100), and keep the boundary token deliberately. This is the
+highest-risk area of the pipeline.
 
 ## 3. Datasets
 
 | Dataset | Location | License | Status |
 |---|---|---|---|
-| Countdown-Tasks-3to4 | `Jiayi-Pan/Countdown-Tasks-3to4` (HF) | **UNSPECIFIED** (no license metadata on model card) | Audit DONE (Phase 1): 490,364 rows (240,632 × 3-num, 249,732 × 4-num); 449,570 unique `(sorted nums, target)` keys / 40,794 duplicate rows (~8.3%); **100% solvable** on a 2,000-row sample (positive-int intermediates); **31 keys overlap our eval split** → must dedupe before any use as training supplement. No 5–6 number problems. |
+| Countdown-Tasks-3to4 | `Jiayi-Pan/Countdown-Tasks-3to4` (HF) | **UNSPECIFIED** (no license metadata on model card) | Audit DONE (Phase 1): 490,364 rows (240,632 × 3-num, 249,732 × 4-num); 449,570 unique `(sorted nums, target)` keys / 40,794 duplicate rows (~8.3%); **100% solvable** on a 2,000-row sample (positive-int intermediates); **32 keys overlap our eval split** → must dedupe before any use as training supplement. No 5–6 number problems. |
 | reasoning-gym countdown | `open-thought/reasoning-gym` | apache-2.0 | dev-only cross-check, installed v0.1.25. Note: its `score_answer` requires using **all** numbers exactly once (`sorted(used)==sorted(nums)`), stricter than our sub-multiset rule; its generator builds left-associative expressions (numbers in [1,100], not the classic pool). |
 
 **Not used by design:** any dataset of human-written chain-of-thought (GSM8K,
@@ -71,3 +81,20 @@ cold-start traces are generated programmatically from our own solver.
   **dropped** (Countdown doesn't need it; `9**9**9**9` holds the GIL).
 - Persistent multiprocessing worker pool (spawn), hard 50 ms per execution,
   stdout truncated to 200 chars; huge ints / deep nesting rejected at the AST level.
+
+## 6. Known limitations & semantics (audit findings, 2026-11-04)
+
+- **Solver incompleteness** (`solver.py`): only explores *positive-integer*
+  intermediates, while the verifier's semantics (Fraction + sub-multiset) admit
+  fraction/negative intermediates. So `solve(..., found=False)` is **not**
+  authoritative under verifier semantics, and must not be used to label problems
+  unsolvable or to compute a Pass@k ceiling. The "100% solvable" cross-check
+  figure is a lower bound. (audit m6)
+- **Verifier semantics** (`verifier.py`): evaluates the full expression with
+  `Fraction` and requires literals ⊆ inputs (sub-multiset); it does **not**
+  require integer intermediates (e.g. `(1/2)+(1/2)==1` passes). This matches the
+  task spec. `integer_intermediates()` is provided separately for analysis.
+- **Weak medium-vs-hard separation** (audit m9): median solver search nodes
+  easy 11.5 → medium 469 → hard 658, and min-op distributions are nearly
+  identical. Matters for the Phase 6 curriculum; consider harder hard-tier
+  targets (or a min-ops bound) then. Not yet addressed.

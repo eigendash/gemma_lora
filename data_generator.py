@@ -116,7 +116,8 @@ def generate_one(
         if res is None:
             continue
         target, sol = res
-        if tmin <= target <= tmax:
+        # reject the degenerate "answer is one of the inputs" case (audit m2)
+        if tmin <= target <= tmax and target not in nums:
             return nums, target, sol
     raise RuntimeError(f"failed to generate tier={tier} after {max_attempts} attempts")
 

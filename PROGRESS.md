@@ -33,5 +33,22 @@ this session.
   green (all solutions exact + integer intermediates). Cross-check
   (`scripts/crosscheck_datasets.py`): Countdown-Tasks-3to4 = 490,364 rows,
   449,570 unique keys / 40,794 dupes (~8.3%), **100% solvable** on 2k sample,
-  **31 keys overlap our eval** (dedupe before supplement); reasoning-gym v0.1.25 =
+  **32 keys overlap our eval** (dedupe before supplement); reasoning-gym v0.1.25 =
   our verifier accepts 300/300 of their answers, our solver solves 300/300.
+
+- 2026-11-04 — Independent audit remediation (auditor verdict "NOT READY" =
+  expected: Phases 2–7 not built). Fixed the two MAJOR + relevant MINOR items:
+  **M1** — `requirements-cuda.txt` was unresolvable (`--index-url cu126` had no
+  torch 2.15.0; vLLM 0.33.0 pins torch==2.14.0 + transformers<5.21.0). Now: drop
+  index-url (PyPI torch 2.15.0 bundles CUDA); vLLM moved to `requirements-vllm.txt`
+  (torch 2.14.0 + transformers 5.20.2 + vllm 0.33.0); both resolve via
+  `uv pip compile` (lockfiles in `lockfiles/`). **M2** — tag tokenization is
+  context-dependent (edge tokens merge with neighbours; segment-wise ≠ joint);
+  corrected RESOURCES.md and recorded the rollout design constraint (carry IDs,
+  never re-tokenize, decode-text stop detection). **m2** — `generate_one` now
+  rejects `target in nums` (0 degenerate in both splits); dataset regenerated,
+  new hashes `880fbfa7…`/`e29fa56c…`. **m5** — verifier normalizes whitespace and
+  restricts charset (rejects `1_0`, `0xA`, `×`, floats). **m3/m6/m7/m8/m10** —
+  gitignore (+`.safetensors`/`checkpoints/`/`.env`), solver-incompleteness note,
+  lockfiles, README quickstart fixes, committed `logs/`. 31 tests pass.
+  Remaining: **F8** (purge `.mpl-cache` from git history) needs explicit OK.

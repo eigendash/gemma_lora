@@ -1,0 +1,23 @@
+$ python scripts/crosscheck_datasets.py  (author script, cleanroom)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Generating train split:   0%|          | 0/490364 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 490364/490364 [00:00<00:00, 13753013.66 examples/s]
+/tmp/scratch/cleanroom/.venv/lib/python3.14/site-packages/cellpylib/ca_functions.py:194: SyntaxWarning: "is" with 'str' literal. Did you mean "=="?
+  if memoize is "recursive":
+/tmp/scratch/cleanroom/.venv/lib/python3.14/site-packages/cellpylib/ca_functions.py:246: SyntaxWarning: "is" with 'str' literal. Did you mean "=="?
+  if memoize is "recursive":
+Matplotlib is building the font cache; this may take a moment.
+/tmp/scratch/cleanroom/.venv/lib/python3.14/site-packages/cellpylib/ca_functions2d.py:431: SyntaxWarning: "is" with 'str' literal. Did you mean "=="?
+  if memoize is "recursive":
+/tmp/scratch/cleanroom/.venv/lib/python3.14/site-packages/cellpylib/ca_functions2d.py:501: SyntaxWarning: "is" with 'str' literal. Did you mean "=="?
+  if memoize is "recursive":
+[countdown-tasks] rows=490364
+[countdown-tasks] num_counts: 3=240632 4=249732
+[countdown-tasks] unique keys=449570 duplicate rows=40794
+[countdown-tasks] leakage overlap with our eval=31
+[countdown-tasks] solvable (pos-int intermediates) =2000/2000 = 1.000
+
+[reasoning-gym] installed version=0.1.25
+[reasoning-gym] our verifier accepts their answer =300/300 = 1.000
+[reasoning-gym] our solver solves their problem (pos-int intermediates) =300/300 = 1.000
+.venv/bin/python scripts/crosscheck_datasets.py  17.67s user 1.05s system 50% cpu 36.830 total
+exit=0

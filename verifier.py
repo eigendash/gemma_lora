@@ -18,6 +18,7 @@ from collections import Counter
 from fractions import Fraction
 
 _MAX_EXPR_LEN = 500
+_ALLOWED_CHARS = frozenset("0123456789+-*/() ")
 
 _BINOP = {
     ast.Add: lambda a, b: a + b,
@@ -78,11 +79,13 @@ def verify_answer(nums, target, expr) -> tuple[bool, str]:
     """
     if not isinstance(expr, str):
         return False, "not-a-string"
-    s = expr.strip()
+    s = " ".join(expr.split())  # normalize all whitespace (incl. newlines/tabs)
     if not s:
         return False, "empty"
     if len(s) > _MAX_EXPR_LEN:
         return False, "too-long"
+    if any(c not in _ALLOWED_CHARS for c in s):
+        return False, "disallowed-character"
     try:
         tree = ast.parse(s, mode="eval")
     except (SyntaxError, ValueError, MemoryError, RecursionError):

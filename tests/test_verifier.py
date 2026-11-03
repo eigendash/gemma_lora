@@ -75,3 +75,24 @@ def test_negative_literal_rejected():
 def test_bool_literal_rejected():
     ok, _ = verify_answer([1, 0], 1, "1 + True")
     assert not ok
+
+
+def test_whitespace_normalized():
+    # newline / tab inside an expression must be accepted (audit m5)
+    assert verify_answer([2, 1, 75], 3, "2\n+1")[0] is True
+    assert verify_answer([1, 2], 3, "1 + 2\t\n")[0] is True
+
+
+def test_python_literal_spellings_rejected():
+    # underscores and hex literals are Python grammar, not Countdown (audit m5)
+    assert verify_answer([10, 2], 12, "1_0 + 2")[0] is False
+    assert verify_answer([10, 2], 12, "0xA + 2")[0] is False
+
+
+def test_unicode_operators_rejected():
+    assert verify_answer([2, 3], 5, "2 × 3")[0] is False
+    assert verify_answer([10, 2], 5, "10 ÷ 2")[0] is False
+
+
+def test_float_literal_rejected():
+    assert verify_answer([1, 2, 3], 6, "1.0 + 2.0 + 3.0")[0] is False

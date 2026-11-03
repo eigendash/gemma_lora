@@ -1,0 +1,17 @@
+wrote 10000 train -> /tmp/scratch/gen_a/train.jsonl
+wrote 1000 eval  -> /tmp/scratch/gen_a/eval.jsonl
+.venv/bin/python data_generator.py --verify --train-out $SP/gen_$r/train.json  0.56s user 0.01s system 99% cpu 0.574 total
+wrote 10000 train -> /tmp/scratch/gen_b/train.jsonl
+wrote 1000 eval  -> /tmp/scratch/gen_b/eval.jsonl
+.venv/bin/python data_generator.py --verify --train-out $SP/gen_$r/train.json  0.57s user 0.01s system 99% cpu 0.583 total
+--- hashes
+19289d17d30ed444f72fb6b1b4aadbd43d0f690eda13aa6c793f6abf2bc7885f  /tmp/scratch/gen_a/eval.jsonl
+17cb7b34fb54991f5dadfb52f55da5cefa9db68200b6076b55a73726b0f19e2c  /tmp/scratch/gen_a/train.jsonl
+19289d17d30ed444f72fb6b1b4aadbd43d0f690eda13aa6c793f6abf2bc7885f  /tmp/scratch/gen_b/eval.jsonl
+17cb7b34fb54991f5dadfb52f55da5cefa9db68200b6076b55a73726b0f19e2c  /tmp/scratch/gen_b/train.jsonl
+19289d17d30ed444f72fb6b1b4aadbd43d0f690eda13aa6c793f6abf2bc7885f  /Users/dash/Documents/dev/gemma_lora/data/eval.jsonl
+17cb7b34fb54991f5dadfb52f55da5cefa9db68200b6076b55a73726b0f19e2c  /Users/dash/Documents/dev/gemma_lora/data/train.jsonl
+RUN A == RUN B byte-identical
+CLEANROOM == AUTHOR data/ byte-identical
+--- PYTHONHASHSEED variation
+PYTHONHASHSEED=123 identical

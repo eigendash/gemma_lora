@@ -1,0 +1,6 @@
+$ python verification/crosscheck_external.py
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[reasoning-gym] n=300 accepted by proj&ref=300 proj!=ref=0 their score_answer==1: 300
+[countdown-tasks-3to4] n=300 ref-solvable=300 proj/ref agree=300 proj expr passes ref_verify=300/300
+RESULT: PASS
+exit=0

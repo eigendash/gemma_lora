@@ -62,3 +62,11 @@ def test_nums_from_countdown_pool():
     for p in probs:
         for x in p["nums"]:
             assert x in dg.POOL
+
+
+def test_no_target_equals_input():
+    # degenerate "answer is one of the inputs" must be rejected (audit m2)
+    rng = random.Random(6)
+    probs = dg.generate_split(300, rng, {"easy": 1, "medium": 1, "hard": 1})
+    for p in probs:
+        assert p["target"] not in p["nums"]
