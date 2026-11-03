@@ -157,11 +157,12 @@ def train_sft(
     return model, losses
 
 
-def load_model_and_tokenizer(model_id: str, device: str):
+def load_model_and_tokenizer(model_id: str, device: str, dtype: str = "float16", attn: str = "eager"):
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
+    dt = {"float32": torch.float32, "float16": torch.float16, "bfloat16": torch.bfloat16}[dtype]
     tokenizer = AutoTokenizer.from_pretrained(model_id)
-    model = AutoModelForCausalLM.from_pretrained(model_id, dtype=torch.float32, attn_implementation="eager")
+    model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dt, attn_implementation=attn)
     model.to(device)
     model.eval()
     return model, tokenizer
@@ -180,6 +181,8 @@ def main(argv=None) -> None:
     ap.add_argument("--output-dir", default="outputs/sft")
     ap.add_argument("--device", default="auto", help="cuda|mps|cpu|auto")
     ap.add_argument("--traces-out", default=None, help="dump traces as JSONL for inspection")
+    ap.add_argument("--dtype", default="float16", help="float32|float16|bfloat16")
+    ap.add_argument("--attn", default="eager", help="sdpa|eager (eager for gemma-2)")
     args = ap.parse_args(argv)
 
     if args.device == "auto":
@@ -196,7 +199,7 @@ def main(argv=None) -> None:
     finally:
         sandbox.close()
 
-    model, tokenizer = load_model_and_tokenizer(args.model, device)
+    model, tokenizer = load_model_and_tokenizer(args.model, device, args.dtype, args.attn)
     examples = [build_example(tokenizer, format_prompt(p["nums"], p["target"]), segs, args.max_length)
                 for p, segs in zip(chosen, traces)]
 

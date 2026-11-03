@@ -1,0 +1,54 @@
+W1104 02:09:34.530000 37415 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/288 [00:00<?, ?it/s]Loading weights:   0%|          | 1/288 [00:04<20:43,  4.33s/it]Loading weights:  84%|████████▎ | 241/288 [00:04<00:00, 75.96it/s]Loading weights: 100%|██████████| 288/288 [00:05<00:00, 53.89it/s]
+step 10 loss 0.3768
+step 20 loss 0.1776
+step 30 loss 0.1712
+step 40 loss 0.1597
+step 50 loss 0.1232
+step 60 loss 0.1370
+step 70 loss 0.2010
+step 80 loss 0.1824
+step 90 loss 0.1073
+step 100 loss 0.1232
+step 110 loss 0.1427
+step 120 loss 0.1371
+step 130 loss 0.1216
+step 140 loss 0.1306
+step 150 loss 0.1067
+step 160 loss 0.0971
+step 170 loss 0.1446
+step 180 loss 0.1270
+step 190 loss 0.1387
+step 200 loss 0.1316
+step 210 loss 0.1210
+step 220 loss 0.1198
+step 230 loss 0.1250
+step 240 loss 0.1521
+step 250 loss 0.1454
+step 260 loss 0.1059
+step 270 loss 0.1049
+step 280 loss 0.1280
+step 290 loss 0.1078
+step 300 loss 0.1518
+step 310 loss 0.1265
+step 320 loss 0.1154
+step 330 loss 0.1267
+step 340 loss 0.0996
+step 350 loss 0.1455
+step 360 loss 0.1019
+step 370 loss 0.1365
+step 380 loss 0.1277
+step 390 loss 0.1300
+step 400 loss 0.1089
+step 410 loss 0.1504
+step 420 loss 0.1417
+step 430 loss 0.1275
+step 440 loss 0.1153
+step 450 loss 0.1432
+step 460 loss 0.1354
+step 470 loss 0.1362
+step 480 loss 0.1108
+step 490 loss 0.1191
+step 500 loss 0.1293
+done 500 steps | final loss 0.0730 | mean 0.1365
+saved adapter -> outputs/sft_gemma

@@ -101,7 +101,7 @@ def _load(model_id: str, adapter: str | None, device: str):
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
     tokenizer = AutoTokenizer.from_pretrained(model_id)
-    base = AutoModelForCausalLM.from_pretrained(model_id, dtype=torch.float32, attn_implementation="eager")
+    base = AutoModelForCausalLM.from_pretrained(model_id, dtype=torch.float16, attn_implementation="sdpa")
     model = base
     if adapter:
         from peft import PeftModel

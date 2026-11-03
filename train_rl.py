@@ -57,6 +57,8 @@ class GRPOConfig:
     kl_coef: float = 0.02
     target_kl: float = 0.1
     kl_adapt_rate: float = 2.0
+    min_kl_coef: float = 1e-3   # floor so the KL penalty never underflows to 0
+    max_kl_coef: float = 1.0
     lora_r: int = 16
     lora_alpha: int = 32
     device: str = "auto"
@@ -122,14 +124,16 @@ class Curriculum:
 # Chunked log-probs (256k vocab safety)
 # ---------------------------------------------------------------------------
 def chunked_logprobs(logits: torch.Tensor, target_ids: torch.Tensor, chunk_size: int = 8192) -> torch.Tensor:
-    logits = logits.float()  # fp32 for stable exp/log (fp16 logits overflow)
-    max_logits = logits.max(dim=-1).values
-    logsumexp = torch.full(max_logits.shape, float("-inf"), device=logits.device, dtype=logits.dtype)
+    """Log-softmax gathered at target positions, computed in fp32 precision but
+    casting only one vocab chunk at a time (never a full fp32 copy of a 256k-vocab
+    logits tensor — a full ``.float()`` doubles memory and OOMs on MPS)."""
+    max_logits = logits.max(dim=-1).values.float()  # (B, T) fp32
+    logsumexp = torch.full(max_logits.shape, float("-inf"), device=logits.device, dtype=torch.float32)
     for i in range(0, logits.shape[-1], chunk_size):
-        chunk = logits[:, :, i:i + chunk_size]
+        chunk = logits[:, :, i:i + chunk_size].float()
         logsumexp = torch.logaddexp(logsumexp, (chunk - max_logits.unsqueeze(-1)).exp().sum(dim=-1).log())
     logz = logsumexp + max_logits
-    target_logit = logits.gather(-1, target_ids.unsqueeze(-1)).squeeze(-1)
+    target_logit = logits.gather(-1, target_ids.unsqueeze(-1)).squeeze(-1).float()
     return target_logit - logz
 
 
@@ -357,7 +361,7 @@ def train(cfg: GRPOConfig) -> None:
         model = PeftModel.from_pretrained(base, os.path.join(resume_dir, "adapter"), is_trainable=True)
         start_step = state["step"]
         run_id = state.get("run_id", run_id)
-        kl_coef = train_state["kl_coef"]
+        kl_coef = max(train_state["kl_coef"], cfg.min_kl_coef)
         curriculum.load_state(state["curriculum"])
         rp = state["rng_python"]
         random.setstate((rp[0], tuple(rp[1]), rp[2]))
@@ -386,7 +390,17 @@ def train(cfg: GRPOConfig) -> None:
     gen_rng = torch.Generator(device=device).manual_seed(cfg.seed)
     log_rows = []
     last_ckpt = time.time()
+    last_hb = time.time()
     stop_requested = {"flag": False}
+
+    # incremental log: append (resume) or truncate (fresh) so a crash doesn't lose the log
+    os.makedirs(cfg.output_dir, exist_ok=True)
+    log_file = open(os.path.join(cfg.output_dir, "train_log.jsonl"), "a" if start_step > 0 else "w")
+    import checkpoint as _ck
+    hb_bucket = _ck.LocalBucket(os.path.join(cfg.output_dir, "_remote")) if cfg.backend == "local" else None
+    if hb_bucket is not None:
+        _ck.write_segment(hb_bucket, run_id, 0, {"start_step": start_step, "device": device,
+                                                 "provider": "local", "config_hash": cfg.hash()})
 
     def _sig(signum, frame):
         stop_requested["flag"] = True
@@ -433,9 +447,11 @@ def train(cfg: GRPOConfig) -> None:
         else:
             out = model(input_ids=batch["input_ids"], attention_mask=batch["attention_mask"])
             policy_lp = chunked_logprobs(out.logits, batch["target_ids"])
+            del out
             with torch.no_grad(), model.disable_adapter():
                 ref_out = model(input_ids=batch["input_ids"], attention_mask=batch["attention_mask"])
             ref_lp = chunked_logprobs(ref_out.logits, batch["target_ids"])
+            del ref_out
 
         ratio = torch.exp(policy_lp - batch["old_logp"])
         A = adv_t.unsqueeze(1)
@@ -449,15 +465,17 @@ def train(cfg: GRPOConfig) -> None:
 
         kl_val = float(kl.detach())
         if kl_val > cfg.target_kl * 1.5:
-            kl_coef *= cfg.kl_adapt_rate
+            kl_coef = min(kl_coef * cfg.kl_adapt_rate, cfg.max_kl_coef)
         elif kl_val < cfg.target_kl / 1.5:
-            kl_coef /= cfg.kl_adapt_rate
+            kl_coef = max(kl_coef / cfg.kl_adapt_rate, cfg.min_kl_coef)
 
         # gradient accumulation: effective batch = prompts_per_step * G * grad_accum
         (loss / cfg.grad_accum).backward()
         if (step + 1) % cfg.grad_accum == 0:
             optimizer.step()
             optimizer.zero_grad()
+        if device == "mps":
+            torch.mps.empty_cache()  # combat MPS fragmentation over long runs
 
         row = {"step": step, "reward": sum(x.total for x in rewards) / len(rewards),
                "correct": sum(x.correct for x in rewards) / len(rewards),
@@ -466,10 +484,17 @@ def train(cfg: GRPOConfig) -> None:
                "length_penalty": sum(x.length_penalty for x in rewards) / len(rewards),
                "kl": kl_val, "kl_coef": kl_coef, "zero_var_frac": zero_var / cfg.prompts_per_step}
         log_rows.append(row)
+        log_file.write(json.dumps(row) + "\n")
+        log_file.flush()
         if (step + 1) % cfg.log_every == 0 or step == start_step:
             print(f"step {step} reward {row['reward']:.3f} correct {row['correct']:.3f} "
                   f"exec {row['exec']:.3f} format {row['format']:.3f} kl {row['kl']:.4f} "
                   f"zero_var {row['zero_var_frac']:.2f}")
+
+        if hb_bucket is not None and time.time() - last_hb > 120:
+            _ck.write_heartbeat(hb_bucket, run_id, {"step": step, "elapsed": int(time.time() - last_hb),
+                                                    "reward": row["reward"], "correct": row["correct"]})
+            last_hb = time.time()
 
         if (step + 1) % cfg.rollout_dump_every == 0:
             _dump_rollouts(cfg.output_dir, step, rollouts)
@@ -481,7 +506,8 @@ def train(cfg: GRPOConfig) -> None:
     ckpt.save(step + 1, model, optimizer, kl_coef, curriculum, sampler, cfg, run_id)
     signal.signal(signal.SIGTERM, old_handler)
     sandbox.close()
-    _write_log(cfg.output_dir, log_rows, run_id)
+    log_file.close()
+    print(f"run {run_id} done; {len(log_rows)} steps -> {cfg.output_dir}/train_log.jsonl")
 
 
 def _dump_rollouts(output_dir, step, rollouts):
