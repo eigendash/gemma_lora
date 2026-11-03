@@ -15,7 +15,7 @@ scope for this session.
 | 4 | rewards.py + reward-hack test suite | ✅ done |
 | 5 | sft_coldstart.py + tiny smoke + gemma sanity | ✅ done |
 | 6 | train_rl.py + overfit 50 + gemma sanity + resumability | ✅ done |
-| 7 | eval.py on a small subset + hand-computed metrics | ⬜ pending |
+| 7 | eval.py on a small subset + hand-computed metrics | ✅ done |
 | 8 | Google Cloud handoff package + HANDOFF.md + REPORT.md skeleton | ⬜ pending |
 
 ## Log
@@ -116,3 +116,19 @@ scope for this session.
   Qwen2.5-0.5B 40 steps loss 0.49→0.18 (23 s); gemma-2-2b 8 steps final loss
   0.151 (24.6 s, no OOM) — pipeline checks, not findings. 76 passed / 2 skipped;
   verification 1 expected FAIL only.
+
+- 2026-11-04 — Phase 7: `eval.py` — Pass@1 (overall + per-tier), format compliance,
+  token length (mean/p50/p95/max), self-correction rate (definition documented) +
+  blanked/shuffled-output control, Pass@1 vs rounds 0/1/2. 4 hand-computed unit
+  tests. End-to-end on Qwen (12-problem subset, pipeline checks not findings):
+  format — base(few-shot) 0.333 / SFT 0.917 / RL-overfit 0.0; pass@1 0.0 for all
+  at this scale; self-correction 0 (no failing executions in the sample).
+
+- 2026-11-04 — Part 2 Mac observation run (gemma-2-2b, ~4 h, 389 steps) found +
+  fixed 2 bugs: (1) **MPS OOM** — full fp32 cast of 256k-vocab logits doubled
+  memory (fixed: per-chunk fp32 + `--chunked-vocab`, `1c8743f`); (2) **adaptive KL
+  coefficient underflow → correctness collapse** — `kl_coef` halved to 0, disabling
+  the KL penalty, so the model drifted (KL 0.02→0.08) and collapsed (correct 0.75→0)
+  (fixed: floor `kl_coef` at 1e-3 / cap 1.0, `dc6d816`). Post-fix run stable for
+  389 steps (KL bounded, no collapse), but correctness stayed ~0.02-0.06 (noisy at
+  G=4 on MPS; real gains belong to the cloud G=8 run). Logs: `logs/rl_gemma_part2*.txt`.
