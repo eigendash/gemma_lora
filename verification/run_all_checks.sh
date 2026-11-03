@@ -20,6 +20,9 @@ mkdir -p "$OUT"
 trap 'rm -rf "$TMP"' EXIT
 export PYTHONPATH="$ROOT"
 export MPLCONFIGDIR="$TMP/mpl"
+# keep caches inside the workspace (sandboxed shells can't write ~/.cache)
+export HF_HOME="${HF_HOME:-$ROOT/.hf-cache}"
+export UV_CACHE_DIR="${UV_CACHE_DIR:-$ROOT/.uv-cache}"
 
 FAILS=0
 declare -a SUMMARY

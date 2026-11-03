@@ -11,7 +11,7 @@ scope for this session.
 | 0 | Environment, RESOURCES.md, scaffold, pinned requirements | ✅ done |
 | 1 | data_generator.py + solver/verifier + tests + dataset cross-check | ✅ done |
 | 2 | sandbox.py + adversarial tests + 10k stress + latency report | ✅ done |
-| 3 | rollout.py + env_mask/segment/hallucination tests | ⬜ pending |
+| 3 | rollout.py + env_mask/segment/hallucination tests | ✅ done |
 | 4 | rewards.py + reward-hack test suite | ⬜ pending |
 | 5 | sft_coldstart.py + tiny smoke + gemma sanity | ⬜ pending |
 | 6 | train_rl.py + overfit 50 + gemma sanity + resumability | ⬜ pending |
@@ -68,3 +68,15 @@ scope for this session.
   p95 0.083 ms / p99 0.190 ms, ~9.9k exec/s, RSS bounded ~54 MB with no growth.
   `verification/run_all_checks.sh` (NETWORK=1) → 1 expected FAIL (`deliverables_present`,
   phases 3–8 missing); F1–F9 all verified applied. 53 tests pass.
+
+- 2026-11-04 — Phase 3: `rollout.py` custom generation loop (KV-cache manual
+  loop) with tool interleaving. Stop strings detected on *decoded text* (not
+  token-ID suffix); segment-wise tokenization + token-level `loss_mask`
+  (prompt + injected `<output>` = 0, model-generated = 1); hallucinated
+  `<output>` truncated + rebuilt + replaced; 2-round cap; max-length/EOS.
+  HF_TOKEN resolved from macOS Keychain (`security find-generic-password -s
+  HF_TOKEN -w`) — gemma-2-2b confirmed: vocab 256000, `padding_side=left`, merges
+  `)</`/`><` (Qwen additionally merges `>\n`). 8 tokenizer-level tests (both
+  tokenizers) + 2 model tests (ratio≈1 at step 0; full-rollout structure) pass;
+  model tests gated by `RUN_MODEL_TESTS=1` (`logs/rollout_model_tests.txt`).
+  Full suite 61 passed / 2 skipped; verification 1 expected FAIL only.
