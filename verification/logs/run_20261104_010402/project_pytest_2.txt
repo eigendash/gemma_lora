@@ -1,0 +1,4 @@
+$ /Users/dash/Documents/dev/gemma_lora/.venv/bin/python -m pytest -q -p no:cacheprovider tests
+..........................ss............................................ [ 97%]
+..                                                                       [100%]
+72 passed, 2 skipped in 3.45s

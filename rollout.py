@@ -44,6 +44,9 @@ class RolloutResult:
     loss_mask: list[int]                # 1 = model-generated (trainable), 0 = env
     old_logprobs: list[float]           # per completion token; 0.0 for env tokens
     transcript: str                     # decoded prompt + completion
+    completion_text: str = ""           # decoded completion only (gen + injected)
+    codes: list[str] = field(default_factory=list)   # executed code per round
+    code_oks: list[bool] = field(default_factory=list)  # whether each ran cleanly
     code_rounds: int = 0
     hallucinated_output: bool = False
     has_answer: bool = False
@@ -152,6 +155,8 @@ def run_rollout(
     loss_mask: list[int] = []
     old_logprobs: list[float] = []
     pieces: list[str] = []
+    codes: list[str] = []
+    code_oks: list[bool] = []
     code_rounds = 0
     hallucinated = False
     truncated = False
@@ -198,6 +203,8 @@ def run_rollout(
             code = extract_between(text, PYTHON_OPEN, PYTHON_CLOSE)
             ok, stdout = sandbox.run(code)
             code_rounds += 1
+            codes.append(code)
+            code_oks.append(ok)
             injected = f"\n{OUTPUT_OPEN}\n{stdout}\n{OUTPUT_CLOSE}\n"
             inj_ids = tokenizer.encode(injected, add_special_tokens=False)
             completion_ids.extend(inj_ids)
@@ -235,6 +242,9 @@ def run_rollout(
         loss_mask=loss_mask,
         old_logprobs=old_logprobs,
         transcript=tokenizer.decode(prompt_ids + completion_ids, skip_special_tokens=False),
+        completion_text="".join(pieces),
+        codes=codes,
+        code_oks=code_oks,
         code_rounds=code_rounds,
         hallucinated_output=hallucinated,
         has_answer=has_answer,

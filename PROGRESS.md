@@ -12,7 +12,7 @@ scope for this session.
 | 1 | data_generator.py + solver/verifier + tests + dataset cross-check | ✅ done |
 | 2 | sandbox.py + adversarial tests + 10k stress + latency report | ✅ done |
 | 3 | rollout.py + env_mask/segment/hallucination tests | ✅ done |
-| 4 | rewards.py + reward-hack test suite | ⬜ pending |
+| 4 | rewards.py + reward-hack test suite | ✅ done |
 | 5 | sft_coldstart.py + tiny smoke + gemma sanity | ⬜ pending |
 | 6 | train_rl.py + overfit 50 + gemma sanity + resumability | ⬜ pending |
 | 7 | eval.py on a small subset + hand-computed metrics | ⬜ pending |
@@ -80,3 +80,14 @@ scope for this session.
   tokenizers) + 2 model tests (ratio≈1 at step 0; full-rollout structure) pass;
   model tests gated by `RUN_MODEL_TESTS=1` (`logs/rollout_model_tests.txt`).
   Full suite 61 passed / 2 skipped; verification 1 expected FAIL only.
+
+- 2026-11-04 — Phase 4: `rewards.py` — `R = R_correct + R_exec + R_format −
+  λ·len`, each component returned separately. R_correct via `verifier.verify_answer`
+  (model-independent); R_exec only if code ran cleanly AND references an input
+  number (blocks `print(1)`/`print(target)`); R_format = exactly one `<answer>` +
+  think→python→answer order; length penalty only beyond threshold (generated
+  tokens); hallucinated `<output>` zeroes exec+format. `RolloutResult` now carries
+  `completion_text`, `codes`, `code_oks`. 11 reward tests incl. the required hack
+  suite — print(1), print(target), hallucinated output, reused numbers, answer in
+  wrong place — all score below the honest correct rollout (1.2). 72 passed / 2
+  skipped; verification 1 expected FAIL only.
