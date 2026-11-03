@@ -124,6 +124,7 @@ def _forward(model, input_ids: torch.Tensor, past, device):
 
 
 def _sample(logits: torch.Tensor, temperature: float, rng: torch.Generator):
+    logits = logits.float()  # fp32 for numerical stability (fp16 logits can overflow softmax)
     if temperature and temperature > 0:
         probs = torch.softmax(logits / temperature, dim=-1)
         nxt = torch.multinomial(probs, num_samples=1, generator=rng)
@@ -144,6 +145,7 @@ def run_rollout(
     temperature: float = 1.0,
     rng: torch.Generator | None = None,
     device: torch.device | str | None = None,
+    output_transform=None,
 ) -> RolloutResult:
     device = device or next(model.parameters()).device
     rng = rng or torch.Generator(device=device)
@@ -202,6 +204,8 @@ def run_rollout(
                 break
             code = extract_between(text, PYTHON_OPEN, PYTHON_CLOSE)
             ok, stdout = sandbox.run(code)
+            if output_transform is not None:
+                stdout = output_transform(stdout)
             code_rounds += 1
             codes.append(code)
             code_oks.append(ok)

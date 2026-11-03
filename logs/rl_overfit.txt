@@ -1,0 +1,21 @@
+W1104 01:55:06.397000 36807 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 6207.06it/s]
+W1104 01:55:09.899000 36814 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+W1104 01:55:11.392000 36815 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+step 0 reward 0.050 correct 0.000 exec 0.025 format 0.025 kl 0.0003 zero_var 0.00
+step 1 reward 0.100 correct 0.000 exec 0.050 format 0.050 kl -0.0005 zero_var 0.00
+step 2 reward 0.050 correct 0.000 exec 0.025 format 0.025 kl -0.0007 zero_var 0.00
+step 3 reward 0.125 correct 0.000 exec 0.075 format 0.050 kl 0.0051 zero_var 0.00
+step 4 reward 0.050 correct 0.000 exec 0.025 format 0.025 kl -0.0035 zero_var 0.00
+step 5 reward 0.075 correct 0.000 exec 0.050 format 0.025 kl -0.0048 zero_var 0.00
+step 6 reward 0.150 correct 0.000 exec 0.075 format 0.075 kl 0.0181 zero_var 0.00
+step 7 reward 0.200 correct 0.000 exec 0.100 format 0.100 kl 0.0095 zero_var 1.00
+step 8 reward 0.100 correct 0.000 exec 0.050 format 0.050 kl 0.0162 zero_var 0.00
+step 9 reward 0.100 correct 0.000 exec 0.050 format 0.050 kl 0.0189 zero_var 0.00
+step 10 reward 0.150 correct 0.000 exec 0.075 format 0.075 kl 0.0383 zero_var 0.00
+step 11 reward 0.100 correct 0.000 exec 0.050 format 0.050 kl 0.0340 zero_var 0.00
+step 12 reward 0.200 correct 0.000 exec 0.100 format 0.100 kl 0.0280 zero_var 1.00
+step 13 reward 0.200 correct 0.000 exec 0.100 format 0.100 kl 0.0460 zero_var 1.00
+step 14 reward 0.100 correct 0.000 exec 0.050 format 0.050 kl 0.0456 zero_var 0.00
+run rl-1793724907 done; 15 steps -> outputs/rl_overfit/train_log.jsonl

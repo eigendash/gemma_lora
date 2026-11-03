@@ -1,0 +1,11 @@
+W1104 02:03:55.645000 37195 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 5622.76it/s]
+W1104 02:03:59.179000 37201 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+W1104 02:04:00.764000 37203 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+step 0 reward 0.050 correct 0.000 exec 0.050 format 0.000 kl -0.0006 zero_var 0.00
+step 1 reward 0.100 correct 0.000 exec 0.100 format 0.000 kl -0.0009 zero_var 1.00
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+step 2 reward 0.100 correct 0.000 exec 0.100 format 0.000 kl -0.0021 zero_var 1.00
+step 3 reward 0.050 correct 0.000 exec 0.050 format 0.000 kl 0.0010 zero_var 0.00
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:475: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-ssm3ynp6'}
+  warnings.warn(

@@ -14,7 +14,7 @@ scope for this session.
 | 3 | rollout.py + env_mask/segment/hallucination tests | ✅ done |
 | 4 | rewards.py + reward-hack test suite | ✅ done |
 | 5 | sft_coldstart.py + tiny smoke + gemma sanity | ✅ done |
-| 6 | train_rl.py + overfit 50 + gemma sanity + resumability | ⬜ pending |
+| 6 | train_rl.py + overfit 50 + gemma sanity + resumability | ✅ done |
 | 7 | eval.py on a small subset + hand-computed metrics | ⬜ pending |
 | 8 | Google Cloud handoff package + HANDOFF.md + REPORT.md skeleton | ⬜ pending |
 
@@ -91,6 +91,22 @@ scope for this session.
   suite — print(1), print(target), hallucinated output, reused numbers, answer in
   wrong place — all score below the honest correct rollout (1.2). 72 passed / 2
   skipped; verification 1 expected FAIL only.
+
+- 2026-11-04 — Phase 6: `train_rl.py` custom GRPO loop — G=4, group-normalized
+  advantage (zero-variance skipped + logged), clipped per-token ratio vs old-policy
+  log-probs, adaptive KL (LoRA adapter disabled for reference), **vocab-chunked
+  log-probs** (`forward_logprobs_chunked`, never materializes (B,T,V); fp32 cast for
+  fp16 stability), tier curriculum, gradient accumulation (effective batch fixed),
+  LoRA-only. `checkpoint.py` — preemption-safe: COMMIT objects (file list + sha256s +
+  config/dataset hash, written last), verify + fallback-to-previous on corrupt,
+  heartbeat + segment history, dual-write; local backend implemented, gcs/s3/hf-hub
+  untested interfaces. Smoke (pipeline checks, not findings): Qwen overfit-50 reward
+  0.05→0.20 (exec 0.025→0.10, format 0.025→0.10, correct flat at 0 — needs Part 2
+  scale); gemma-2-2b 3 steps loaded + masked + gradient (KL −0.08→−0.22) with
+  chunked-vocab, no OOM. `scripts/test_resume.sh` kill-9 test: run1 steps 0–3 →
+  SIGKILL → run2 resumes at step 4 → step 6 (log committed). Fixed sandbox eager
+  worker warm-up (spawn cost was tripping the 50 ms budget under load). 92 passed /
+  2 skipped.
 
 - 2026-11-04 — Phase 5: `sft_coldstart.py` — programmatic traces (wrong attempt →
   real sandbox `False` → correction → real `True` → answer; no human CoT) +

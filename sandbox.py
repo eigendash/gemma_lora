@@ -48,6 +48,10 @@ class Sandbox:
         self._idle: deque[_Worker] = deque()
         self._all: set[_Worker] = set()
         self._lock = threading.Lock()
+        # eagerly spawn + warm up workers so the spawn/import cost is paid once,
+        # not inside the first 50 ms execution budget
+        for _ in range(self.n_workers):
+            self._idle.append(self._spawn())
 
     # -- pool plumbing -------------------------------------------------------
     def _spawn(self) -> _Worker:
@@ -59,7 +63,17 @@ class Sandbox:
         child.close()
         w = _Worker(parent, proc)
         self._all.add(w)
+        self._warmup(w)
         return w
+
+    def _warmup(self, w: _Worker) -> None:
+        """Pay the worker's cold-start cost (spawn + import) with a generous budget."""
+        try:
+            w.conn.send("print(0)")
+            if w.conn.poll(5.0):
+                w.conn.recv()
+        except Exception:
+            pass
 
     def _get_worker(self) -> _Worker:
         with self._lock:

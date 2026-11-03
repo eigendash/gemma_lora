@@ -176,7 +176,10 @@ def execute(code: str, max_stdout: int = DEFAULT_MAX_STDOUT) -> tuple[bool, str]
 def worker_main(conn, max_stdout: int = DEFAULT_MAX_STDOUT) -> None:
     """Entry point for a spawned worker: loop receiving code, replying results."""
     while True:
-        code = conn.recv()
+        try:
+            code = conn.recv()
+        except EOFError:
+            break  # parent died (e.g. SIGKILL); exit cleanly
         if code is None:  # shutdown sentinel
             break
         ok, msg = validate_ast(code)
