@@ -8,9 +8,10 @@ A LoRA (r=16) on **Qwen3-4B-Base**, trained with a custom GRPO loop (native PyTo
 Each rollout runs the `<think> / <python> / <output> / <answer>` protocol: `<output>` is real sandbox stdout,
 injected mid-generation and masked out of the loss.
 
-- **Result:** the best policy, **P10b s80**, solves **52.7%** of the 1,000-problem test set (Pass@1, greedy).
+- **Result:** the best policy, **P10b s80**, solves **52.8%** of a fresh 1,000-problem holdout (Pass@1, greedy). The holdout was generated after model selection and evaluated once. The previous best scored 47.9% on it (p = 0.0002).
+  - On a second fresh holdout it scores 51.3%; on the original test set, 52.7%.
   - The base model scores **0%** zero-shot and **11.3%** with the same few-shot format demo.
-  - On a separate 1,000-problem holdout, generated after model selection and evaluated once, it scores **52.8%**, against 47.9% for the previous best (p = 0.0002).
+  - **The holdout is the headline number.** The test set was reused across lineage decisions (P10 s90 was chosen partly on it) and run on 6+ models, so its numbers are slightly optimistic.
 - **Model choice:** gemma-2-2b (the SPEC example) was replaced after a measured comparison. It reached about 2% Pass@1 with the format demo, against about 15% for Qwen3-4B-Base (EXPERIMENTS §2.4).
 
 | Test set, 1,000 problems (SPEC §D) | Base, zero-shot | Base, few-shot | P8 s90 | P10 s90 | **P10b s80** |
@@ -30,6 +31,7 @@ injected mid-generation and masked out of the loss.
 
 **Statistics:**
 - Paired exact McNemar tests: P10b vs P8, p = 0.0005; vs P10 (same run), p = 0.009. P10 vs P8 alone was not significant on test (p = 0.07).
+- **What these p-values cover:** they compare two *checkpoints* on a fixed problem set. They don't include run-to-run variance, so they don't show that one *recipe* beats another. A P10b replicate with a different seed and from-scratch seed replays are running to measure that spread. Per-tier p-values are descriptive only (uncorrected).
 - Checkpoints were chosen on a 300-problem validation split, never on test or holdout.
 
 ## 2. Learning dynamics
@@ -37,7 +39,8 @@ injected mid-generation and masked out of the loss.
 ![learning curves](docs/figures/learning_curves.png)
 
 *Reward, generated tokens per rollout, and in-run validation accuracy for the lineage P8 → P10 → P10b
-(`verification/plot_learning_curves.py`). Each phase warm-starts from the previous phase's chosen checkpoint.*
+(`verification/plot_learning_curves.py`). Each phase warm-starts from the previous phase's chosen checkpoint.
+P7 (base → 36% val in 40 steps) is not drawn: its per-step log was not kept.*
 
 - **P8** (the "check several candidates in one `<python>` block" prompt) carried validation accuracy from 37% to 46%.
   - Reward rose 0.44 → 0.60, and length grew 275 → 320 tokens as checks got wider.
@@ -46,10 +49,13 @@ injected mid-generation and masked out of the loss.
 - **P10b:** a second, shorter hint cycle with a 5-step LR warmup. There was no early dip, and validation sat at 50–53%.
   - Length rises while hints are on (longer hinted prompts lead to longer checks), then falls back to about 310 tokens when they stop.
 - **Health signals:** KL to the base model grows slowly (0.07 → 0.12 across P10b). Clip fraction is about 0.003. No run hit the length cap.
+  - The adaptive KL coefficient sits at its floor (0.001) for most steps, so the KL penalty is in practice inactive (about 1e-4 per token). KL is a monitor here, not a regulator.
 - **Training reward is a poor progress signal here.** The signal-based curriculum keeps about half of each batch on hard problems, so train accuracy stays flat (0.35–0.55) while validation improves. Every decision used validation.
 - **Validation noise:** "greedy" vLLM evaluation is not reproducible (batched LoRA kernels), giving ±7 problems on 300. Final choices therefore used 3 separate validation passes and their mean (VERIFICATION §19).
 
 ## 3. Emergent backtracking (P10b s80, test set, verbatim)
+
+**How much is emergent.** Retrying is *prompted*: the instruction line and the few-shot demo show a second check after a failure. Even the base model retries after an all-False first check in 89% of cases, and RL raises that to 100% (530/531). What RL changed is the *quality* of checks and retries: the first check succeeds more often, and retries recover 12.6% of the time against 1.3% for the base.
 
 All 67 recoveries on the test set follow the same pattern. A full first check fails, the model states this and proposes new candidates, and it answers with the one that printed True. Medium, 75 2 8 4 5 → 391:
 
@@ -87,7 +93,9 @@ Reward: `R = R_correct + R_exec + R_format − λ·len`, with λ applied only be
 **The real hack.** In the 8×8 pilots, accuracy was about 5%, so most groups had no correct sample. A wrong but well-formed answer still earned exec + format credit, and GRPO learned to answer *without* retrying.
 - **Fix 1:** a final answer whose own check printed False ("contradicted") now gets no shaping credit.
 - **Fix 2:** an answer using numbers that weren't given ("invalid literals") gets none either.
-- **Effect:** `contradicted` fell from 0.23 (base) to 0.04–0.06, and `retry_after_false` went to 1.0.
+- **Effect:** `contradicted` fell from 0.23 (base) to 0.04–0.06.
+  - **Retries:** after an all-False first check, retrying went from 89% (base) to 100% (P10b, 530/531 on test).
+  - The training-time `retry_after_false` (0.5–0.7 in P10b) undercounts: it treats a multi-candidate check with any False as failed. A strict version is logged from 2026-11-06.
 
 **Other safeguards:**
 - **Verifier:** `R_correct` is model-independent (AST plus exact fractions, numbers used at most once).
