@@ -1,0 +1,72 @@
+{
+  "p10b_s80": {
+    "val_correct": 0.53,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.88,
+      "hard": 0.29,
+      "medium": 0.42
+    },
+    "val_s": 12.1
+  },
+  "rep_s60": {
+    "val_correct": 0.5066666666666667,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.84,
+      "hard": 0.27,
+      "medium": 0.41
+    },
+    "val_s": 16.5
+  },
+  "rep_s70": {
+    "val_correct": 0.49333333333333335,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.86,
+      "hard": 0.26,
+      "medium": 0.36
+    },
+    "val_s": 16.8
+  },
+  "rep_s78": {
+    "val_correct": 0.5233333333333333,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.83,
+      "hard": 0.33,
+      "medium": 0.41
+    },
+    "val_s": 16.8
+  },
+  "rep_s80": {
+    "val_correct": 0.49666666666666665,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.81,
+      "hard": 0.27,
+      "medium": 0.41
+    },
+    "val_s": 16.7
+  },
+  "rep_s50": {
+    "val_correct": 0.51,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.82,
+      "hard": 0.31,
+      "medium": 0.4
+    },
+    "val_s": 17.2
+  },
+  "rep_s76": {
+    "val_correct": 0.5,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.83,
+      "hard": 0.29,
+      "medium": 0.38
+    },
+    "val_s": 16.7
+  }
+}

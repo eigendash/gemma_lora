@@ -554,6 +554,13 @@ Paired McNemar tests (only-A / only-B):
 - These are single runs per arm. The P10b replicate (seed 1, chain `c2-rep`, running) gives the run-to-run spread. With nohint − P10b = +5, the conclusion "hints ≈ no effect" holds unless the spread is tiny; it can't flip into "hints help".
 - Both P10b and nohint used LR warmup, so warmup is not separated out (P10, without warmup, was the earlier recipe).
 
+**P10b replicate (seed 1; chain `c2-rep`, logs `verification/logs/c2_replicate/`).** The VM was spot-preempted at step 4 and the run resumed from the bucket.
+- **3-pass validation:** s50 154.0, s60 **154.7**, s70 151.0, s76 152.3, s78 153.0, s80 150.0 (P10b s80 159.3 in the same run).
+- **Test:** rep s80 **554** vs P10b s80 519 (98 / 63, p = 0.007). Validation and test disagree here; the validation differences are 4–5 problems, within noise.
+- **Declared before the holdout2 run** (written 2026-11-06 20:35 UTC):
+  - the primary replicate number is the validation pick, **s60**;
+  - s80 (final step) is also evaluated, as a secondary number, and is not used for any choice.
+
 **Consequences:**
 - The replays (§2.7l) keep their pre-registered recipe (phases c and d with hints), because changing them now would break comparability.
 - REPORT.md must not credit hints for the gains.
