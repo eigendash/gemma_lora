@@ -1,0 +1,72 @@
+{
+  "p10_s90": {
+    "val_correct": 0.5133333333333333,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.86,
+      "hard": 0.25,
+      "medium": 0.43
+    },
+    "val_s": 12.2
+  },
+  "p10b_s60": {
+    "val_correct": 0.51,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.85,
+      "hard": 0.28,
+      "medium": 0.4
+    },
+    "val_s": 16.1
+  },
+  "p10b_s70": {
+    "val_correct": 0.51,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.85,
+      "hard": 0.29,
+      "medium": 0.39
+    },
+    "val_s": 11.3
+  },
+  "p10b_s78": {
+    "val_correct": 0.5166666666666667,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.86,
+      "hard": 0.27,
+      "medium": 0.42
+    },
+    "val_s": 12.9
+  },
+  "p10b_s80": {
+    "val_correct": 0.5466666666666666,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.89,
+      "hard": 0.31,
+      "medium": 0.44
+    },
+    "val_s": 12.0
+  },
+  "p10b_s50": {
+    "val_correct": 0.5,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.83,
+      "hard": 0.25,
+      "medium": 0.42
+    },
+    "val_s": 18.3
+  },
+  "p10b_s76": {
+    "val_correct": 0.5233333333333333,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.87,
+      "hard": 0.31,
+      "medium": 0.39
+    },
+    "val_s": 11.7
+  }
+}

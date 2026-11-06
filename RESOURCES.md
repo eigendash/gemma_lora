@@ -23,7 +23,7 @@ vLLM / bitsandbytes.
 | pyyaml | 6.0.3 | config files |
 | huggingface-hub | 2.4.0 | |
 | tokenizers | 0.23.3 | (transitive) |
-| vllm | 0.33.0 | **cloud only, untested** (pinned in `requirements-cuda.txt`) |
+| vllm | 0.33.0 | **not used by any code**; resolvable stack recorded in `requirements-vllm.txt` (torch 2.14.0, separate venv) |
 | reasoning-gym | 0.1.25 (dev only) | cross-check only, never a runtime import |
 
 Pinned files: `requirements-mac.txt` (tested), `requirements-cuda.txt`
@@ -79,7 +79,8 @@ cold-start traces are generated programmatically from our own solver.
 - AST whitelist only; no attribute access / imports / f-strings / comprehensions /
   lambdas. `ast.USub` and `ast.Tuple` deliberately allowed; `ast.Pow` deliberately
   **dropped** (Countdown doesn't need it; `9**9**9**9` holds the GIL).
-- Persistent multiprocessing worker pool (spawn), hard 50 ms per execution,
+- Persistent pool of stdlib-only `python -I -S sandbox_worker.py` subprocesses (JSON over pipes;
+  never re-imports the parent `__main__`, so workers never load torch), hard 50 ms per execution,
   stdout truncated to 200 chars; huge ints / deep nesting rejected at the AST level.
 
 ## 6. Known limitations & semantics (audit findings, 2026-11-04)

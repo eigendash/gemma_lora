@@ -1,0 +1,45 @@
+# Literature-aligned GRPO pilot (DAPO / SimpleTIR / rStar2 / Gandhi et al.), from BASE Qwen3-4B.
+# lit2 = lit with 16 prompts/step and the contradicted-answer reward rule (rewards.answer_contradicted).
+# lit3 = lit2 + 2 optimizer updates per batch with DAPO clip-higher (0.2/0.28), truncated IS (cap 2) for
+# sampler/trainer mismatch, 768-token budget with the length penalty from 512 (VERIFICATION.md 12.2 items 2-4).
+# lit4 = lit3 + copy-free GQA decode attention (sdpa_gqa) + merged-weight generation copy + shortcut auto-stop
+# guards. Go/no-go run on soos (EXPERIMENTS.md section 6); eval: n=200, greedy, 768 tokens, paired vs step 0.
+# vs pilot_qwen3_soos.yaml: 2x prompts per step, DAPO dynamic sampling, T=0.9, no KL penalty,
+# retry-instruction prompt (A/B: the instruction alone makes the base model retry 72% of failed checks).
+model: Qwen/Qwen3-4B-Base
+prompt_style: fewshot_direct_retry
+n_problems: 0
+G: 8
+prompts_per_step: 16
+grad_accum: 1
+total_steps: 200
+max_new_tokens: 768
+lr: 0.00002
+kl_coef: 0.0
+min_kl_coef: 0.0
+max_kl_coef: 0.0
+target_kl: 0.1
+lora_r: 16
+lora_alpha: 32
+dtype: bfloat16
+attn: sdpa_gqa
+chunked_vocab: true
+micro_batch: 8
+grad_ckpt: false
+generation: batched
+gen_batch: 128
+dynamic_sampling: true
+max_refill_rounds: 2
+checkpoint_every: 10
+checkpoint_timer: 900
+rollout_dump_every: 5
+temperature: 0.9
+on_round_cap: notice
+updates_per_batch: 2
+clip_eps_high: 0.28
+tis_cap: 2.0
+length_threshold: 512
+gen_merged: true
+guard_window: 5
+guard_contradicted: 0.6
+guard_max_length: 0.4

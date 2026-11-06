@@ -1,0 +1,86 @@
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 19657.02it/s]
+step 0 reward 0.126 correct 0.031 exec 0.066 format 0.032 kl 0.0000 gen/train dlogp 0.544 zero_var 0.00 gen 184.1s loss 205.4s
+step 1 reward 0.191 correct 0.086 exec 0.070 format 0.043 kl 0.0006 gen/train dlogp 0.456 zero_var 0.00 gen 107.5s loss 218.6s
+step 2 reward 0.186 correct 0.078 exec 0.074 format 0.040 kl 0.0009 gen/train dlogp 0.504 zero_var 0.00 gen 109.2s loss 181.9s
+/home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/peft/utils/save_and_load.py:313: UserWarning: Could not find a config file in Qwen/Qwen3-4B-Base - will assume that the vocabulary was not modified.
+  warnings.warn(
+step 3 reward 0.164 correct 0.055 exec 0.072 format 0.045 kl 0.0012 gen/train dlogp 0.49 zero_var 0.00 gen 197.8s loss 308.5s
+step 4 reward 0.291 correct 0.156 exec 0.084 format 0.054 kl 0.0056 gen/train dlogp 0.538 zero_var 0.00 gen 116.7s loss 204.7s
+step 5 reward 0.227 correct 0.094 exec 0.084 format 0.053 kl 0.0014 gen/train dlogp 0.643 zero_var 0.00 gen 112.9s loss 197.9s
+step 6 reward 0.444 correct 0.297 exec 0.088 format 0.065 kl 0.0014 gen/train dlogp 0.932 zero_var 0.00 gen 105.4s loss 230.3s
+step 7 reward 0.448 correct 0.289 exec 0.091 format 0.072 kl 0.0028 gen/train dlogp 1.09 zero_var 0.00 gen 182.3s loss 236.4s
+step 8 reward 0.252 correct 0.117 exec 0.082 format 0.059 kl 0.0050 gen/train dlogp 1.23 zero_var 0.00 gen 125.0s loss 213.1s
+step 9 reward 0.208 correct 0.070 exec 0.084 format 0.061 kl 0.0071 gen/train dlogp 1.09 zero_var 0.00 gen 139.1s loss 305.4s
+step 10 reward 0.293 correct 0.141 exec 0.087 format 0.070 kl 0.0059 gen/train dlogp 1.64 zero_var 0.06 gen 228.4s loss 242.5s
+step 11 reward 0.324 correct 0.172 exec 0.083 format 0.070 kl 0.0142 gen/train dlogp 1.64 zero_var 0.00 gen 161.8s loss 211.1s
+VGPU(0x48460320) Queue(0x7f1ddc69e000) is idle
+:0:rocdevice.cpp            :3586: 614369481705 us:  Callback: Queue 0x7f1bdcf00000 aborting with error : HSA_STATUS_ERROR_EXCEPTION: An HSAIL operation resulted in a hardware exception. code: 0x1016
+/home/eigendash/gemma_lora_run/rollout.py:497: UserWarning: uncheckedSetDevice() ignoring error: CUDA error: unspecified launch failure
+Search for `hipErrorLaunchFailure' in https://rocm.docs.amd.com/projects/HIP/en/latest/index.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing AMD_SERIALIZE_KERNEL=3
+Device-side assertion tracking was not enabled by user.
+Exception raised from SetDevice at /__w/pytorch/pytorch/c10/hip/HIPFunctions.cpp:334 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7f1df1f757fd in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x12cd2 (0x7f1df3e72cd2 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libc10_hip.so)
+frame #2: c10::cuda::SetDevice(signed char, bool) + 0x65 (0x7f1df3eb99e5 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libc10_hip.so)
+frame #3: <unknown function> + 0xe44d6b (0x7f1dbc644d6b in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_hip.so)
+frame #4: <unknown function> + 0x1c99a00 (0x7f1dbd499a00 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_hip.so)
+frame #5: <unknown function> + 0x1d6f5ce (0x7f1dde56f5ce in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: at::native::copy_(at::Tensor&, at::Tensor const&, bool) + 0x30 (0x7f1dde571b70 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: at::_ops::copy_::call(at::Tensor&, at::Tensor const&, bool) + 0x142 (0x7f1ddf3e9f12 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #8: at::native::_to_copy(at::Tensor const&, std::optional<c10::ScalarType>, std::optional<c10::Layout>, std::optional<c10::Device>, std::optional<bool>, bool, std::optional<c10::MemoryFormat>) + 0x16ca (0x7f1dde954c7a in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #9: <unknown function> + 0x3089b7c (0x7f1ddf889b7c in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #10: at::_ops::_to_copy::redispatch(c10::DispatchKeySet, at::Tensor const&, std::optional<c10::ScalarType>, std::optional<c10::Layout>, std::optional<c10::Device>, std::optional<bool>, bool, std::optional<c10::MemoryFormat>) + 0xe2 (0x7f1ddee97e52 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #11: <unknown function> + 0x2df9eab (0x7f1ddf5f9eab in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #12: at::_ops::_to_copy::redispatch(c10::DispatchKeySet, at::Tensor const&, std::optional<c10::ScalarType>, std::optional<c10::Layout>, std::optional<c10::Device>, std::optional<bool>, bool, std::optional<c10::MemoryFormat>) + 0xe2 (0x7f1ddee97e52 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #13: <unknown function> + 0x5224ff1 (0x7f1de1a24ff1 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #14: <unknown function> + 0x522558f (0x7f1de1a2558f in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #15: at::_ops::_to_copy::call(at::Tensor const&, std::optional<c10::ScalarType>, std::optional<c10::Layout>, std::optional<c10::Device>, std::optional<bool>, bool, std::optional<c10::MemoryFormat>) + 0x1e4 (0x7f1ddef48d64 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #16: at::native::to(at::Tensor const&, std::optional<c10::ScalarType>, std::optional<c10::Layout>, std::optional<c10::Device>, std::optional<bool>, bool, bool, std::optional<c10::MemoryFormat>) + 0xc4 (0x7f1dde93d6b4 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #17: <unknown function> + 0x31d49b2 (0x7f1ddf9d49b2 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #18: at::_ops::to_dtype_layout::call(at::Tensor const&, std::optional<c10::ScalarType>, std::optional<c10::Layout>, std::optional<c10::Device>, std::optional<bool>, bool, bool, std::optional<c10::MemoryFormat>) + 0x200 (0x7f1ddf0f71c0 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_cpu.so)
+frame #19: <unknown function> + 0xeb2687 (0x7f1df2eb2687 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_python.so)
+frame #20: <unknown function> + 0x46ab83 (0x7f1df246ab83 in /home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/torch/lib/libtorch_python.so)
+frame #21: PyObject_Vectorcall + 0x33 (0x535883 in .venv/bin/python)
+frame #22: _PyEval_EvalFrameDefault + 0x36bf (0x55048f in .venv/bin/python)
+frame #23: PyEval_EvalCode + 0x106 (0x547ee6 in .venv/bin/python)
+frame #24: .venv/bin/python() [0x6cab01]
+frame #25: .venv/bin/python() [0x6c76c1]
+frame #26: .venv/bin/python() [0x6c6d6b]
+frame #27: .venv/bin/python() [0x6c6839]
+frame #28: Py_RunMain + 0x349 (0x6c44e9 in .venv/bin/python)
+frame #29: Py_BytesMain + 0x34 (0x673874 in .venv/bin/python)
+frame #30: <unknown function> + 0x2a601 (0x7f1e47c2a601 in /usr/lib/x86_64-linux-gnu/libc.so.6)
+frame #31: __libc_start_main + 0x88 (0x7f1e47c2a718 in /usr/lib/x86_64-linux-gnu/libc.so.6)
+frame #32: _start + 0x25 (0x672c45 in .venv/bin/python)
+ (Triggered internally at /__w/pytorch/pytorch/c10/hip/impl/HIPGuardImpl.h:70.)
+  return nxt.squeeze(1).tolist(), logp.tolist()
+Traceback (most recent call last):
+  File "/home/eigendash/gemma_lora_run/train_rl.py", line 912, in <module>
+    main()
+    ~~~~^^
+  File "/home/eigendash/gemma_lora_run/train_rl.py", line 908, in main
+    train(build_config(argv))
+    ~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/home/eigendash/gemma_lora_run/train_rl.py", line 666, in train
+    flat = run_rollouts_batched(gen, tokenizer, prompts, sandbox, batch_size=cfg.gen_batch,
+                                impl=cfg.gen_impl, **gen_kw)
+  File "/home/eigendash/gemma_lora_run/rollout.py", line 603, in run_rollouts_batched
+    if _run_continuous(model, states, sandbox, pad_id, temperature, rng, device, bs):
+       ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/eigendash/gemma_lora_run/rollout.py", line 407, in _run_continuous
+    ids, lps = _sample_batch(logits[torch.tensor(need, device=logits.device)], temperature, rng)
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/eigendash/gemma_lora_run/rollout.py", line 497, in _sample_batch
+    return nxt.squeeze(1).tolist(), logp.tolist()
+           ~~~~~~~~~~~~~~~~~~~~~^^
+torch.AcceleratorError: CUDA error: unspecified launch failure
+Search for `hipErrorLaunchFailure' in https://rocm.docs.amd.com/projects/HIP/en/latest/index.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing AMD_SERIALIZE_KERNEL=3
+Device-side assertion tracking was not enabled by user.
+
+real	76m3.402s
+user	86m30.178s
+sys	54m41.677s

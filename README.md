@@ -35,24 +35,23 @@ injected inside `<output>...</output>`; generation resumes. Max 2 code rounds.
 
 ## Layout
 
-Built (Phase 0–1):
-
-- `data_generator.py` — synthetic problems (guaranteed solvable, tiered, deduped)
+- `data_generator.py` — synthetic problems (guaranteed solvable, tiered, deduped; seed-0 hashes in `logs/data_hashes.txt`)
 - `solver.py` / `verifier.py` — reference solver + model-independent answer verifier
-- `tests/` — unit tests (31, run in <0.1 s, no model)
-- `scripts/crosscheck_datasets.py` — solver/verifier cross-check vs two references
-
-Planned (Phases 2–7, not yet written):
-
-- `sandbox.py` / `sandbox_worker.py` — safe in-process executor (AST whitelist, 50 ms)
-- `rollout.py` — custom generation loop with tool interleaving + env-token masking
-- `rewards.py` — composite reward (correct + exec + format − λ·len)
-- `sft_coldstart.py` — programmatic cold-start traces + LoRA SFT
-- `train_rl.py` — custom GRPO loop
-- `eval.py` — Pass@1, format, length, self-correction metrics
-- `configs/` — full-run + smoke configs (full-run marked "not yet run at scale")
-- `scripts/setup_cuda.sh`, `scripts/run_all.sh` — RunPod setup + reproduction
-- `REPORT.md` (skeleton), `HANDOFF.md` — Phase 7
+- `sandbox.py` / `sandbox_worker.py` — execution sandbox: AST whitelist, restricted builtins, 50 ms hard
+  timeout (kill + respawn), stdout truncated to 200 chars; workers are stdlib-only subprocesses
+- `rollout.py` — custom generation loop with tool interleaving + env-token masking (the model is fed
+  exactly the ids that are trained on)
+- `rewards.py` — composite reward (correct + exec + format − λ·len), each component logged
+- `sft_coldstart.py` — programmatic cold-start traces + LoRA SFT (`<output>` masked)
+- `train_rl.py` — custom GRPO loop (k3 KL, softcap-correct chunked log-probs, curriculum, resumable,
+  bucket checkpoints, cost guard)
+- `checkpoint.py` — create-only COMMIT checkpoints over a bucket (`local` | `gcs`) + push/pull CLI
+- `eval.py` — Pass@1 (overall/tier), format, length, self-correction (+ blank/shuffle controls), rounds sweep
+- `configs/` — VRAM presets + smoke config (**not yet run at scale**)
+- `scripts/` — cloud handoff (`bootstrap.sh`, `launch_anywhere.sh`, `publish_code.sh`, …; **not run
+  against any cloud**) and Mac helpers
+- `tests/` — unit + behaviour tests (fast suite needs only tokenizers; `RUN_MODEL_TESTS=1` for model tests)
+- `verification/` — independent audit checks (`verification/run_all_checks.sh`) and `VERIFICATION.md`
 
 ## Quickstart (Mac)
 
@@ -64,7 +63,7 @@ uv pip install --python .venv/bin/python -r requirements-mac.txt
 # generate the dataset (gitignored; reproducible with --seed 0):
 .venv/bin/python data_generator.py --n-train 10000 --n-eval 1000 --seed 0 --verify
 
-# fast unit tests (no model loaded, ~0.05 s):
+# test suite (tokenizers only, no model weights; ~5 s):
 .venv/bin/python -m pytest -q
 
 # optional: dataset cross-check (needs dev deps + network):
@@ -79,9 +78,10 @@ exported for non-interactive shells too (it is *not* read from `~/.zshrc`).
 ## Environment
 
 Dev machine: Apple M4 Pro (arm64, 24 GB RAM), MPS. No CUDA/vLLM/bitsandbytes.
-All code is device-agnostic (`cuda|mps|cpu`, `--device` override, `--backend hf|vllm`
-default `hf`). The `vllm` path will be written but **untested**.
+Training/eval code is device-agnostic (`--device cuda|mps|cpu|auto`). Generation is the hand-written HF
+loop in `rollout.py`; there is **no vLLM backend** (`requirements-vllm.txt` only records a resolvable
+vLLM stack for a future, separate venv).
 
 See `RESOURCES.md` for verified dependencies/references, `PROGRESS.md` for phase
-status, `REPORT.md` (Phase 7 skeleton) for the final memo, and `HANDOFF.md`
-(Phase 7) for the exact PART 2 commands.
+status, `REPORT.md` (skeleton) for the final memo, `HANDOFF.md` for the exact PART 2
+commands, and `VERIFICATION.md` for the independent audit.

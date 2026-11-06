@@ -1,0 +1,52 @@
+# P7 on ONE RTX PRO 6000 (96 GB): the P6 recipe (configs/pilot_qwen3_lit4.yaml) plus the fixes
+# that P6's diagnosis pointed to (EXPERIMENTS.md §2.8):
+#  - 4x batch: 64 prompts x 8 (P6: 16 x 8) -> less gradient noise; uses the GPU
+#  - adaptive KL on (P6 had beta = 0; held-out softened once KL passed ~0.25)
+#  - curriculum weighted by the MEASURED rate of mixed-correctness groups per tier (P6's
+#    formula saturated: easy tier got ~all the mass while ~50% of its groups were 8/8)
+#  - no shaping credit for wrong answers that break the number rule (P6 value-only checks)
+#  - validation split (300 problems held out of train.jsonl) evaluated in-loop every 5 steps
+#  - vLLM sleep mode so generation and the loss pass each get the whole GPU
+model: Qwen/Qwen3-4B-Base
+prompt_style: fewshot_direct_retry
+n_problems: 0
+G: 8
+prompts_per_step: 64
+grad_accum: 1
+total_steps: 120
+max_new_tokens: 768
+lr: 0.00002
+kl_coef: 0.01
+target_kl: 0.1
+min_kl_coef: 0.001
+max_kl_coef: 0.2
+lora_r: 16
+lora_alpha: 32
+dtype: bfloat16
+attn: sdpa
+chunked_vocab: true
+micro_batch: 8
+grad_ckpt: false
+generation: vllm
+vllm_gpu_util: 0.6
+vllm_sleep: true
+vllm_max_model_len: 4096
+dynamic_sampling: true
+max_refill_rounds: 2
+curriculum_mode: signal
+curriculum_group_window: 64
+zero_shaping_invalid_literals: true
+val_n: 300
+val_every: 5
+checkpoint_every: 5
+checkpoint_timer: 900
+rollout_dump_every: 5
+temperature: 0.9
+on_round_cap: notice
+updates_per_batch: 2
+clip_eps_high: 0.28
+tis_cap: 2.0
+length_threshold: 512
+guard_window: 5
+guard_contradicted: 0.6
+guard_max_length: 0.4

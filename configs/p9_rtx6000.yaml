@@ -1,0 +1,49 @@
+# P9: P8's recipe (configs/p8_rtx6000.yaml) with a WIDER check demo, starting from P8 step 90 (the val-best P8).
+# Why (EXPERIMENTS.md §2.7g): P8 plateaued at ~46% val. 145/152 of P8 s90's val failures were "every check False ->
+# unchecked guess", with only ~3 candidates per check (~6 per problem). `fewshot_wide_retry` demonstrates 8
+# candidates per check and a second check built from the printed values closest to the target, so the 2-execution
+# cap covers ~16 candidates. Everything else (batch, KL, curriculum, reward, LR) is unchanged from P7/P8.
+init_lora: baselines/p8_s90
+model: Qwen/Qwen3-4B-Base
+prompt_style: fewshot_wide_retry
+n_problems: 0
+G: 8
+prompts_per_step: 64
+grad_accum: 1
+total_steps: 100
+max_new_tokens: 768
+lr: 0.00002
+kl_coef: 0.01
+target_kl: 0.1
+min_kl_coef: 0.001
+max_kl_coef: 0.2
+lora_r: 16
+lora_alpha: 32
+dtype: bfloat16
+attn: sdpa
+chunked_vocab: true
+micro_batch: 4
+grad_ckpt: false
+generation: vllm
+vllm_gpu_util: 0.6
+vllm_sleep: true
+vllm_max_model_len: 4096
+dynamic_sampling: true
+max_refill_rounds: 2
+curriculum_mode: signal
+curriculum_group_window: 64
+zero_shaping_invalid_literals: true
+val_n: 300
+val_every: 5
+checkpoint_every: 2
+checkpoint_timer: 300
+rollout_dump_every: 5
+temperature: 0.9
+on_round_cap: notice
+updates_per_batch: 2
+clip_eps_high: 0.28
+tis_cap: 2.0
+length_threshold: 512
+guard_window: 5
+guard_contradicted: 0.6
+guard_max_length: 0.4

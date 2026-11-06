@@ -17,6 +17,7 @@ scope for this session.
 | 6 | train_rl.py + overfit 50 + gemma sanity + resumability | ✅ done |
 | 7 | eval.py on a small subset + hand-computed metrics | ✅ done |
 | 8 | Cloud-agnostic GPU handoff (vast.ai/RunPod + GCS + GCP CPU) + HANDOFF/REPORT | ✅ done |
+| R2 | Independent audit round 2 fixes (F10–F19) | ✅ done — see log + VERIFICATION.md |
 
 ## Log
 
@@ -77,7 +78,7 @@ scope for this session.
   HF_TOKEN resolved from macOS Keychain (`security find-generic-password -s
   HF_TOKEN -w`) — gemma-2-2b confirmed: vocab 256000, `padding_side=left`, merges
   `)</`/`><` (Qwen additionally merges `>\n`). 8 tokenizer-level tests (both
-  tokenizers) + 2 model tests (ratio≈1 at step 0; full-rollout structure) pass;
+  tokenizers) + 2 model tests (ratio≈1 at step 0 — *first token only; see audit-R2 below*; full-rollout structure) pass;
   model tests gated by `RUN_MODEL_TESTS=1` (`logs/rollout_model_tests.txt`).
   Full suite 61 passed / 2 skipped; verification 1 expected FAIL only.
 
@@ -128,9 +129,8 @@ scope for this session.
   fixed 2 bugs: (1) **MPS OOM** — full fp32 cast of 256k-vocab logits doubled
   memory (fixed: per-chunk fp32 + `--chunked-vocab`, `1c8743f`); (2) **adaptive KL
   coefficient underflow → correctness collapse** — `kl_coef` halved to 0, disabling
-  the KL penalty, so the model drifted (KL 0.02→0.08) and collapsed (correct 0.75→0)
-  (fixed: floor `kl_coef` at 1e-3 / cap 1.0, `dc6d816`). Post-fix run stable for
-  389 steps (KL bounded, no collapse), but correctness stayed ~0.02-0.06 (noisy at
+  the KL penalty, so the model drifted (KL 0.02→0.08) and collapsed (correct 0.75→0 — *audit R2: one step of 4 rollouts; mean 0.07*)
+  (fixed: floor `kl_coef` at 1e-3 / cap 1.0, `dc6d816`). Post-fix run 389 steps (*audit R2: KL kept rising 0.03→0.09; run predates the R2 fixes*), but correctness stayed ~0.02-0.06 (noisy at
   G=4 on MPS; real gains belong to the cloud G=8 run). Logs: `logs/rl_gemma_part2*.txt`.
 
 - 2026-11-04 — Phase 8: cloud-agnostic GPU handoff. `scripts/bootstrap.sh`
@@ -142,4 +142,55 @@ scope for this session.
   batch 128 constant via grad-accum); `.env.example`; `HANDOFF.md` (exact Part 2
   order + provider notes + cost guard + MPS/CUDA differences); `REPORT.md` skeleton
   with `[PENDING]` placeholders. All scripts `bash -n` clean (shellcheck not
-  installed). **verification/run_all_checks.sh → 0 failed (fully green).**
+  installed). **verification/run_all_checks.sh → 0 failed** (*audit R2: those checks covered Phases 0–1 only*).
+
+- 2026-11-04 — **Audit round 2 fixes (F10–F19)**, all re-verified by `verification/` checks:
+  - **Rollout:** the `</python>` stop token is now fed before the injection, so the generation
+    context equals the trained ids. Stop detection runs only on text generated after the last
+    injection, which ends the double execution. A hallucinated `<output>` ends the rollout (tokens
+    kept and penalized; no rollback, so it always terminates). `completion_text` includes the
+    injected text, and the real outputs are recorded.
+  - **Measured effect:** the step-0 ratio is exactly 1 on Qwen and gemma in fp32 (max |Δlogp| 2.6e-5;
+    it was 0.71 on Qwen and 12 on gemma).
+  - **GRPO:** the Gemma-2 softcap is applied in the chunked log-probs, and each chunk is
+    activation-checkpointed. KL uses the k3 estimator. The curriculum samples tiers by the chance
+    that a group has reward variance. Zero-variance groups are dropped from the update. The loss
+    pass runs in eval mode with micro-batches, and "old" log-probs come from the training forward
+    (the rollout log-probs are logged as `gen_train_logp_dev`).
+  - **Resume:** the SFT adapter is merged on every start, the sampling RNG is checkpointed and
+    `latest.json` is written atomically. A resumed run matches an uninterrupted run step for step.
+  - **Handoff:** the trainer commits checkpoints to the bucket and restores them on a fresh box.
+    Heartbeats and segments are written to the bucket, and there is a cost guard (`--max-hours`,
+    `--max-total-usd`). The presets are now applied (`n_problems: 0`), and CLI flags override YAML.
+    The tarball is a `git archive` (no `.env`), bootstrap paths are fixed, the venv is pinned to
+    Python 3.14 via uv, and the eval stage was rewritten. watch/cost/lifecycle are fixed.
+  - **Eval:** greedy by default, with `--dtype`/`--attn` flags, SFT merged before the RL adapter,
+    a stratified subset, a real rounds sweep, and self-correction computed from the recorded outputs.
+  - **Sandbox:** workers are stdlib-only subprocesses (13 MB; previously 360 MB with torch). The pool
+    is capped, and output is truncated rather than turned into an error.
+  - **Rewards:** exec requires arithmetic over ≥2 inputs plus output; format requires `<think>` and a
+    well-formed answer.
+  - **Tests:** 128 pass / 2 skip.
+  - **Open finding:** the SFT traces hurt correctness (gemma Pass@1 0/12 after SFT vs 2/12 few-shot
+    base). See VERIFICATION.md §11.
+
+- 2026-11-04 — **SFT traces rebuilt (audit R3-1, option 1).** The traces now use the smallest-subset
+  solution and come in four kinds: direct, near_miss, split and resplit. Every claim restates the real
+  printed values and nothing is answered after a miss.
+  - **Verification:** 1000 traces checked on both tokenizers, 0 failures. Tests: 132 passed / 2 skipped.
+  - **Qwen-0.5B, 24 problems:** Pass@1 4/24 (easy 4/8), versus 0/24 for both the old traces and the
+    few-shot base model (`verification/logs/r4/`).
+  - **gemma SFT on the new traces:** not run. It takes ~40 min on MPS, over the 15-minute budget.
+    `outputs/sft_gemma` is OLD-trace; retrain it (cloud `RUN_STAGE=sft`, or approve the Mac run).
+
+- 2026-11-04/05 — **Batched generation is now the default** (`run_rollouts_batched`; it shares a per-sequence state machine with the
+  sequential reference).
+  - **Equivalence:** fake-LM field-for-field equality with sequential on both tokenizers; real Qwen greedy produces identical tokens.
+  - **Speed:** 7.4× faster on gemma.
+  - **SFT checkpointing:** every 50 steps; resume reproduces an uninterrupted run exactly.
+  - **Hardware move:** the Mac run was killed by macOS's out-of-memory killer at step ~220, so experiments moved to `soos`
+    (Strix Halo, ROCm 7.2).
+  - **Qwen3 tags:** found and fixed the Qwen3 reserved-tag tokenization issue (`encode_text`).
+  - **Base-model comparison** (VERIFICATION.md, Round 4): Qwen3-4B-Base 7/48 vs gemma-2-2b 1/48. SFT on the current traces doesn't
+    beat base for either model.
+  - Tests: 142 passed / 4 model-gated skips.

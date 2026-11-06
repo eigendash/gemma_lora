@@ -1,0 +1,32 @@
+{
+  "base": {
+    "val_correct": 0.113,
+    "val_n": 1000,
+    "val_tier": {
+      "easy": 0.212,
+      "hard": 0.017,
+      "medium": 0.077
+    },
+    "val_s": 65.0
+  },
+  "p7_s40": {
+    "val_correct": 0.364,
+    "val_n": 1000,
+    "val_tier": {
+      "easy": 0.652,
+      "hard": 0.117,
+      "medium": 0.227
+    },
+    "val_s": 34.7
+  },
+  "p8_s90": {
+    "val_correct": 0.478,
+    "val_n": 1000,
+    "val_tier": {
+      "easy": 0.81,
+      "hard": 0.2,
+      "medium": 0.313
+    },
+    "val_s": 33.8
+  }
+}

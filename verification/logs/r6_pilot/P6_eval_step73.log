@@ -1,0 +1,44 @@
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:  91%|█████████ | 361/398 [00:00<00:00, 3608.63it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 3806.78it/s]
+{
+  "config": {
+    "model": "Qwen/Qwen3-4B-Base",
+    "init_adapter": "",
+    "adapter": "outputs/pilot_qwen3_lit4/step-73/adapter",
+    "eval_file": "data/eval.jsonl",
+    "n_eval": 200,
+    "max_new_tokens": 768,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.0,
+    "dtype": "bfloat16",
+    "attn": "sdpa_gqa",
+    "device": "cuda",
+    "seed": 0,
+    "fewshot": false,
+    "prompt_style": "fewshot_direct_retry",
+    "generation": "batched",
+    "batch_size": 100,
+    "control": "real",
+    "out": "runs/P6_eval_step73.json",
+    "dump": "runs/P6_eval_step73.jsonl"
+  },
+  "metrics": {
+    "n": 200,
+    "pass@1": 0.325,
+    "format_compliance": 0.99,
+    "length_mean": 168.48,
+    "length_p50": 181,
+    "length_p95": 242,
+    "length_max": 768,
+    "per_tier_pass@1": {
+      "easy": 0.6268656716417911,
+      "hard": 0.15151515151515152,
+      "medium": 0.19402985074626866
+    },
+    "mean_code_rounds": 1.77,
+    "hallucination_rate": 0.0,
+    "n_failing": 155,
+    "self_correction_correct": 0.15483870967741936,
+    "self_correction_backtrack": 0.0
+  }
+}

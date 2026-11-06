@@ -1,0 +1,54 @@
+# P10b: continuation of P10 (hint-augmented GRPO) from P10 s90, the test-set best (504/1000; EXPERIMENTS.md §2.7j).
+# Two changes vs configs/p10_rtx6000.yaml:
+#   1. a second, shorter hint cycle: ~1/2 of the solution (steps 0-24), ~1/4 (25-49), none (50-79). P10's best stretch was
+#      the hint-free tail, so 30 hint-free steps are kept at the end.
+#   2. lr_warmup_steps 5 (linear 0 -> 2e-5): P9 and P10 both lost ~10 hard val problems in their first 10-20 steps after
+#      a warm start with a fresh AdamW at full LR; this tests that hypothesis (compare P10b steps 0-25 with P10's).
+# init_lora p8_s90 -> p10_s90, total_steps 90 -> 80. Prompt, batch, LR, KL (base reference), curriculum, reward: unchanged.
+init_lora: baselines/p10_s90
+model: Qwen/Qwen3-4B-Base
+prompt_style: fewshot_multi_retry
+n_problems: 0
+G: 8
+prompts_per_step: 64
+grad_accum: 1
+total_steps: 80
+max_new_tokens: 768
+lr: 0.00002
+lr_warmup_steps: 5
+kl_coef: 0.01
+target_kl: 0.1
+min_kl_coef: 0.001
+max_kl_coef: 0.2
+lora_r: 16
+lora_alpha: 32
+dtype: bfloat16
+attn: sdpa
+chunked_vocab: true
+micro_batch: 4
+grad_ckpt: false
+generation: vllm
+vllm_gpu_util: 0.6
+vllm_sleep: true
+vllm_max_model_len: 4096
+dynamic_sampling: true
+max_refill_rounds: 2
+curriculum_mode: signal
+curriculum_group_window: 64
+zero_shaping_invalid_literals: true
+val_n: 300
+val_every: 5
+checkpoint_every: 2
+checkpoint_timer: 300
+rollout_dump_every: 5
+temperature: 0.9
+on_round_cap: notice
+updates_per_batch: 2
+clip_eps_high: 0.28
+tis_cap: 2.0
+length_threshold: 512
+guard_window: 5
+guard_contradicted: 0.6
+guard_max_length: 0.4
+hint_schedule: 0.5@0,0.25@25,0@50
+hint_max_groups: 16
