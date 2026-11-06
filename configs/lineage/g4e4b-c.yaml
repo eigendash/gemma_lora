@@ -1,6 +1,6 @@
 # g4e4b-c: phase c of the from-scratch replay (scripts/make_lineage_configs.py; source p10_rtx6000.yaml).
 # Generated: edit the generator, not this file.
-model: google/gemma-4-E4B
+model: models/gemma-4-E4B-text
 prompt_style: fewshot_multi_retry
 n_problems: 0
 G: 8

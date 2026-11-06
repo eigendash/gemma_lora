@@ -173,6 +173,19 @@ def test_behaviour_metrics_retry_after_false():
     assert m["n_first_false"] == 2 and m["retry_after_false"] == 0.5 and m["frac_max_length"] == 0.25
 
 
+def test_strict_retry_metric_and_sampled_nll():
+    import types
+    R = lambda outs: types.SimpleNamespace(outputs=outs, terminal_reason="answer")
+    # multi-candidate checks: "False 50\nTrue 15" is not a failure for the strict metric
+    m = train_rl.behaviour_metrics([R(["False 50\nTrue 15"]), R(["False 1\nFalse 2", "True 3"]),
+                                    R(["False 1\nFalse 2"]), R(["True 9"])])
+    assert m["n_first_false"] == 3 and m["n_first_allfalse"] == 2 and m["retry_after_allfalse"] == 0.5
+    S = lambda lps, mask: types.SimpleNamespace(old_logprobs=lps, loss_mask=mask)
+    # env tokens (mask 0, logprob 0.0) are excluded: mean of 1.0, 2.0, 3.0
+    assert train_rl.sampled_nll([S([-1.0, 0.0, -2.0], [1, 0, 1]), S([-3.0], [1])])["entropy_est"] == 2.0
+    assert train_rl.sampled_nll([])["entropy_est"] != train_rl.sampled_nll([])["entropy_est"]  # nan when empty
+
+
 # --- P7: signal curriculum, validation split ---------------------------------------------------
 def test_curriculum_signal_mode_uses_mixed_group_rate():
     import random

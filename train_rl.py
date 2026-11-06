@@ -827,7 +827,7 @@ def train(cfg: GRPOConfig) -> None:
                       temperature=cfg.temperature, rng=gen_rng, device=device)
         zero_var = n_signal = n_sampled = refills = 0
         hint_frac = hint_frac_at(hint_sched, step)
-        n_hint_groups = n_hint_correct = n_hint_signal = 0
+        n_hint_groups = n_hint_correct = n_hint_signal = n_hint_nocorrect = 0
         n_signal_nocorrect = 0
         hint_rollouts = []
 
@@ -913,6 +913,7 @@ def train(cfg: GRPOConfig) -> None:
                             train_advs.extend(a.tolist())
                             n_signal += 1
                             n_hint_signal += 1
+                            n_hint_nocorrect += not any(x.correct > 0 for x in gr)  # shaping-only, like n_signal_nocorrect
             if not cfg.dynamic_sampling:
                 break
 
@@ -1030,6 +1031,8 @@ def train(cfg: GRPOConfig) -> None:
                "n_signal_nocorrect": n_signal_nocorrect,
                "lr": optimizer.param_groups[0]["lr"], "hint_frac": hint_frac, "n_hint_groups": n_hint_groups, "n_hint_signal": n_hint_signal,
                "hint_correct": n_hint_correct / max(1, n_hint_groups * cfg.G),
+               "n_hint_nocorrect": n_hint_nocorrect,
+               **sampled_nll(all_rollouts),
                **val_row}
         log_rows.append(row)
         log_file.write(json.dumps(row) + "\n")
@@ -1075,9 +1078,26 @@ def behaviour_metrics(rollouts) -> dict:
     if not rollouts:
         return {}
     ff = [r for r in rollouts if r.outputs and "False" in r.outputs[0].split()]
+    # strict: the first check printed no True at all (with the multi-candidate prompt, a check where candidate 1
+    # failed but a later one passed counts as "False" above but is not a failure; logged since 2026-11-06)
+    af = [r for r in rollouts if r.outputs and "True" not in r.outputs[0].split()]
     return {"retry_after_false": (sum(len(r.outputs) > 1 for r in ff) / len(ff)) if ff else float("nan"),
             "n_first_false": len(ff),
+            "retry_after_allfalse": (sum(len(r.outputs) > 1 for r in af) / len(af)) if af else float("nan"),
+            "n_first_allfalse": len(af),
             "frac_max_length": sum(r.terminal_reason == "max_length" for r in rollouts) / len(rollouts)}
+
+
+def sampled_nll(rollouts) -> dict:
+    """Mean negative log-prob of the model's own sampled tokens (sampler log-probs at the sampling temperature):
+    a Monte Carlo estimate of the policy's per-token entropy. Env tokens (loss_mask 0) are excluded."""
+    tot = cnt = 0.0
+    for r in rollouts:
+        for lp, m in zip(r.old_logprobs, r.loss_mask):
+            if m:
+                tot -= lp
+                cnt += 1
+    return {"entropy_est": round(tot / cnt, 4) if cnt else float("nan")}
 
 
 def guard_tripped(log_rows: list[dict], cfg) -> str:

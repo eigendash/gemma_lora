@@ -509,6 +509,48 @@ Paired McNemar tests on the holdout:
   - The holdout shows P10 → P10b gained more (+49) than P8 → P10 (+13).
   - This would fit "hint-free consolidation after a hint phase helps", but no ablation isolates it.
 
+### 2.7l From-scratch replays: Qwen3-8B, Gemma-4-E4B, Qwen3-4B seeds (pre-registered 2026-11-06, before any result)
+**Question:** does the recipe that worked on Qwen3-4B transfer to another size, another model family and other seeds?
+This is a question about the recipe, not a model-capability comparison: hyperparameters are kept identical on purpose.
+
+**Recipe** (`scripts/make_lineage_configs.py`; configs in `configs/lineage/`):
+- The 4 phases of the original lineage: a = P7 (40 steps), b = P8 (90), c = P10 (90), d = P10b (80).
+- Each phase warm-starts from the previous phase's **final** step; nothing is hand-picked. With a constant LR this matches the original s40/s90 choices.
+- Only the model and seed change. Each lineage is evaluated once on `data/holdout3.jsonl` with a single backend.
+
+**Arms:**
+- `q8b` (Qwen3-8B-Base, seed 0).
+- `g4e4b` (Gemma-4-E4B, text-only extraction, seed 0).
+- `q4s1` and `q4s2` (Qwen3-4B-Base, seeds 1 and 2).
+- **Reading:** the original seed-0 4B lineage was designed on its own outcomes, so it counts as *selected*. Seeds 1 and 2 are the unbiased estimate of the recipe.
+
+**Rejected change, the plateau rule.** A proposed rule would end each phase at a validation plateau (3-eval smoothing, ≥1 pp improvement, patience 4, warm-start from the plateau onset). Replayed on our own logs, it would have stopped P8 at s40 and warm-started from s20 (smoothed 40.2%), while P8 went on to 48% by s95. In P10b it would have taken s50 instead of s80. One validation pass has an SD of about 1.5 pp, so a 1 pp threshold mostly tracks noise. Fixed phase lengths are kept.
+
+**Gemma-4-E4B preparation** (`verification/check_gemma4_text.py`):
+- The checkpoint is multimodal, and `AutoModelForCausalLM` loads `Gemma4ForConditionalGeneration`. 148 of its 406 LoRA-target modules sit in the vision/audio towers.
+- `Gemma4ForCausalLM.from_pretrained` cannot read the checkpoint: all 666 language weights come up missing.
+- **Fix:** copy the 665 `model.language_model.*` tensors into a text-only model.
+  - Logits match the multimodal model exactly (max |diff| 0 in fp32 eager).
+  - The 258 LoRA targets are all in language layers.
+  - vLLM greedy output equals HF on 64/64 tokens.
+  - The model is stored at `gs://…/models/gemma-4-E4B-text/` (sha256 `acbf7fec…`).
+- Tags tokenize cleanly, with no special-token clash (`verification/logs/tokenizer_tags_qwen3_gemma4.txt`). The model has a final-logit softcap of 30 and a 512-token sliding window.
+
+**Gemma go/no-go gate (pre-registered):**
+- **Base validation, 3 passes, phase-a prompt:** 5, 6 and 3 of 300, mean **1.6%**. With the multi-candidate prompt: 3.7%, one pass. For comparison, Qwen3-4B is about 13% and Qwen3-8B 26% at step 0.
+- **After phase a only** (`scripts/gate_check.py`), the chain continues if two conditions hold:
+  - smoothed in-run validation (last 3 evals) ≥ 1.6 + 3 = **4.6%**;
+  - first-round train accuracy is rising (mean of the last 10 steps > mean of the first 10).
+- **If it fails,** the single allowed deviation is to rerun Gemma with hints from phase a (`hint_schedule` from phase c, applied to phases a and b), reported as a deviation. No other per-model tuning.
+
+**Logging added before these runs** (logging only; config hashes unchanged):
+- `entropy_est`: the mean −log p of the sampled model tokens.
+- `retry_after_allfalse` / `n_first_allfalse`: the strict retry rate, counting a first check as failed only when it printed no True.
+- `n_hint_nocorrect`: hinted groups trained with no correct answer.
+- The Qwen3-8B run started before these and does not have them.
+
+**Also queued:** a P10b replicate (seed 1, same P10 s90 init), so the hint ablation can be read against run-to-run spread rather than against a single run.
+
 ### 2.7f Final test set (data/eval.jsonl, 1,000 problems; 400 easy / 300 medium / 300 hard), greedy
 Each checkpoint was chosen on the 300-problem validation split before this run. The test set had not been used before.
 The run used vLLM on the RTX PRO 6000 (`verification/eval_vllm.py --set test`).
