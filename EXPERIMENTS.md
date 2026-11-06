@@ -509,6 +509,56 @@ Paired McNemar tests on the holdout:
   - The holdout shows P10 → P10b gained more (+49) than P8 → P10 (+13).
   - This would fit "hint-free consolidation after a hint phase helps", but no ablation isolates it.
 
+### 2.7m Hint ablation and P10c: the second hint cycle did nothing (2026-11-06)
+**Runs** (chain `c1`; logs in `verification/logs/c1_ablation_p10c/`):
+- **P10b-nohint** (`configs/p10b_nohint_rtx6000.yaml`): identical to P10b (P10 s90 init, 80 steps, lr warmup 5, seed 0) except that it has **no hint schedule**.
+- **P10c** (`configs/p10c_rtx6000.yaml`): the P10b recipe, a third hint cycle, starting from P10b s80.
+
+**Selection** (3-pass validation, the usual rule: best mean, ties go to the later step):
+
+| ckpt | passes | mean /300 | easy | medium | hard |
+|---|---|---|---|---|---|
+| P10b s80 (reference) | 158, 157, 158 | 157.7 | 87.7 | 39.7 | 30.3 |
+| nohint s50 / s60 / s70 | – | 146.3 / 149.0 / 149.0 | – | – | – |
+| nohint s76 / s78 | – | 156.7 / 158.7 | – | – | – |
+| **nohint s80** | 161, 162, 159 | **160.7** | 88.3 | 42.0 | 30.3 |
+| P10c s50 / s60 / s70 | – | 151.3 / 148.7 / 147.7 | – | – | – |
+| **P10c s76 / s78** (tie, so the later step, s78) | 159, 155, 152 / 154, 159, 153 | **155.3** | 86.0 | 41.3 | 28.0 |
+| P10c s80 | 150, 152, 152 | 151.3 | 84.0 | 40.7 | 26.7 |
+
+**Test** (vLLM, one process): P10b s80 520, nohint s80 525, P10c s80 531. Every pairwise p is above 0.4.
+
+**holdout2** (`data/holdout2.jsonl`, soos `eval.py`, the same settings as its baseline; each model evaluated **once**):
+
+| Model | easy /400 | medium /300 | hard /300 | total |
+|---|---|---|---|---|
+| P10 s90 (the init of both) | 311 | 87 | 73 | 471 |
+| P10b s80 (hint cycle + warmup) | 332 | 101 | 80 | 513 |
+| **P10b-nohint s80** (warmup, no hints) | 336 | 104 | 78 | **518** |
+| **P10c s78** (third hint cycle, from P10b s80) | 339 | 99 | 87 | **525** |
+
+Paired McNemar tests (only-A / only-B):
+- **nohint vs P10b:** 92 / 87, **p = 0.77**.
+- **P10c vs P10b:** 90 / 78, p = 0.40.
+- **nohint vs P10 s90:** 118 / 71, p = 0.0008.
+- **P10c vs P10 s90:** 117 / 63, p = 0.0001.
+- **P10c vs nohint:** p = 0.65.
+
+**Conclusion:**
+- **The P10 → P10b gain (+42 to +49 on two holdouts) came from 80 more GRPO steps, not from the second hint cycle.** Without hints the same 80 steps did as well or better.
+- A third hint cycle adds nothing measurable.
+- The first hint cycle (P8 → P10) was itself not significant on holdout1 (+13, p = 0.37). So across the lineage there is no evidence that hinted resampling helps on this task; there is evidence that **continued training does**.
+- The hints did *train*: hint_correct was about 20%. But the extra signal did not turn into unhinted accuracy beyond what plain training gave.
+
+**Caveats:**
+- These are single runs per arm. The P10b replicate (seed 1, chain `c2-rep`, running) gives the run-to-run spread. With nohint − P10b = +5, the conclusion "hints ≈ no effect" holds unless the spread is tiny; it can't flip into "hints help".
+- Both P10b and nohint used LR warmup, so warmup is not separated out (P10, without warmup, was the earlier recipe).
+
+**Consequences:**
+- The replays (§2.7l) keep their pre-registered recipe (phases c and d with hints), because changing them now would break comparability.
+- REPORT.md must not credit hints for the gains.
+- The "recipe v2" candidate list gains "drop the hint cycles; just train longer".
+
 ### 2.7l From-scratch replays: Qwen3-8B, Gemma-4-E4B, Qwen3-4B seeds (pre-registered 2026-11-06, before any result)
 **Question:** does the recipe that worked on Qwen3-4B transfer to another size, another model family and other seeds?
 This is a question about the recipe, not a model-capability comparison: hyperparameters are kept identical on purpose.

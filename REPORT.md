@@ -47,6 +47,7 @@ P7 (base → 36% val in 40 steps) is not drawn: its per-step log was not kept.*
 - **P10 (hinted rollouts, QuestA-style):** a group where all 8 samples fail is resampled with "Hint: one solution contains X". The hint covers ½, then ¼, then none of the solution.
   - Validation first *dropped* (47 → 42%) while hints dominated, then climbed to 50% once hints faded.
 - **P10b:** a second, shorter hint cycle with a 5-step LR warmup. There was no early dip, and validation sat at 50–53%.
+- **Hint ablation:** the same 80 steps *without* hints did as well, at 518 vs 513 on a second fresh holdout (p = 0.77). The P10 → P10b gain (+42 to +49 on two holdouts) came from **training longer, not from the hints**. A third hint cycle (P10c, 525) adds nothing significant. There is no evidence in this lineage that hinted resampling helps this task (EXPERIMENTS §2.7m).
   - Length rises while hints are on (longer hinted prompts lead to longer checks), then falls back to about 310 tokens when they stop.
 - **Health signals:** KL to the base model grows slowly (0.07 → 0.12 across P10b). Clip fraction is about 0.003. No run hit the length cap.
   - The adaptive KL coefficient sits at its floor (0.001) for most steps, so the KL penalty is in practice inactive (about 1e-4 per token). KL is a monitor here, not a regulator.
