@@ -1,0 +1,42 @@
+=== pass 1 order: c_s76 nh_s76 c_s80 nh_s70 c_s60 p10b_s80 nh_s80 c_s78 c_s70 nh_s50 c_s50 nh_s78 nh_s60
+c_s76: correct 0.530 (159/300) {'easy': 0.89, 'hard': 0.26, 'medium': 0.44} 15s
+nh_s76: correct 0.517 (155/300) {'easy': 0.84, 'hard': 0.3, 'medium': 0.41} 11s
+c_s80: correct 0.500 (150/300) {'easy': 0.83, 'hard': 0.27, 'medium': 0.4} 16s
+nh_s70: correct 0.503 (151/300) {'easy': 0.83, 'hard': 0.3, 'medium': 0.38} 12s
+c_s60: correct 0.490 (147/300) {'easy': 0.82, 'hard': 0.26, 'medium': 0.39} 21s
+p10b_s80: correct 0.527 (158/300) {'easy': 0.89, 'hard': 0.28, 'medium': 0.41} 12s
+nh_s80: correct 0.537 (161/300) {'easy': 0.88, 'hard': 0.32, 'medium': 0.41} 11s
+c_s78: correct 0.513 (154/300) {'easy': 0.85, 'hard': 0.26, 'medium': 0.43} 16s
+c_s70: correct 0.487 (146/300) {'easy': 0.81, 'hard': 0.28, 'medium': 0.37} 18s
+nh_s50: correct 0.490 (147/300) {'easy': 0.82, 'hard': 0.23, 'medium': 0.42} 12s
+c_s50: correct 0.500 (150/300) {'easy': 0.84, 'hard': 0.25, 'medium': 0.41} 20s
+nh_s78: correct 0.530 (159/300) {'easy': 0.87, 'hard': 0.3, 'medium': 0.42} 11s
+nh_s60: correct 0.490 (147/300) {'easy': 0.85, 'hard': 0.22, 'medium': 0.4} 12s
+=== pass 2 order: c_s78 nh_s76 c_s80 nh_s70 c_s70 c_s76 nh_s80 p10b_s80 nh_s50 c_s60 nh_s60 c_s50 nh_s78
+c_s78: correct 0.530 (159/300) {'easy': 0.88, 'hard': 0.31, 'medium': 0.4} 15s
+nh_s76: correct 0.523 (157/300) {'easy': 0.86, 'hard': 0.3, 'medium': 0.41} 14s
+c_s80: correct 0.507 (152/300) {'easy': 0.84, 'hard': 0.26, 'medium': 0.42} 18s
+nh_s70: correct 0.500 (150/300) {'easy': 0.82, 'hard': 0.27, 'medium': 0.41} 12s
+c_s70: correct 0.490 (147/300) {'easy': 0.84, 'hard': 0.24, 'medium': 0.39} 20s
+c_s76: correct 0.517 (155/300) {'easy': 0.89, 'hard': 0.25, 'medium': 0.41} 17s
+nh_s80: correct 0.540 (162/300) {'easy': 0.89, 'hard': 0.32, 'medium': 0.41} 11s
+p10b_s80: correct 0.523 (157/300) {'easy': 0.88, 'hard': 0.32, 'medium': 0.37} 12s
+nh_s50: correct 0.483 (145/300) {'easy': 0.8, 'hard': 0.24, 'medium': 0.41} 12s
+c_s60: correct 0.500 (150/300) {'easy': 0.82, 'hard': 0.31, 'medium': 0.37} 23s
+nh_s60: correct 0.497 (149/300) {'easy': 0.84, 'hard': 0.25, 'medium': 0.4} 12s
+c_s50: correct 0.500 (150/300) {'easy': 0.83, 'hard': 0.25, 'medium': 0.42} 17s
+nh_s78: correct 0.520 (156/300) {'easy': 0.87, 'hard': 0.31, 'medium': 0.38} 11s
+=== pass 3 order: c_s80 nh_s76 p10b_s80 nh_s70 c_s76 nh_s50 nh_s80 c_s78 c_s70 c_s60 nh_s78 nh_s60 c_s50
+c_s80: correct 0.507 (152/300) {'easy': 0.85, 'hard': 0.27, 'medium': 0.4} 14s
+nh_s76: correct 0.527 (158/300) {'easy': 0.87, 'hard': 0.3, 'medium': 0.41} 12s
+p10b_s80: correct 0.527 (158/300) {'easy': 0.86, 'hard': 0.31, 'medium': 0.41} 12s
+nh_s70: correct 0.487 (146/300) {'easy': 0.83, 'hard': 0.23, 'medium': 0.4} 12s
+c_s76: correct 0.507 (152/300) {'easy': 0.87, 'hard': 0.24, 'medium': 0.41} 15s
+nh_s50: correct 0.490 (147/300) {'easy': 0.82, 'hard': 0.25, 'medium': 0.4} 12s
+nh_s80: correct 0.530 (159/300) {'easy': 0.88, 'hard': 0.27, 'medium': 0.44} 11s
+c_s78: correct 0.510 (153/300) {'easy': 0.85, 'hard': 0.27, 'medium': 0.41} 15s
+c_s70: correct 0.500 (150/300) {'easy': 0.83, 'hard': 0.27, 'medium': 0.4} 21s
+c_s60: correct 0.497 (149/300) {'easy': 0.83, 'hard': 0.28, 'medium': 0.38} 18s
+nh_s78: correct 0.537 (161/300) {'easy': 0.88, 'hard': 0.3, 'medium': 0.43} 11s
+nh_s60: correct 0.503 (151/300) {'easy': 0.85, 'hard': 0.25, 'medium': 0.41} 11s
+c_s50: correct 0.513 (154/300) {'easy': 0.87, 'hard': 0.26, 'medium': 0.41} 21s

@@ -42,6 +42,10 @@ for rc in $RUNS; do
       && mv "$init.tmp" "$init"
     [ -f "$init/adapter_model.safetensors" ] || { mark "MISSING init $init for $id"; exit 1; }
     mark "INIT $id from runs/$src step_$last"
+  elif [[ "$init" == baselines/* ]] && [ ! -f "$init/adapter_model.safetensors" ]; then  # a kept adapter in the bucket
+    mkdir -p "$init" && gcloud storage cp "$B/$init/*" "$init/" >/dev/null 2>&1
+    [ -f "$init/adapter_model.safetensors" ] || { mark "MISSING init $init for $id"; exit 1; }
+    mark "INIT $id from bucket $init"
   fi
   mark "TRAIN $id $cfg"
   RUN_ID="$id" CONFIG="$cfg" GCS_BUCKET="$B" COST_PER_HOUR="$COST_PER_HOUR" bash scripts/cloud_train.sh > "$LOG/$id.wrapper.log" 2>&1
@@ -62,7 +66,8 @@ NAMES=()
 for a in $VAL_ADAPTERS; do
   n="${a%%=*}"; src="${a#*=}"
   if [ ! -d "baselines/$n" ]; then
-    if [ -d "$src" ]; then cp -r "$src" "baselines/$n"
+    if [[ "$src" == baselines/* ]] && [ ! -d "$src" ]; then mkdir -p "$src" && gcloud storage cp "$B/$src/*" "$src/" >/dev/null 2>&1; fi
+    if [ -d "$src" ]; then [ "$src" = "baselines/$n" ] || cp -r "$src" "baselines/$n"
     else rm -rf "baselines/$n.tmp"; mkdir -p "baselines/$n.tmp"  # gcloud storage cp needs an existing destination dir
       gcloud storage cp "$B/$src/adapter/*" "baselines/$n.tmp/" >/dev/null && mv "baselines/$n.tmp" "baselines/$n"; fi
   fi
