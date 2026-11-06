@@ -561,6 +561,23 @@ Paired McNemar tests (only-A / only-B):
   - the primary replicate number is the validation pick, **s60**;
   - s80 (final step) is also evaluated, as a secondary number, and is not used for any choice.
 
+**Replicate holdout2 results** (declared above; each checkpoint evaluated once):
+- **Primary, rep s60 (validation pick): 506** (easy 319 / medium 106 / hard 81).
+  - vs P10b s80 513: 85 / 92, p = 0.65.
+  - vs nohint 518: p = 0.37.
+  - vs P10 s90 471: p = 0.008.
+- **Secondary, rep s80 (final step): 539** (332 / 103 / **104**).
+  - vs P10b s80: p = 0.058.
+  - vs rep s60: 90 / 57, **p = 0.008**.
+
+**What this adds:**
+1. **Recipe spread.** The same recipe from the same init lands at 506–539 on holdout2, depending on seed and checkpoint. The hint-vs-no-hint gap (+5) sits well inside that spread, so **hints show no effect**. Continued training from P10 s90 is clearly positive in every arm (+35 to +68).
+2. **300-problem validation chose the wrong checkpoint.** It ranked rep s60 (154.7) above rep s80 (150.0); holdout2 says s80 is 33 problems better (p = 0.008). Selecting among late checkpoints with 3 × 300 greedy passes is unreliable at these effect sizes.
+   - That supports the final-step rule used by the replays (§2.7l).
+   - For any future selection, use a larger fresh validation set (1–2k), as the review suggested.
+   - The P10c pick (s78 over s80 by 4 problems on validation) carries the same caveat.
+3. **No new headline from holdout2.** rep s80's 539 comes from evaluating two checkpoints of one run, so it isn't used as a new best. P10b s80 and rep s80 will be evaluated once on holdout3 as fixed references alongside the replays.
+
 **Consequences:**
 - The replays (§2.7l) keep their pre-registered recipe (phases c and d with hints), because changing them now would break comparability.
 - REPORT.md must not credit hints for the gains.
