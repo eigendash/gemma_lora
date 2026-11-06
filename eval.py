@@ -144,7 +144,8 @@ def stratified_subset(problems: list[dict], n: int) -> list[dict]:
     return out
 
 
-def _load(model_id: str, init_adapter: str | None, adapter: str | None, device: str, dtype: str, attn: str):
+def _load(model_id: str, init_adapter: str | None, adapter: str | None, device: str, dtype: str, attn: str,
+          merge_adapter: bool = False):
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
     dt = {"float32": torch.float32, "float16": torch.float16, "bfloat16": torch.bfloat16}[dtype]
@@ -157,6 +158,8 @@ def _load(model_id: str, init_adapter: str | None, adapter: str | None, device: 
             model = PeftModel.from_pretrained(model, init_adapter).merge_and_unload()
         if adapter:
             model = PeftModel.from_pretrained(model, adapter)
+            if merge_adapter:  # ~1.27x faster decode on soos (no per-layer LoRA side matmuls); bf16 rounding differs
+                model = model.merge_and_unload()
     model.to(device)
     model.eval()
     return model, tokenizer
@@ -216,6 +219,9 @@ def main(argv=None) -> None:
     ap.add_argument("--generation", default="batched", choices=["batched", "sequential"])
     ap.add_argument("--batch-size", type=int, default=32, help="sequences per batched decode")
     ap.add_argument("--control", default="real", choices=["real", "blank", "shuffle"])
+    ap.add_argument("--merge-adapter", action="store_true",
+                    help="merge --adapter into the weights (faster; not bit-identical to the unmerged runs, so keep "
+                         "it off when comparing against earlier unmerged evaluations of the same problems)")
     ap.add_argument("--out", default="", help="write metrics JSON here")
     ap.add_argument("--dump", default="", help="write per-problem transcripts JSONL here")
     args = ap.parse_args(argv)
@@ -228,7 +234,8 @@ def main(argv=None) -> None:
     with open(args.eval_file) as f:
         problems = stratified_subset([json.loads(line) for line in f], args.n_eval)
 
-    model, tokenizer = _load(args.model, args.init_adapter or None, args.adapter or None, device, dtype, args.attn)
+    model, tokenizer = _load(args.model, args.init_adapter or None, args.adapter or None, device, dtype, args.attn,
+                             merge_adapter=args.merge_adapter)
     sandbox = Sandbox(n_workers=2, timeout=0.050)
     result = {"config": {k: v for k, v in vars(args).items()} | {"dtype": dtype, "device": device}}
     try:

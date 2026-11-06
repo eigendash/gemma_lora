@@ -34,6 +34,7 @@ log-probs at the same temperature.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 
 import torch
@@ -301,7 +302,78 @@ def _plain_layers(past):
     layers = getattr(past, "layers", None)
     if layers is None:
         return None
-    return layers if all(type(l).__name__ == "DynamicLayer" for l in layers) else None
+    return layers if all(type(l).__name__ in ("DynamicLayer", "_PreallocLayer") for l in layers) else None
+
+
+def _kv_buffer(t, need: int = 0):
+    """A [B, H, cap, D] buffer holding ``t`` in its first L positions, with room to grow."""
+    if t is None:
+        return None
+    L = t.shape[-2]
+    cap = L + max(need, 64, L // 4)
+    buf = t.new_empty(t.shape[:-2] + (cap,) + t.shape[-1:])
+    buf[..., :L, :] = t
+    return buf
+
+
+_PREALLOC_CLS = {}
+
+
+def _prealloc_class(base):
+    """Subclass of HF ``DynamicLayer`` whose ``update`` writes new tokens into a preallocated buffer instead of
+    ``torch.cat``-ing the whole cache every step. ``DynamicLayer.update`` copies the full KV cache per token per
+    layer; at 128 rows x ~1.2k tokens (Qwen3-4B: 147 KB/token) that was ~30 GB of copying per decode step on
+    soos, more than half the step time. ``keys``/``values`` are views of the buffers, so in-place writes
+    (``dst[slots] = src``) go straight into the cache; assigning a new tensor (crop, pad, select) re-buffers it."""
+    if base not in _PREALLOC_CLS:
+        class _PreallocLayer(base):
+            @property
+            def keys(self):
+                b = self.__dict__.get("_kb")
+                return None if b is None else b[..., :self._kn, :]
+
+            @keys.setter
+            def keys(self, t):
+                self._kb, self._kn = _kv_buffer(t), (0 if t is None else t.shape[-2])
+
+            @property
+            def values(self):
+                b = self.__dict__.get("_vb")
+                return None if b is None else b[..., :self._vn, :]
+
+            @values.setter
+            def values(self, t):
+                self._vb, self._vn = _kv_buffer(t), (0 if t is None else t.shape[-2])
+
+            def update(self, key_states, value_states, *args, **kwargs):
+                if not self.is_initialized:
+                    self.lazy_initialization(key_states, value_states)
+                n = key_states.shape[-2]
+                if self._kb is None or self._kn + n > self._kb.shape[-2]:
+                    self._kb = _kv_buffer(self.keys, n)
+                if self._vb is None or self._vn + n > self._vb.shape[-2]:
+                    self._vb = _kv_buffer(self.values, n)
+                self._kb[..., self._kn:self._kn + n, :] = key_states
+                self._vb[..., self._vn:self._vn + n, :] = value_states
+                self._kn += n
+                self._vn += n
+                return self.keys, self.values
+
+        _PREALLOC_CLS[base] = _PreallocLayer
+    return _PREALLOC_CLS[base]
+
+
+def _cache_prealloc(past) -> None:
+    """Switch a plain HF DynamicCache to preallocated in-place layers (no-op for anything else)."""
+    if os.environ.get("ROLLOUT_KV_PREALLOC", "1") == "0":
+        return
+    layers = getattr(past, "layers", None)
+    if not layers or not all(type(l).__name__ == "DynamicLayer" for l in layers):
+        return
+    for l in layers:
+        k, v = l.__dict__.pop("keys", None), l.__dict__.pop("values", None)
+        l.__class__ = _prealloc_class(type(l))
+        l.keys, l.values = k, v
 
 
 def _cache_select(past, idx: torch.Tensor) -> None:
@@ -373,6 +445,7 @@ def _run_continuous(model, states: list[_Rollout], sandbox, pad_id: int, tempera
     past, logits, attn, next_pos = _prefill(model, [states[r].context_ids for r in first], pad_id, device)
     if _plain_layers(past) is None and not hasattr(past, "merge_rows"):
         return False
+    _cache_prealloc(past)
     slot_row = list(first)
     forced: list[list[int]] = [[] for _ in range(S)]
     admit_min = max(1, S // 8)
