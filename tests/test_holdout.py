@@ -1,6 +1,7 @@
 """Fresh 1,000-problem holdout sets, each generated after the model selection it is meant to check
 (scripts/make_holdout.py): data/holdout.jsonl (2026-11-05, for P10b) and data/holdout2.jsonl (2026-11-06, for
-P10b-nohint / P10c). They must stay disjoint from train/val/test and from each other, and must never be read by
+P10b-nohint / P10c) and data/holdout3.jsonl (2026-11-06, for the from-scratch replays: Qwen3-8B, Gemma-4-E4B,
+Qwen3-4B seeds). They must stay disjoint from train/val/test and from each other, and must never be read by
 training or selection code."""
 import hashlib
 import json
@@ -14,6 +15,8 @@ SETS = {  # file -> (sha256, files it must be disjoint from)
     "holdout.jsonl": ("480a4ae99b44f0c1f9dfaa0f3f934c480fac0315e5a584ba74366c132b808f30", ("train.jsonl", "eval.jsonl")),
     "holdout2.jsonl": ("caac4fb21c5d228ef14508c6edf7d0c9c8c0bda4b6826702e35683d7b9177057",
                        ("train.jsonl", "eval.jsonl", "holdout.jsonl")),
+    "holdout3.jsonl": ("f727df133a8d6144a85c3bc93b5669936a30b877fde61af9a54d7ae94ef2f7e3",
+                       ("train.jsonl", "eval.jsonl", "holdout.jsonl", "holdout2.jsonl")),
 }
 
 

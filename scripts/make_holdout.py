@@ -6,6 +6,8 @@ Deterministic: these commands reproduce the frozen files byte for byte (hashes i
   python scripts/make_holdout.py --seed 20261105 --out data/holdout.jsonl
   python scripts/make_holdout.py --seed 20261106 --out data/holdout2.jsonl \
       --exclude data/train.jsonl data/eval.jsonl data/holdout.jsonl
+  python scripts/make_holdout.py --seed 20261107 --out data/holdout3.jsonl \
+      --exclude data/train.jsonl data/eval.jsonl data/holdout.jsonl data/holdout2.jsonl
 """
 import argparse
 import json

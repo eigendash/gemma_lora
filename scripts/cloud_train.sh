@@ -22,8 +22,13 @@ sync_logs() {  # logs live on the VM disk, which spot preemption / max-run-durat
   gcloud storage cp "$OUT/train.log" "${GCS_BUCKET%/}/runs/$RUN_ID/logs/" >/dev/null 2>&1 || true
   [ -f "$OUT/run/train_log.jsonl" ] && gcloud storage cp "$OUT/run/train_log.jsonl" "${GCS_BUCKET%/}/runs/$RUN_ID/logs/" >/dev/null 2>&1
   [ -d "$OUT/run/val" ] && gcloud storage rsync -r "$OUT/run/val" "${GCS_BUCKET%/}/runs/$RUN_ID/logs/val" >/dev/null 2>&1
+  [ -f "$OUT/run/rollouts.jsonl" ] && gcloud storage cp "$OUT/run/rollouts.jsonl" "${GCS_BUCKET%/}/runs/$RUN_ID/logs/" >/dev/null 2>&1
   true
 }
+# provenance for later analysis: the exact config, code snapshot hash and environment of this attempt
+{ echo "config: $CONFIG"; echo "host: $(hostname) $(date -u +%FT%TZ)"; sha256sum "$HOME/code.tgz" 2>/dev/null
+  nvidia-smi --query-gpu=name,driver_version --format=csv,noheader 2>/dev/null; { "$PY" -m pip freeze 2>/dev/null || ~/.local/bin/uv pip freeze --python "$PY" 2>/dev/null; }; } > "$OUT/provenance.txt"
+gcloud storage cp "$CONFIG" "$OUT/provenance.txt" "${GCS_BUCKET%/}/runs/$RUN_ID/logs/" >/dev/null 2>&1 || true
 ( while sleep "${LOG_SYNC_S:-300}"; do sync_logs; done ) &
 SYNC_PID=$!
 for attempt in 1 2 3 4; do

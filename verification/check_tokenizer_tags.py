@@ -1,12 +1,13 @@
-"""Tag tokenization + segment-boundary probe (Qwen2.5-0.5B, gemma-2-2b).
+"""Tag tokenization + segment-boundary probe (default: Qwen2.5-0.5B, gemma-2-2b; or the models given as arguments).
 
-Run: zsh -c "source ~/.zshrc; python verification/check_tokenizer_tags.py"  (HF_TOKEN needed for gated gemma; never printed)
+Run: zsh -c "source ~/.zshrc; python verification/check_tokenizer_tags.py [model ...]"  (HF_TOKEN needed for gated gemma; never printed)
 """
 import os
+import sys
 from transformers import AutoTokenizer
 CASES = ["<think>", "</think>", "<python>", "</python>", "<output>", "</output>", "<answer>", "</answer>",
          "</python>\n", "\n</python>", "</python>\n<output>\n", "\n</output>\n", ")\n</python>", "</output><answer>1</answer>", "print(x)</python>"]
-for name in ["Qwen/Qwen2.5-0.5B", "google/gemma-2-2b"]:
+for name in sys.argv[1:] or ["Qwen/Qwen2.5-0.5B", "google/gemma-2-2b"]:
     try:
         tok = AutoTokenizer.from_pretrained(name, token=os.environ.get("HF_TOKEN"))
     except Exception as e:
@@ -21,3 +22,7 @@ for name in ["Qwen/Qwen2.5-0.5B", "google/gemma-2-2b"]:
     b = tok.encode("\n<output>\n1\n</output>\n", add_special_tokens=False)
     joint = tok.encode("x = 1\nprint(x)\n</python>\n<output>\n1\n</output>\n", add_special_tokens=False)
     print("  concat(segment ids) == tokenize(joined text):", a + b == joint, len(a+b), len(joint))
+    # are any protocol tags registered as special / added tokens (they would then be generated or stripped differently)?
+    added = {t for t in getattr(tok, "get_added_vocab", lambda: {})()}
+    clash = [t for t in ("<think>", "</think>", "<python>", "</python>", "<output>", "</output>", "<answer>", "</answer>") if t in added]
+    print("  protocol tags that are added/special tokens:", clash or "none")
