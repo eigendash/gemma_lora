@@ -1,0 +1,37 @@
+# Cloud smoke on ONE 24 GB L4 (GCP quota = 1 L4). Same as smoke_cloud_qwen3.yaml but sized for 24 GB:
+# vLLM 0.5 (8 GB weights + KV), trainer micro-batch 2 + grad ckpt, 2048 context.
+# Original header: the lit3 recipe at toy scale with vLLM generation,
+# GCS checkpoints every 2 steps. Measures step time / throughput / vLLM-vs-trainer log-prob gap.
+model: Qwen/Qwen3-4B-Base
+prompt_style: fewshot_direct_retry
+n_problems: 0
+G: 8
+prompts_per_step: 8
+grad_accum: 1
+total_steps: 6
+max_new_tokens: 768
+lr: 0.00002
+kl_coef: 0.0
+min_kl_coef: 0.0
+max_kl_coef: 0.0
+lora_r: 16
+lora_alpha: 32
+dtype: bfloat16
+attn: sdpa
+chunked_vocab: true
+micro_batch: 2
+generation: vllm
+vllm_gpu_util: 0.5
+vllm_max_model_len: 2048
+grad_ckpt: true
+dynamic_sampling: true
+max_refill_rounds: 1
+checkpoint_every: 2
+checkpoint_timer: 900
+rollout_dump_every: 2
+temperature: 0.9
+on_round_cap: notice
+updates_per_batch: 2
+clip_eps_high: 0.28
+tis_cap: 2.0
+length_threshold: 512

@@ -12,9 +12,11 @@ gcloud storage buckets create "gs://$B" \
   --project "$GCP_PROJECT" --location "$REGION" \
   --uniform-bucket-level-access --public-access-prevention=enforced
 
-# lifecycle: delete heartbeats after 7 days, keep only recent checkpoints (prune
-# is done by lifecycle rule, never by the training host)
-gcloud storage buckets update "gs://$B" --lifecycle-file=- <<'EOF'
-{"rule":[{"action":{"type":"Delete"},"condition":{"age":7,"matchesPrefix":["runs/"]}}]}
-EOF
+# lifecycle: expire heartbeats (top-level hb/ prefix) after 7 days. Checkpoints,
+# SFT adapters and eval results under runs/ are NEVER auto-deleted: prune them
+# by hand after scripts/pull_checkpoints.sh has mirrored them to the Mac.
+LC="$(mktemp)"
+echo '{"rule":[{"action":{"type":"Delete"},"condition":{"age":7,"matchesPrefix":["hb/"]}}]}' > "$LC"
+gcloud storage buckets update "gs://$B" --lifecycle-file="$LC"
+rm -f "$LC"
 echo "bucket gs://$B created in $REGION"

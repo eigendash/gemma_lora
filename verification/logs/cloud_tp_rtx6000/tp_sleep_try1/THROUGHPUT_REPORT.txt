@@ -1,0 +1,8 @@
+gpu: NVIDIA RTX PRO 6000 Blackwell Server Edition, 97887 MiB
+config: configs/throughput_rtx6000_sleep.yaml
+train FAILED (exit 1)
+wall: 115s
+peak mem: 0 MiB (at end)
+step 0: gen 17.9s loss 19.4s tokens 21418 sampled 16 logp_dev mean 0.0098 p99 0.1767 tis_w 1.0004 correct 0.109
+steady step time 37s -> 96.5 steps/hour (16 prompts x 8)
+report: outputs/cloud_throughput/THROUGHPUT_REPORT.txt

@@ -1,0 +1,40 @@
+# Throughput check on ONE RTX PRO 6000 (96 GB, g4-standard-48): the P6 recipe
+# (configs/pilot_qwen3_lit4.yaml: 16 prompts x 8, 768 tokens, U=2, clip-higher, TIS) with vLLM
+# generation instead of HF batched. 4 steps; compare gen_s/loss_s to soos (~107-260 s gen, ~150-200 s loss).
+model: Qwen/Qwen3-4B-Base
+prompt_style: fewshot_direct_retry
+n_problems: 0
+G: 8
+prompts_per_step: 16
+grad_accum: 1
+total_steps: 4
+max_new_tokens: 768
+lr: 0.00002
+kl_coef: 0.0
+min_kl_coef: 0.0
+max_kl_coef: 0.0
+target_kl: 0.1
+lora_r: 16
+lora_alpha: 32
+dtype: bfloat16
+attn: sdpa
+chunked_vocab: true
+micro_batch: 8
+grad_ckpt: false
+generation: vllm
+vllm_gpu_util: 0.3
+vllm_max_model_len: 4096
+dynamic_sampling: true
+max_refill_rounds: 2
+checkpoint_every: 100
+checkpoint_timer: 900
+rollout_dump_every: 5
+temperature: 0.9
+on_round_cap: notice
+updates_per_batch: 2
+clip_eps_high: 0.28
+tis_cap: 2.0
+length_threshold: 512
+guard_window: 5
+guard_contradicted: 0.6
+guard_max_length: 0.4

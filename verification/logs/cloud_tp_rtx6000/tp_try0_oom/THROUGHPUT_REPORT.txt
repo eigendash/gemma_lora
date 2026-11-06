@@ -1,0 +1,6 @@
+gpu: NVIDIA RTX PRO 6000 Blackwell Server Edition, 97887 MiB
+config: configs/throughput_rtx6000_qwen3.yaml
+train FAILED (exit 1)
+wall: 216s
+peak mem: 0 MiB (at end)
+report: outputs/cloud_throughput/THROUGHPUT_REPORT.txt
