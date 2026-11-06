@@ -22,3 +22,8 @@ checkpoint_timer: 600
 chunked_vocab: true
 attn: eager
 dtype: bfloat16
+n_problems: 0        # 0 = all 10,000 train problems
+micro_batch: 4       # rollouts per forward/backward in the loss pass (memory knob; not part of the resume hash)
+temperature: 1.0
+generation: batched
+gen_batch: 32        # sequences per batched decode (KV-cache memory knob)

@@ -1,8 +1,8 @@
 """Minimal sandbox execution logic for spawned worker processes.
 
 This module is deliberately tiny: it imports only the standard library
-(``ast``, ``contextlib``, ``io``) so that spawning a worker under macOS
-``spawn`` is cheap and never pulls in torch/transformers.
+(``ast``, ``contextlib``, ``json``, ``os``, ``sys``) so a worker process starts
+in milliseconds and never pulls in torch/transformers.
 
 Safety model (defense in depth):
 1. **AST whitelist** — rejects forbidden syntax before execution (no attribute
@@ -17,16 +17,26 @@ Safety model (defense in depth):
    process (see ``sandbox.py``) that is killed on timeout, so infinite loops and
    C-level hangs cannot leak or wedge the pool.
 
-Output is captured and truncated to ``max_stdout`` characters; a bounded buffer
-raises ``OutputError`` if a single execution writes more than ``_BUFFER_LIMIT``
-bytes, preventing memory blow-up from unbounded ``print`` loops.
+Output is captured and truncated to ``max_stdout`` characters. The capture
+buffer stops storing after ``_BUFFER_LIMIT`` characters (later writes are
+counted and discarded), so an unbounded ``print`` loop cannot grow memory; it is
+stopped by the parent's timeout instead.
+
+Run as a script (``python -I -S sandbox_worker.py <max_stdout>``) this module is
+the worker process: it reads one JSON request per line on stdin and writes one
+JSON reply per line on the original stdout. It imports only the standard
+library, so a worker never loads torch/transformers regardless of what the
+parent process imported (unlike ``multiprocessing`` spawn, which re-imports the
+parent's ``__main__``).
 """
 
 from __future__ import annotations
 
 import ast
 import contextlib
-import io
+import json
+import os
+import sys
 
 MAX_CODE_LEN = 4096
 MAX_INT = 10**12
@@ -82,12 +92,12 @@ _ALLOWED_TYPES = frozenset(
 )
 
 
-class _OutputLimitExceeded(Exception):
-    pass
-
-
 class _BoundedWriter:
-    """File-like object that raises once total written bytes exceed a limit."""
+    """File-like capture buffer that keeps at most ``limit`` characters.
+
+    Writes beyond the limit are discarded (memory stays bounded); execution is
+    not interrupted, so the caller still gets the first characters of output.
+    """
 
     def __init__(self, limit: int):
         self._limit = limit
@@ -97,10 +107,10 @@ class _BoundedWriter:
     def write(self, s) -> int:
         if not isinstance(s, str):
             s = str(s)
-        self._size += len(s)
-        if self._size > self._limit:
-            raise _OutputLimitExceeded(f"stdout exceeded {self._limit} bytes")
-        self._buf.append(s)
+        room = self._limit - self._size
+        if room > 0:
+            self._buf.append(s[:room])
+            self._size += min(len(s), room)
         return len(s)
 
     def flush(self) -> None:
@@ -167,23 +177,29 @@ def execute(code: str, max_stdout: int = DEFAULT_MAX_STDOUT) -> tuple[bool, str]
         with contextlib.redirect_stdout(buf):
             exec(compile(code, "<countdown-sandbox>", "exec"), safe_globals, {})
         return True, buf.getvalue().strip()[:max_stdout]
-    except _OutputLimitExceeded:
-        return False, "OutputError: output exceeded limit"
     except Exception as e:  # noqa: BLE001 — sandbox boundary; report, don't leak
-        return False, f"RuntimeError: {type(e).__name__}: {e}"
+        return False, f"RuntimeError: {type(e).__name__}: {e}"[:max_stdout]
 
 
-def worker_main(conn, max_stdout: int = DEFAULT_MAX_STDOUT) -> None:
-    """Entry point for a spawned worker: loop receiving code, replying results."""
-    while True:
-        try:
-            code = conn.recv()
-        except EOFError:
-            break  # parent died (e.g. SIGKILL); exit cleanly
-        if code is None:  # shutdown sentinel
+def serve_stdio(max_stdout: int = DEFAULT_MAX_STDOUT) -> None:
+    """Worker loop: one JSON request per stdin line -> one JSON reply per line.
+
+    The protocol channel is a private dup of fd 1; fd 1 itself is pointed at
+    /dev/null so nothing else in the process can corrupt the channel.
+    """
+    proto = os.fdopen(os.dup(1), "w", buffering=1)
+    devnull = os.open(os.devnull, os.O_WRONLY)
+    os.dup2(devnull, 1)
+    sys.stdout = open(os.devnull, "w")
+    for line in sys.stdin:
+        req = json.loads(line)
+        if req is None:  # shutdown sentinel
             break
+        code = req.get("code")
         ok, msg = validate_ast(code)
-        if not ok:
-            conn.send((False, f"SecurityError: {msg}"))
-            continue
-        conn.send(execute(code, max_stdout))
+        reply = execute(code, max_stdout) if ok else (False, f"SecurityError: {msg}")
+        proto.write(json.dumps(list(reply)) + "\n")
+
+
+if __name__ == "__main__":
+    serve_stdio(int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_MAX_STDOUT)

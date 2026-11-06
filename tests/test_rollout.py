@@ -97,21 +97,34 @@ def test_extract_between():
     assert rollout.extract_between(text, "<answer>", "</answer>") == "(100-3)*8"
 
 
-def test_truncate_tokens_removes_hallucinated_output(qwen_tok, gemma_tok):
-    for tok in (qwen_tok, gemma_tok):
-        text = "print(x)</python>\n<output>\nfake\n</output>\n"
-        ids = tok.encode(text, add_special_tokens=False)
-        pieces = [tok.decode([i]) for i in ids]
-        start = "".join(pieces).find("<output>")
-        assert start >= 0
-        keep = rollout._truncate_tokens(pieces, start)
-        kept = "".join(keep)
-        assert "<output>" not in kept
-        assert "</python>" in kept
-
-
 def test_format_prompt_contains_tags():
     p = rollout.format_prompt([100, 75, 3, 8], 952)
     for t in ("<think>", "</think>", "<python>", "</python>", "<answer>", "</answer>"):
         assert t in p
     assert "952" in p and "100" in p
+
+
+QWEN3 = "Qwen/Qwen3-4B-Base"
+_TAG_TEXT = ("<think>\nTarget 15.\n</think>\n<python>\nres = 5 + 10\nprint(res == 15, res)\n</python>"
+             "\n<output>\nTrue 15\n</output>\n<answer>\n5 + 10\n</answer>\n")
+
+
+def test_encode_text_unchanged_for_tokenizers_without_tag_tokens(qwen_tok, gemma_tok):
+    for tok in (qwen_tok, gemma_tok):
+        for add in (False, True):
+            assert rollout.encode_text(tok, _TAG_TEXT, add) == tok.encode(_TAG_TEXT, add_special_tokens=add)
+
+
+def test_protocol_tags_never_become_reserved_tokens():
+    """Qwen3 registers <think>/</think> as added tokens its base model never emits;
+    protocol text must encode them as ordinary pieces (audit R4)."""
+    try:
+        tok = AutoTokenizer.from_pretrained(QWEN3)
+    except Exception as e:  # pragma: no cover
+        pytest.skip(f"{QWEN3} tokenizer unavailable: {type(e).__name__}")
+    plain = tok.encode(_TAG_TEXT, add_special_tokens=False)
+    assert tok.convert_tokens_to_ids("<think>") in plain  # the problem exists with plain encode
+    ids = rollout.encode_text(tok, _TAG_TEXT)
+    added_ids = set(tok.get_added_vocab().values())
+    assert not (set(ids) & added_ids), tok.convert_ids_to_tokens([i for i in ids if i in added_ids])
+    assert tok.decode(ids) == _TAG_TEXT

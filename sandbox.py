@@ -1,35 +1,100 @@
-"""Safe in-process execution sandbox with a persistent worker pool.
+"""Safe execution sandbox with a persistent, capped worker pool.
 
-Each execution runs in a dedicated worker process (macOS ``spawn``) so a hard
-timeout can kill and respawn the worker, and C-level hangs / infinite loops
-cannot wedge the pool. Workers are reused across executions (no per-call spawn
-cost) and recycled every ``recycle_every`` executions to stop slow leaks.
+Each execution runs in a dedicated worker *process* so a hard timeout can kill
+it, and infinite loops or C-level hangs cannot wedge the pool. Workers are
+reused across executions and recycled every ``recycle_every`` executions.
 
-The AST whitelist + restricted builtins live in ``sandbox_worker`` (kept minimal
-so worker import cost stays low). Validation is done in the parent first (fast
-rejection) and repeated in the worker (defense in depth).
+Workers are plain ``python -I -S sandbox_worker.py`` subprocesses speaking
+line-delimited JSON over pipes (not ``multiprocessing``): under the ``spawn``
+start method, multiprocessing re-imports the parent's ``__main__`` in every
+worker, so a training script that imports torch made each worker load torch too
+(~360 MB RSS, ~1.4 s per respawn). A subprocess worker imports only the stdlib,
+and behaves identically on macOS and Linux.
+
+Result integrity: each worker has its own pipe and serves one request at a
+time. A worker that misses its deadline (execution or warm-up) is killed and
+never reused, so a late reply can never be read by a later call.
+
+The AST whitelist + restricted builtins live in ``sandbox_worker``. Validation
+is done in the parent first (fast rejection) and repeated in the worker.
 """
 
 from __future__ import annotations
 
-import multiprocessing
+import json
 import os
+import select
+import subprocess
+import sys
 import threading
+import time
 from collections import deque
 
 import sandbox_worker
 
+_WORKER_PATH = os.path.abspath(sandbox_worker.__file__)
+_WARMUP_TIMEOUT = 10.0
+
+
+class _Proc:
+    """Small adapter over ``subprocess.Popen`` (``pid`` / ``is_alive``)."""
+
+    __slots__ = ("p", "pid")
+
+    def __init__(self, popen: subprocess.Popen):
+        self.p = popen
+        self.pid = popen.pid
+
+    def is_alive(self) -> bool:
+        return self.p.poll() is None
+
 
 class _Worker:
-    __slots__ = ("conn", "proc", "execs")
+    __slots__ = ("proc", "execs", "_buf")
 
-    def __init__(self, conn, proc):
-        self.conn = conn
+    def __init__(self, proc: _Proc):
         self.proc = proc
         self.execs = 0
+        self._buf = b""
 
     def alive(self) -> bool:
         return self.proc.is_alive()
+
+    def send(self, code: str) -> None:
+        self.proc.p.stdin.write((json.dumps({"code": code}) + "\n").encode())
+        self.proc.p.stdin.flush()
+
+    def recv(self, timeout: float):
+        """Return the decoded reply, or None if ``timeout`` elapses first."""
+        fd = self.proc.p.stdout.fileno()
+        deadline = time.monotonic() + timeout
+        while b"\n" not in self._buf:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                return None
+            ready, _, _ = select.select([fd], [], [], remaining)
+            if not ready:
+                return None
+            chunk = os.read(fd, 65536)
+            if not chunk:
+                raise EOFError("worker closed its pipe")
+            self._buf += chunk
+        line, self._buf = self._buf.split(b"\n", 1)
+        return json.loads(line)
+
+    def kill(self) -> None:
+        p = self.proc.p
+        if p.poll() is None:
+            p.kill()
+        try:
+            p.wait(timeout=2.0)
+        except subprocess.TimeoutExpired:  # pragma: no cover - kill is not ignorable
+            pass
+        for f in (p.stdin, p.stdout):
+            try:
+                f.close()
+            except OSError:
+                pass
 
 
 class Sandbox:
@@ -44,86 +109,87 @@ class Sandbox:
         self.recycle_every = int(recycle_every)
         self.max_stdout = int(max_stdout)
         self.n_workers = int(n_workers) if n_workers else max(1, os.cpu_count() or 4)
-        self._ctx = multiprocessing.get_context("spawn")
         self._idle: deque[_Worker] = deque()
         self._all: set[_Worker] = set()
-        self._lock = threading.Lock()
-        # eagerly spawn + warm up workers so the spawn/import cost is paid once,
-        # not inside the first 50 ms execution budget
+        self._pending = 0  # workers being spawned (count toward the cap)
+        self._cond = threading.Condition()
+        self._closed = False
+        # eagerly spawn + warm up so start-up cost is not paid inside an execution budget
         for _ in range(self.n_workers):
-            self._idle.append(self._spawn())
+            w = self._spawn()
+            with self._cond:
+                self._idle.append(w)
 
     # -- pool plumbing -------------------------------------------------------
     def _spawn(self) -> _Worker:
-        parent, child = self._ctx.Pipe(duplex=True)
-        proc = self._ctx.Process(
-            target=sandbox_worker.worker_main, args=(child, self.max_stdout), daemon=True
-        )
-        proc.start()
-        child.close()
-        w = _Worker(parent, proc)
-        self._all.add(w)
-        self._warmup(w)
-        return w
-
-    def _warmup(self, w: _Worker) -> None:
-        """Pay the worker's cold-start cost (spawn + import) with a generous budget."""
-        try:
-            w.conn.send("print(0)")
-            if w.conn.poll(5.0):
-                w.conn.recv()
-        except Exception:
-            pass
+        last_err = None
+        for _ in range(2):
+            popen = subprocess.Popen(
+                [sys.executable, "-I", "-S", _WORKER_PATH, str(self.max_stdout)],
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                close_fds=True,
+            )
+            w = _Worker(_Proc(popen))
+            try:
+                w.send("print(0)")
+                reply = w.recv(_WARMUP_TIMEOUT)
+            except (OSError, EOFError, ValueError) as e:
+                reply, last_err = None, e
+            if reply == [True, "0"]:
+                with self._cond:
+                    self._all.add(w)
+                return w
+            # never keep a worker whose warm-up reply is missing: it could arrive later
+            w.kill()
+        raise RuntimeError(f"sandbox worker failed to start: {last_err!r}")
 
     def _get_worker(self) -> _Worker:
-        with self._lock:
-            while self._idle:
-                w = self._idle.popleft()
-                if w.alive():
-                    return w
-                self._all.discard(w)
-            if len(self._all) < self.n_workers:
-                return self._spawn()
-            return self._spawn()  # caller drives one execution at a time
+        with self._cond:
+            while True:
+                if self._closed:
+                    raise RuntimeError("sandbox is closed")
+                while self._idle:
+                    w = self._idle.popleft()
+                    if w.alive():
+                        return w
+                    self._all.discard(w)
+                if len(self._all) + self._pending < self.n_workers:
+                    self._pending += 1
+                    break
+                self._cond.wait()
+        try:
+            return self._spawn()
+        finally:
+            with self._cond:
+                self._pending -= 1
+                self._cond.notify()
 
     def _release(self, w: _Worker) -> None:
-        should_terminate = False
-        with self._lock:
-            if w.execs >= self.recycle_every:
+        retire = False
+        with self._cond:
+            if w.execs >= self.recycle_every or not w.alive() or self._closed:
                 self._all.discard(w)
-                should_terminate = True
-            elif w.alive():
-                self._idle.append(w)
+                retire = True
             else:
-                self._all.discard(w)
-        if should_terminate:
-            self._terminate(w)
+                self._idle.append(w)
+            self._cond.notify()
+        if retire:
+            w.kill()
 
     def _kill(self, w: _Worker) -> None:
-        with self._lock:
+        with self._cond:
             self._all.discard(w)
-        self._terminate(w)
-
-    def _terminate(self, w: _Worker) -> None:
-        """Lock-free teardown of a worker (must NOT be called while holding _lock)."""
-        try:
-            w.conn.close()
-        except Exception:
-            pass
-        if w.proc.is_alive():
-            w.proc.terminate()
-            w.proc.join(timeout=1.0)
-            if w.proc.is_alive():
-                w.proc.kill()
-                w.proc.join(timeout=1.0)
+            self._cond.notify()
+        w.kill()
 
     # -- public API ----------------------------------------------------------
     def run(self, code: str) -> tuple[bool, str]:
         """Execute ``code`` and return ``(ok, stdout_or_error)``.
 
-        Returns ``(False, "SecurityError: ...")`` for forbidden code,
+        ``(False, "SecurityError: ...")`` for forbidden code,
         ``(False, "TimeoutError: ...")`` if execution exceeds ``self.timeout``,
-        and ``(True, truncated_stdout)`` on success.
+        ``(False, "RuntimeError: ...")`` if the code raised, and
+        ``(True, stdout)`` (stripped, truncated to ``max_stdout``) on success.
         """
         ok, msg = sandbox_worker.validate_ast(code)
         if not ok:
@@ -131,20 +197,19 @@ class Sandbox:
 
         w = self._get_worker()
         try:
-            w.conn.send(code)
-            if w.conn.poll(self.timeout):
-                result = w.conn.recv()
-            else:
-                self._kill(w)
-                return False, f"TimeoutError: execution exceeded {int(self.timeout * 1000)}ms"
-        except (EOFError, BrokenPipeError, OSError, ConnectionError):
+            w.send(code)
+            result = w.recv(self.timeout)
+        except (EOFError, BrokenPipeError, OSError, ValueError):
             self._kill(w)
             return False, "ExecutionError: worker died unexpectedly"
+        if result is None:
+            self._kill(w)
+            return False, f"TimeoutError: execution exceeded {int(self.timeout * 1000)}ms"
 
         w.execs += 1
         self._release(w)
-        if isinstance(result, tuple) and len(result) == 2:
-            return result
+        if isinstance(result, list) and len(result) == 2:
+            return bool(result[0]), str(result[1])
         return False, "ExecutionError: malformed worker response"
 
     def run_many(self, codes: list[str]) -> list[tuple[bool, str]]:
@@ -152,9 +217,14 @@ class Sandbox:
         return [self.run(c) for c in codes]
 
     def close(self) -> None:
-        for w in list(self._all):
-            self._kill(w)
-        self._idle.clear()
+        with self._cond:
+            self._closed = True
+            workers = list(self._all)
+            self._all.clear()
+            self._idle.clear()
+            self._cond.notify_all()
+        for w in workers:
+            w.kill()
 
     def __enter__(self) -> "Sandbox":
         return self

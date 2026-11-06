@@ -1,4 +1,4 @@
-# 10-minute cloud smoke config: tiny settings to record step time, tokens/s and
+# 10-minute cloud smoke config (RUN_STAGE=smoke): records step time, tokens/s and
 # peak GPU memory before the main run. NOT run (Mac only).
 model: google/gemma-2-2b
 G: 4
@@ -16,3 +16,7 @@ checkpoint_timer: 300
 chunked_vocab: true
 attn: eager
 dtype: bfloat16
+n_problems: 200
+micro_batch: 4
+generation: batched
+gen_batch: 4

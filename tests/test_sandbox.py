@@ -103,9 +103,53 @@ def test_excessive_output_truncated(sb):
     assert ok and len(text) == 200  # truncated to max_stdout
 
 
-def test_unbounded_print_loop_errors(sb):
-    ok, text = sb.run("for i in range(1000000):\n    print(i)")
-    assert not ok and "OutputError" in text
+def test_large_output_truncated_not_errored(sb):
+    # well over the 8 KB capture buffer, still fast enough to finish in 50 ms:
+    # the spec asks for truncation to 200 chars, not an error
+    ok, text = sb.run("for i in range(3000):\n    print(i)")
+    assert ok and len(text) == 200 and text.startswith("0\n1\n2")
+
+
+def test_unbounded_print_loop_times_out(sb):
+    ok, text = sb.run("for i in range(100000000):\n    print(i)")
+    assert not ok and "TimeoutError" in text
+
+
+def test_pool_is_capped_under_concurrency():
+    s = Sandbox(n_workers=2, timeout=0.050)
+    seen = []
+
+    def worker(tid):
+        for i in range(30):
+            s.run("while True:\n    pass" if i % 10 == 0 else f"print({tid})")
+            seen.append(len(s._all) + s._pending)
+
+    threads = [threading.Thread(target=worker, args=(t,)) for t in range(6)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    s.close()
+    assert max(seen) <= 2
+
+
+def test_worker_never_imports_torch_even_if_parent_did():
+    import subprocess
+    import sys
+
+    code = (
+        "import sys, json; sys.modules['torch'] = object()  # pretend the parent imported torch\n"
+        "from sandbox import Sandbox\n"
+        "s = Sandbox(n_workers=1)\n"
+        "w = next(iter(s._all))\n"
+        "print(w.proc.pid)\n"
+        "s.close()\n"
+    )
+    out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True)
+    assert out.stdout.strip().isdigit()
+    # the worker command line is the stdlib-only script, isolated (-I) and without site (-S)
+    import sandbox
+    assert sandbox._WORKER_PATH.endswith("sandbox_worker.py")
 
 
 def test_worker_reuse_many_execs(sb):

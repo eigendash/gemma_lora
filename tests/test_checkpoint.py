@@ -46,9 +46,43 @@ def test_dual_write(tmp_path):
 
 def test_heartbeat_and_segment(tmp_path):
     b = ck.LocalBucket(str(tmp_path))
-    ck.write_heartbeat(b, "run1", {"step": 5, "tokens_per_s": 10})
-    ck.write_segment(b, "run1", 0, {"start_step": 0, "gpu": "mps"})
-    keys = b.list("runs/run1/hb/")
-    assert any(k.endswith(".json") for k in keys)
+    ck.write_heartbeat(b, "run1", {"step": 5, "segment": 0, "segment_elapsed_s": 7200})
+    ck.write_segment(b, "run1", ck.next_segment_index(b, "run1"), {"start_step": 0, "gpu": "mps"})
+    assert any(k.endswith(".json") for k in b.list("hb/run1/"))  # top-level hb/ prefix (lifecycle)
+    assert ck.next_segment_index(b, "run1") == 1
     seg = b.get("runs/run1/history/segment_0.json")
     assert json.loads(seg)["gpu"] == "mps"
+
+
+def test_accumulated_hours_from_heartbeats(tmp_path):
+    b = ck.LocalBucket(str(tmp_path))
+    for i, (seg, el) in enumerate([(0, 1800), (0, 3600), (1, 900)]):
+        b.put(f"hb/r/{1000 + i}.json", json.dumps({"segment": seg, "segment_elapsed_s": el}).encode())
+    total, per = ck.accumulated_hours(b, "r")
+    assert per == {0: 1.0, 1: 0.25} and abs(total - 1.25) < 1e-9
+
+
+def test_commit_is_create_only(tmp_path):
+    b = ck.LocalBucket(str(tmp_path))
+    assert ck.commit_checkpoint(b, "r", 2, _files(), "cfg", "ds")
+    assert not ck.commit_checkpoint(b, "r", 2, {"state.json": b"different"}, "cfg", "ds")
+    assert ck.verify_checkpoint(b, "r", 2, "cfg", "ds")  # original commit untouched
+
+
+def test_cli_push_pull_roundtrip(tmp_path, monkeypatch):
+    src = tmp_path / "sft"
+    (src / "sub").mkdir(parents=True)
+    (src / "adapter_model.safetensors").write_bytes(b"W" * 10)
+    (src / "sub" / "x.json").write_text("{}")
+    data = tmp_path / "train.jsonl"
+    data.write_text("{}\n")
+    root = str(tmp_path / "bucket")
+    common = ["--kind", "sft", "--run-id", "r", "--backend", "local", "--root", root, "--dataset", str(data)]
+    assert ck.main(["push", "--dir", str(src)] + common) == 0
+    dest = tmp_path / "dest"
+    assert ck.main(["pull", "--dir", str(dest)] + common) == 0
+    assert (dest / "adapter_model.safetensors").read_bytes() == b"W" * 10
+    assert (dest / "sub" / "x.json").read_text() == "{}"
+    # a different dataset must not restore this artifact
+    data.write_text("changed\n")
+    assert ck.main(["pull", "--dir", str(tmp_path / "d2")] + common) == 1
