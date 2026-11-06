@@ -1,0 +1,21 @@
+$ checkpoint.py push --kind sft (stand-in SFT adapter: Qwen sft_coldstart)
+committed: sft step 0 <- /Users/dash/Documents/dev/gemma_lora/outputs/sft_coldstart
+$ RUN_STAGE=grpo bash scripts/launch_anywhere.sh --total-steps 2 ... (Mac dry run, local bucket)
+detected GPU=unknown vram=0MB preset=configs/smoke_cuda.yaml stage=grpo run=dry
+pulled sft step 0 -> outputs/sft_gemma
+step 0 reward 0.025 correct 0.000 exec 0.025 format 0.000 kl 0.0000 gen/train dlogp 0.000135 zero_var 0.00
+  warnings.warn(
+step 1 reward 0.050 correct 0.000 exec 0.050 format 0.000 kl 0.0000 gen/train dlogp 2.6e-05 zero_var 0.00
+run dry done; 2 steps -> outputs/rl/train_log.jsonl
+$ RUN_STAGE=sft (artifact exists in bucket -> pulled, not retrained)
+detected GPU=unknown vram=0MB preset=configs/smoke_cuda.yaml stage=sft run=dry
+pulled sft step 0 -> outputs/sft_gemma
+$ checkpoint.py pull --kind ckpt
+pulled ckpt step 2 -> outputs/rl_latest
+adapter
+state.json
+train_state.pt
+$ cost_report
+segment                      gpu start_step   hours      usd
+      0                      mps          0    0.00     0.01
+total: segments=1 gpu_hours=0.00 usd=0.01

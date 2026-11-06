@@ -1,0 +1,116 @@
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:  29%|██▉       | 115/398 [00:00<00:00, 1110.57it/s]Loading weights:  61%|██████    | 242/398 [00:00<00:00, 1191.25it/s]Loading weights:  95%|█████████▌| 380/398 [00:00<00:00, 1272.27it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 1272.87it/s]
+model=Qwen/Qwen3-4B-Base dtype=float32 attn=eager device=cuda final_logit_softcapping=None
+rollout: code_rounds=1 has_answer=True n_completion=65 n_env=12
+--- BEFORE first <output>
+    ground-truth HF log_softmax: n= 38 max|new-old|=3.052e-05 ratio min=1.0000 max=1.0000
+    train_rl chunked_logprobs  : n= 38 max|new-old|=3.147e-05 ratio min=1.0000 max=1.0000
+    forward_logprobs_chunked   : n= 38 max|new-old|=2.766e-05 ratio min=1.0000 max=1.0000
+--- AFTER  first <output>
+    ground-truth HF log_softmax: n= 15 max|new-old|=1.818e-05 ratio min=1.0000 max=1.0000
+    train_rl chunked_logprobs  : n= 15 max|new-old|=1.83e-05 ratio min=1.0000 max=1.0000
+    forward_logprobs_chunked   : n= 15 max|new-old|=1.83e-05 ratio min=1.0000 max=1.0000
+RATIO≈1 CHECK chunked_logprobs: max|Δlogp|=3.147e-05 (tol 0.001) -> PASS
+RATIO≈1 CHECK forward_logprobs_chunked: max|Δlogp|=2.766e-05 (tol 0.001) -> PASS
+forward_logprobs_chunked vs HF ground truth (same ids, same context): max|Δ|=3.161e-06
+
+real	0m39.758s
+user	0m46.911s
+sys	0m24.254s
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:  11%|█         | 42/398 [00:00<00:00, 408.14it/s]Loading weights:  25%|██▍       | 99/398 [00:00<00:00, 501.96it/s]Loading weights:  39%|███▊      | 154/398 [00:00<00:00, 517.60it/s]Loading weights:  53%|█████▎    | 210/398 [00:00<00:00, 532.89it/s]Loading weights:  67%|██████▋   | 267/398 [00:00<00:00, 544.74it/s]Loading weights:  81%|████████  | 323/398 [00:00<00:00, 545.80it/s]Loading weights:  95%|█████████▌| 379/398 [00:00<00:00, 544.75it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 544.96it/s]
+step 10 loss 0.4744 (3.81 s/step)
+step 20 loss 0.1563 (4.14 s/step)
+step 30 loss 0.1095 (3.96 s/step)
+step 40 loss 0.0990 (3.86 s/step)
+step 50 loss 0.0837 (3.87 s/step)
+/home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/peft/utils/save_and_load.py:313: UserWarning: Could not find a config file in Qwen/Qwen3-4B-Base - will assume that the vocabulary was not modified.
+  warnings.warn(
+step 60 loss 0.0832 (3.81 s/step)
+step 70 loss 0.0938 (3.82 s/step)
+step 80 loss 0.0824 (3.80 s/step)
+step 90 loss 0.0719 (3.77 s/step)
+step 100 loss 0.0762 (3.72 s/step)
+step 110 loss 0.0733 (3.74 s/step)
+step 120 loss 0.0501 (3.75 s/step)
+step 130 loss 0.0486 (3.75 s/step)
+step 140 loss 0.0732 (3.81 s/step)
+step 150 loss 0.0665 (3.78 s/step)
+step 160 loss 0.0644 (3.75 s/step)
+step 170 loss 0.0948 (3.71 s/step)
+step 180 loss 0.0718 (3.67 s/step)
+step 190 loss 0.0597 (3.64 s/step)
+step 200 loss 0.0814 (3.60 s/step)
+step 210 loss 0.0769 (3.60 s/step)
+step 220 loss 0.0879 (3.54 s/step)
+step 230 loss 0.0682 (3.50 s/step)
+step 240 loss 0.0974 (3.44 s/step)
+step 250 loss 0.0805 (3.40 s/step)
+step 260 loss 0.0573 (3.36 s/step)
+step 270 loss 0.0772 (3.30 s/step)
+step 280 loss 0.0755 (3.26 s/step)
+step 290 loss 0.0701 (3.22 s/step)
+step 300 loss 0.0611 (3.20 s/step)
+step 310 loss 0.0711 (3.18 s/step)
+step 320 loss 0.0794 (3.14 s/step)
+step 330 loss 0.0919 (3.10 s/step)
+step 340 loss 0.0688 (3.08 s/step)
+step 350 loss 0.0875 (3.06 s/step)
+step 360 loss 0.0554 (3.04 s/step)
+step 370 loss 0.0555 (3.03 s/step)
+step 380 loss 0.0593 (3.02 s/step)
+step 390 loss 0.0714 (2.99 s/step)
+step 400 loss 0.0626 (2.97 s/step)
+step 410 loss 0.0884 (2.95 s/step)
+step 420 loss 0.0678 (2.93 s/step)
+step 430 loss 0.0703 (2.92 s/step)
+step 440 loss 0.0701 (2.91 s/step)
+step 450 loss 0.0648 (2.90 s/step)
+step 460 loss 0.0605 (2.89 s/step)
+step 470 loss 0.0601 (2.88 s/step)
+step 480 loss 0.0729 (2.86 s/step)
+step 490 loss 0.0641 (2.85 s/step)
+step 500 loss 0.0810 (2.84 s/step)
+done 500 steps | final loss 0.0268 | mean 0.0834
+saved adapter -> outputs/sft_qwen3_v3b
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 21287.63it/s]
+{
+  "config": {
+    "model": "Qwen/Qwen3-4B-Base",
+    "init_adapter": "outputs/sft_qwen3_v3b",
+    "adapter": "",
+    "eval_file": "data/eval.jsonl",
+    "n_eval": 48,
+    "max_new_tokens": 384,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.0,
+    "dtype": "bfloat16",
+    "attn": "eager",
+    "device": "cuda",
+    "seed": 0,
+    "fewshot": false,
+    "generation": "batched",
+    "batch_size": 32,
+    "control": "real",
+    "out": "runs/E7b_eval_sft_v3_qwen3.json",
+    "dump": "runs/E7b_eval_sft_v3_qwen3.jsonl"
+  },
+  "metrics": {
+    "n": 48,
+    "pass@1": 0.10416666666666667,
+    "format_compliance": 0.16666666666666666,
+    "length_mean": 292.2916666666667,
+    "length_p50": 316,
+    "length_p95": 330,
+    "length_max": 332,
+    "per_tier_pass@1": {
+      "easy": 0.125,
+      "hard": 0.0625,
+      "medium": 0.125
+    },
+    "mean_code_rounds": 1.8958333333333333,
+    "hallucination_rate": 0.0,
+    "n_failing": 43,
+    "self_correction_correct": 0.023255813953488372,
+    "self_correction_backtrack": 1.0
+  }
+}

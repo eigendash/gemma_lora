@@ -1,0 +1,12 @@
+$ bash -c rc=0; for f in sandbox.py rollout.py rewards.py sft_coldstart.py train_rl.py eval.py HANDOFF.md REPORT.md scripts/setup_cuda.sh scripts/run_all.sh; do if [ -e "$f" ]; then echo "present $f"; else echo "MISSING $f"; rc=1; fi; done; ls configs/*.y*ml >/dev/null 2>&1 && echo "present configs/*.yaml" || { echo "MISSING configs/*.yaml"; rc=1; }; exit $rc
+present sandbox.py
+present rollout.py
+present rewards.py
+present sft_coldstart.py
+present train_rl.py
+present eval.py
+present HANDOFF.md
+present REPORT.md
+present scripts/setup_cuda.sh
+present scripts/run_all.sh
+present configs/*.yaml

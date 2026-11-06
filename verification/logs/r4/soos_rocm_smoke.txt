@@ -1,0 +1,4 @@
+device: Radeon 8060S Graphics | bf16 supported: True
+bf16 fwd+bwd ok: loss 10.461 in 0.84s, grad finite: True
+chunked+softcap vs full max|d|: 1.9073486328125e-06
+batched rollout ok: [32, 32, 32, 32] tokens in 0.15s

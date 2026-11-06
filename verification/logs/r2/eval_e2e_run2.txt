@@ -1,0 +1,15 @@
+{
+  "n": 6,
+  "pass@1": 0.0,
+  "format_compliance": 0.16666666666666666,
+  "length_mean": 81.16666666666667,
+  "length_p50": 84,
+  "length_p95": 96,
+  "length_max": 96,
+  "per_tier_pass@1": {
+    "easy": 0.0
+  },
+  "n_failing": 0,
+  "self_correction_correct": 0.0,
+  "self_correction_backtrack": 0.0
+}

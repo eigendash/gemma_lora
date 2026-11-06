@@ -1,0 +1,40 @@
+{
+  "config": {
+    "model": "Qwen/Qwen2.5-0.5B",
+    "init_adapter": "",
+    "adapter": "",
+    "eval_file": "data/eval.jsonl",
+    "n_eval": 24,
+    "max_new_tokens": 320,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.0,
+    "dtype": "float32",
+    "attn": "eager",
+    "device": "mps",
+    "seed": 0,
+    "fewshot": true,
+    "control": "real",
+    "out": "verification/logs/r4/qwen_base_fewshot.json",
+    "dump": "verification/logs/r4/qwen_base_fewshot.jsonl"
+  },
+  "metrics": {
+    "n": 24,
+    "pass@1": 0.0,
+    "format_compliance": 1.0,
+    "length_mean": 77.58333333333333,
+    "length_p50": 79,
+    "length_p95": 91,
+    "length_max": 91,
+    "per_tier_pass@1": {
+      "easy": 0.0,
+      "hard": 0.0,
+      "medium": 0.0
+    },
+    "mean_code_rounds": 1.0,
+    "hallucination_rate": 0.0,
+    "n_failing": 24,
+    "self_correction_correct": 0.0,
+    "self_correction_backtrack": 0.0
+  }
+}

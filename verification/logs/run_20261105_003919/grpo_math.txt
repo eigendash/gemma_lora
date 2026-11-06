@@ -1,0 +1,23 @@
+$ /Users/dash/Documents/dev/gemma_lora/.venv/bin/python -m pytest -q -s -p no:cacheprovider -rA verification/test_grpo_math.py
+W1105 00:41:11.689000 69387 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+.......
+KL(p||ref)=0.3878 |grad k3|=0.3947 |grad KL(ref||p)|=0.3954 cos(k3, KL(ref||p))=1.0000 cos(k3, KL(p||ref))=0.9562 min 8-token est=0.0712
+....s
+pass rates easy .6 / medium .1 / hard 0 -> sampling share {'easy': 0.61235, 'medium': 0.3565, 'hard': 0.03115}
+.
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED verification/test_grpo_math.py::test_group_advantage_matches_formula[rewards0]
+PASSED verification/test_grpo_math.py::test_group_advantage_matches_formula[rewards1]
+PASSED verification/test_grpo_math.py::test_group_advantage_matches_formula[rewards2]
+PASSED verification/test_grpo_math.py::test_zero_variance_group_flagged
+PASSED verification/test_grpo_math.py::test_collate_alignment_independent
+PASSED verification/test_grpo_math.py::test_chunked_logprobs_equals_log_softmax
+PASSED verification/test_grpo_math.py::test_logprobs_from_hidden_equals_full_no_softcap
+PASSED verification/test_grpo_math.py::test_kl_estimator_nonnegative_and_has_gradient
+PASSED verification/test_grpo_math.py::test_clipped_surrogate_sign_and_clipping
+PASSED verification/test_grpo_math.py::test_softcap_chunked_matches_capped_log_softmax_and_grads
+PASSED verification/test_grpo_math.py::test_config_precedence_cli_over_yaml
+PASSED verification/test_grpo_math.py::test_curriculum_shifts_toward_easier_when_hard_unsolved
+SKIPPED [1] verification/test_grpo_math.py:148: needs Qwen weights
+12 passed, 1 skipped in 1.60s

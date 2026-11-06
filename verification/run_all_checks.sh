@@ -60,6 +60,23 @@ run no_build_artifacts_in_history bash -c "! git log --all --name-only --format=
 # 6. spec deliverables present (fails until PART 1 phases 2-7 exist)
 run deliverables_present bash -c 'rc=0; for f in sandbox.py rollout.py rewards.py sft_coldstart.py train_rl.py eval.py HANDOFF.md REPORT.md scripts/setup_cuda.sh scripts/run_all.sh; do if [ -e "$f" ]; then echo "present $f"; else echo "MISSING $f"; rc=1; fi; done; ls configs/*.y*ml >/dev/null 2>&1 && echo "present configs/*.yaml" || { echo "MISSING configs/*.yaml"; rc=1; }; exit $rc'
 
+# 6b. Round-2 module audits (independent; project code is never the oracle)
+run sandbox_adversarial "$PY" -m pytest -q -s -p no:cacheprovider verification/test_sandbox_adversarial.py
+run sandbox_stress "$PY" verification/stress_sandbox_independent.py --n 10000
+run rollout_independent "$PY" -m pytest -q -p no:cacheprovider -rA verification/test_rollout_independent.py
+run grpo_math "$PY" -m pytest -q -s -p no:cacheprovider -rA verification/test_grpo_math.py
+run reward_hacks "$PY" -m pytest -q -s -p no:cacheprovider verification/test_reward_hacks.py
+run eval_metrics "$PY" -m pytest -q -s -p no:cacheprovider verification/test_eval_metrics.py
+mkdir -p data && [ -f data/train.jsonl ] || "$PY" data_generator.py --seed 0 >/dev/null
+run sft_traces "$PY" verification/check_sft_traces.py --tokenizer Qwen/Qwen2.5-0.5B
+run publish_tarball_excludes_env bash -c 'grep -q "git archive" scripts/publish_code.sh && ! grep -qE "tar c[a-z]*f .*\.$" scripts/publish_code.sh && git archive --format=tar --prefix=repo/ HEAD | tar t > "$0/ls.txt" && ! grep -qE "(^|/)\.env$" "$0/ls.txt" && ! grep -qv "^repo/" "$0/ls.txt" && echo "git archive: $(wc -l < "$0/ls.txt") entries, all under repo/, no .env"' "$TMP"
+run launch_applies_preset bash -c 'grep -q -- "--config" scripts/launch_anywhere.sh'
+# model-dependent (needs cached weights; gemma needs HF_TOKEN): RUN_MODEL_CHECKS=1
+if [ "${RUN_MODEL_CHECKS:-0}" = "1" ]; then
+  run logprob_consistency_qwen "$PY" verification/check_logprob_consistency.py --model Qwen/Qwen2.5-0.5B
+  run logprob_consistency_gemma "$PY" verification/check_logprob_consistency.py --model google/gemma-2-2b --attn eager
+fi
+
 # 7. shell scripts lint (only if present)
 if ls scripts/*.sh >/dev/null 2>&1; then
   run bash_n bash -c 'for f in scripts/*.sh; do bash -n "$f" || exit 1; done'

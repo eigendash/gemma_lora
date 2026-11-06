@@ -1,0 +1,27 @@
+W1104 10:34:29.724000 47971 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/288 [00:00<?, ?it/s]Loading weights:   0%|          | 1/288 [00:03<17:24,  3.64s/it]Loading weights: 100%|██████████| 288/288 [00:03<00:00, 79.09it/s]
+step 10 loss 0.3245
+step 20 loss 0.1256
+step 30 loss 0.0928
+step 40 loss 0.0930
+step 50 loss 0.1199
+step 60 loss 0.0965
+step 70 loss 0.0871
+step 80 loss 0.0977
+step 90 loss 0.0684
+step 100 loss 0.0878
+step 110 loss 0.0854
+step 120 loss 0.0686
+step 130 loss 0.0670
+step 140 loss 0.0657
+step 150 loss 0.0858
+step 160 loss 0.0676
+step 170 loss 0.0886
+step 180 loss 0.0671
+step 190 loss 0.0974
+step 200 loss 0.1052
+step 210 loss 0.0765
+step 220 loss 0.0828
+ -u sft_coldstart.py --model google/gemma-2-2b --n-traces 250 --epochs 1       41.45s user 2873.05s system 14% cpu 5:36:45.83 total
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/multiprocessing/resource_tracker.py:475: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-wsijsds7'}
+  warnings.warn(

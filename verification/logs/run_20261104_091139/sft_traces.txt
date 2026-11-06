@@ -1,0 +1,282 @@
+$ /tmp/scratch/cleanroom2/.venv/bin/python verification/check_sft_traces.py --tokenizer Qwen/Qwen2.5-0.5B
+checked 200 traces; failures: 0
+
+----- trace 34: nums=[25, 6, 5, 6, 5, 4] target=731
+<think>
+Try to reach 731. First attempt: (6+(5*(5+(6+(25*4))))).
+</think>
+<python>
+res = (6+(5*(5+(6+(25*4)))))
+print(res == 731, res)
+</python>
+
+<output>
+False 561
+</output>
+<think>
+False 561; that is wrong. The right expression is (6+(5+(6*(4*(25+5))))) = 731.
+</think>
+<python>
+res = (6+(5+(6*(4*(25+5)))))
+print(res == 731, res)
+</python>
+
+<output>
+True 731
+</output>
+<answer>
+(6+(5+(6*(4*(25+5)))))
+</answer>
+
+
+----- trace 145: nums=[1, 1, 4, 3] target=18
+<think>
+Try to reach 18. First attempt: (4+(3-(1+1))).
+</think>
+<python>
+res = (4+(3-(1+1)))
+print(res == 18, res)
+</python>
+
+<output>
+False 5
+</output>
+<think>
+False 5; that is wrong. The right expression is (3*(1+(1+4))) = 18.
+</think>
+<python>
+res = (3*(1+(1+4)))
+print(res == 18, res)
+</python>
+
+<output>
+True 18
+</output>
+<answer>
+(3*(1+(1+4)))
+</answer>
+
+
+----- trace 195: nums=[10, 10, 2, 50, 8, 100] target=185
+<think>
+Try to reach 185. First attempt: ((10+(10+100))/(50+(2+8))).
+</think>
+<python>
+res = ((10+(10+100))/(50+(2+8)))
+print(res == 185, res)
+</python>
+
+<output>
+False 2.0
+</output>
+<think>
+False 2.0; that is wrong. The right expression is ((10+(2*100))-(50/(10-8))) = 185.
+</think>
+<python>
+res = ((10+(2*100))-(50/(10-8)))
+print(res == 185, res)
+</python>
+
+<output>
+True 185.0
+</output>
+<answer>
+((10+(2*100))-(50/(10-8)))
+</answer>
+
+
+----- trace 16: nums=[1, 10, 9, 3] target=39
+<think>
+Try to reach 39. First attempt: ((9*3)*(1+10)).
+</think>
+<python>
+res = ((9*3)*(1+10))
+print(res == 39, res)
+</python>
+
+<output>
+False 297
+</output>
+<think>
+False 297; that is wrong. The right expression is (9+(3*(1*10))) = 39.
+</think>
+<python>
+res = (9+(3*(1*10)))
+print(res == 39, res)
+</python>
+
+<output>
+True 39
+</output>
+<answer>
+(9+(3*(1*10)))
+</answer>
+
+
+----- trace 65: nums=[9, 2, 25, 5, 4, 3] target=777
+<think>
+Try to reach 777. First attempt: (2+(4+((5-3)+(9+25)))).
+</think>
+<python>
+res = (2+(4+((5-3)+(9+25))))
+print(res == 777, res)
+</python>
+
+<output>
+False 42
+</output>
+<think>
+False 42; that is wrong. The right expression is ((25*(5*(2+4)))+(9*3)) = 777.
+</think>
+<python>
+res = ((25*(5*(2+4)))+(9*3))
+print(res == 777, res)
+</python>
+
+<output>
+True 777
+</output>
+<answer>
+((25*(5*(2+4)))+(9*3))
+</answer>
+
+
+----- trace 30: nums=[4, 8, 8, 25, 3] target=331
+<think>
+Try to reach 331. First attempt: ((8*25)+(3+(4+8))).
+</think>
+<python>
+res = ((8*25)+(3+(4+8)))
+print(res == 331, res)
+</python>
+
+<output>
+False 215
+</output>
+<think>
+False 215; that is wrong. The right expression is ((25*3)+(4*(8*8))) = 331.
+</think>
+<python>
+res = ((25*3)+(4*(8*8)))
+print(res == 331, res)
+</python>
+
+<output>
+True 331
+</output>
+<answer>
+((25*3)+(4*(8*8)))
+</answer>
+
+
+----- trace 126: nums=[1, 4, 75] target=15
+<think>
+Try to reach 15. First attempt: (4*(1+75)).
+</think>
+<python>
+res = (4*(1+75))
+print(res == 15, res)
+</python>
+
+<output>
+False 304
+</output>
+<think>
+False 304; that is wrong. The right expression is (75/(1+4)) = 15.
+</think>
+<python>
+res = (75/(1+4))
+print(res == 15, res)
+</python>
+
+<output>
+True 15.0
+</output>
+<answer>
+(75/(1+4))
+</answer>
+
+
+----- trace 194: nums=[1, 10, 10, 4] target=25
+<think>
+Try to reach 25. First attempt: ((10*4)-(1*10)).
+</think>
+<python>
+res = ((10*4)-(1*10))
+print(res == 25, res)
+</python>
+
+<output>
+False 30
+</output>
+<think>
+False 30; that is wrong. The right expression is ((10+4)+(1+10)) = 25.
+</think>
+<python>
+res = ((10+4)+(1+10))
+print(res == 25, res)
+</python>
+
+<output>
+True 25
+</output>
+<answer>
+((10+4)+(1+10))
+</answer>
+
+
+----- trace 115: nums=[9, 75, 1] target=85
+<think>
+Try to reach 85. First attempt: (9*(75-1)).
+</think>
+<python>
+res = (9*(75-1))
+print(res == 85, res)
+</python>
+
+<output>
+False 666
+</output>
+<think>
+False 666; that is wrong. The right expression is (9+(75+1)) = 85.
+</think>
+<python>
+res = (9+(75+1))
+print(res == 85, res)
+</python>
+
+<output>
+True 85
+</output>
+<answer>
+(9+(75+1))
+</answer>
+
+
+----- trace 120: nums=[25, 6, 10] target=85
+<think>
+Try to reach 85. First attempt: (10+(25*6)).
+</think>
+<python>
+res = (10+(25*6))
+print(res == 85, res)
+</python>
+
+<output>
+False 160
+</output>
+<think>
+False 160; that is wrong. The right expression is (25+(6*10)) = 85.
+</think>
+<python>
+res = (25+(6*10))
+print(res == 85, res)
+</python>
+
+<output>
+True 85
+</output>
+<answer>
+(25+(6*10))
+</answer>
+

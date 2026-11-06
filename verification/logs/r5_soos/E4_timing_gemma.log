@@ -1,0 +1,90 @@
+Loading weights:   0%|          | 0/288 [00:00<?, ?it/s]Loading weights:  13%|█▎        | 38/288 [00:00<00:00, 379.75it/s]Loading weights:  39%|███▉      | 113/288 [00:00<00:00, 581.16it/s]Loading weights:  62%|██████▏   | 179/288 [00:00<00:00, 605.11it/s]Loading weights:  84%|████████▎ | 241/288 [00:00<00:00, 587.58it/s]Loading weights: 100%|██████████| 288/288 [00:00<00:00, 580.56it/s]
+{
+  "config": {
+    "model": "google/gemma-2-2b",
+    "init_adapter": "",
+    "adapter": "",
+    "eval_file": "data/eval.jsonl",
+    "n_eval": 16,
+    "max_new_tokens": 256,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.0,
+    "dtype": "bfloat16",
+    "attn": "eager",
+    "device": "cuda",
+    "seed": 0,
+    "fewshot": true,
+    "generation": "sequential",
+    "batch_size": 32,
+    "control": "real",
+    "out": "runs/E4_seq.json",
+    "dump": ""
+  },
+  "metrics": {
+    "n": 16,
+    "pass@1": 0.0,
+    "format_compliance": 0.5,
+    "length_mean": 203.875,
+    "length_p50": 204,
+    "length_p95": 215,
+    "length_max": 215,
+    "per_tier_pass@1": {
+      "easy": 0.0,
+      "hard": 0.0,
+      "medium": 0.0
+    },
+    "mean_code_rounds": 2.0,
+    "hallucination_rate": 0.0,
+    "n_failing": 16,
+    "self_correction_correct": 0.0,
+    "self_correction_backtrack": 1.0
+  }
+}
+
+real	24m42.058s
+user	28m36.817s
+sys	19m43.593s
+Loading weights:   0%|          | 0/288 [00:00<?, ?it/s]Loading weights:   0%|          | 1/288 [00:02<11:06,  2.32s/it]Loading weights:  55%|█████▍    | 157/288 [00:02<00:01, 86.57it/s]Loading weights:  72%|███████▏  | 207/288 [00:02<00:00, 91.61it/s]Loading weights:  83%|████████▎ | 239/288 [00:03<00:00, 91.03it/s]Loading weights:  91%|█████████ | 262/288 [00:03<00:00, 92.58it/s]Loading weights:  98%|█████████▊| 281/288 [00:03<00:00, 90.51it/s]Loading weights: 100%|██████████| 288/288 [00:03<00:00, 75.69it/s]
+{
+  "config": {
+    "model": "google/gemma-2-2b",
+    "init_adapter": "",
+    "adapter": "",
+    "eval_file": "data/eval.jsonl",
+    "n_eval": 16,
+    "max_new_tokens": 256,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.0,
+    "dtype": "bfloat16",
+    "attn": "eager",
+    "device": "cuda",
+    "seed": 0,
+    "fewshot": true,
+    "generation": "batched",
+    "batch_size": 16,
+    "control": "real",
+    "out": "runs/E4_bat.json",
+    "dump": ""
+  },
+  "metrics": {
+    "n": 16,
+    "pass@1": 0.0,
+    "format_compliance": 0.4375,
+    "length_mean": 204.8125,
+    "length_p50": 204,
+    "length_p95": 220,
+    "length_max": 220,
+    "per_tier_pass@1": {
+      "easy": 0.0,
+      "hard": 0.0,
+      "medium": 0.0
+    },
+    "mean_code_rounds": 2.0,
+    "hallucination_rate": 0.0,
+    "n_failing": 16,
+    "self_correction_correct": 0.0,
+    "self_correction_backtrack": 1.0
+  }
+}

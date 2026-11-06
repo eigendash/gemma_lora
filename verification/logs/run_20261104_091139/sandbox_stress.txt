@@ -1,0 +1,25 @@
+$ /tmp/scratch/cleanroom2/.venv/bin/python verification/stress_sandbox_independent.py --n 10000
+latency over 1000 trivial runs: p50=0.055ms p95=0.065ms p99=0.083ms max=0.258ms
+[PASS] latency p99 < 5ms 
+concurrency: 8 threads x 150 calls (+timeouts) in 0.9s; errors=0; workers in pool after=4 (configured 4, alive 4)
+[PASS] no cross-talk under threads []
+leak: 10000 mixed execs (100 timeouts) in 8.4s
+  parent RSS MB first/last/max: 23.0/26.0/26.0
+  workers RSS MB first/last/max: 24.9/12.4/24.9
+  live child processes sampled: min=0 max=2
+[PASS] parent RSS flat (<+30MB) 
+[PASS] worker count bounded max children 2
+[PASS] no orphan workers after close 0 left
+memory bomb 'x = [0] * 30000000\nprint(len(x))'        -> True 30000000 33ms | peak child RSS 241 MB
+[PASS] memory bomb bounded <1GB: x = [0] * 30000000 241MB
+memory bomb 'x = [0] * 1000000000'                     -> False TimeoutError: execution exceeded 50ms 71ms | peak child RSS 990 MB
+[PASS] memory bomb bounded <1GB: x = [0] * 1000000000 990MB
+memory bomb 'x = (0,) * 300000000'                     -> False TimeoutError: execution exceeded 50ms 71ms | peak child RSS 952 MB
+[PASS] memory bomb bounded <1GB: x = (0,) * 300000000 952MB
+WORKER 45828 rss_mb=12 libtorch_mapped=False
+WORKER 45829 rss_mb=12 libtorch_mapped=False
+POOL_INIT_S 0.04
+RUN (True, '7')
+[PASS] worker does not load torch when parent __main__ imports torch 
+[PASS] first call after pool init returns its own result 
+FAILED: none

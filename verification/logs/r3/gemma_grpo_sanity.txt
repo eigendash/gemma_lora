@@ -1,0 +1,8 @@
+W1104 08:55:22.248000 44384 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/288 [00:00<?, ?it/s]Loading weights: 100%|██████████| 288/288 [00:00<00:00, 7795.75it/s]
+step 0 reward 0.075 correct 0.000 exec 0.075 format 0.000 kl 0.0000 gen/train dlogp 1.88e-05 zero_var 0.00
+step 1 reward 0.100 correct 0.000 exec 0.100 format 0.000 kl nan gen/train dlogp nan zero_var 1.00
+/tmp/scratch/cleanroom2/.venv/lib/python3.14/site-packages/peft/utils/save_and_load.py:313: UserWarning: Could not find a config file in google/gemma-2-2b - will assume that the vocabulary was not modified.
+  warnings.warn(
+run rl-1793750129 done; 2 steps -> /tmp/scratch/rlG/train_log.jsonl
+zsh -c   16.49s user 12.68s system 30% cpu 1:37.16 total

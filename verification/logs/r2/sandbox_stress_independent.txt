@@ -1,0 +1,25 @@
+latency over 1000 trivial runs: p50=0.061ms p95=0.071ms p99=0.088ms max=0.300ms
+[PASS] latency p99 < 5ms 
+concurrency: 8 threads x 150 calls (+timeouts) in 2.2s; errors=0; workers in pool after=8 (configured 4, alive 8)
+[PASS] no cross-talk under threads []
+leak: 10000 mixed execs (100 timeouts) in 9.4s
+  parent RSS MB first/last/max: 22.7/25.4/25.4
+  workers RSS MB first/last/max: 54.7/34.9/54.7
+  live child processes sampled: min=1 max=3
+[PASS] parent RSS flat (<+30MB) 
+[PASS] worker count bounded max children 3
+[FAIL] no orphan workers after close 1 left
+memory bomb 'x = [0] * 30000000\nprint(len(x))'        -> True 30000000 32ms | peak child RSS 245 MB
+[PASS] memory bomb bounded <1GB: x = [0] * 30000000 245MB
+memory bomb 'x = [0] * 1000000000'                     -> False TimeoutError: execution exceeded 50ms 56ms | peak child RSS 840 MB
+[PASS] memory bomb bounded <1GB: x = [0] * 1000000000 840MB
+memory bomb 'x = (0,) * 300000000'                     -> False TimeoutError: execution exceeded 50ms 55ms | peak child RSS 825 MB
+[PASS] memory bomb bounded <1GB: x = (0,) * 300000000 825MB
+WORKER 42440 rss_mb=359 libtorch_mapped=True
+WORKER 42441 rss_mb=363 libtorch_mapped=True
+POOL_INIT_S 2.87
+RUN (True, '7')
+[FAIL] worker does not load torch when parent __main__ imports torch 
+[PASS] first call after pool init returns its own result 
+FAILED: ['no orphan workers after close', 'worker does not load torch when parent __main__ imports torch']
+PYTHONPATH=$CR .venv/bin/python verification/stress_sandbox_independent.py --  18.40s user 2.42s system 122% cpu 16.952 total

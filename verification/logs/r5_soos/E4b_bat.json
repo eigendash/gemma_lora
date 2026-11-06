@@ -1,0 +1,42 @@
+{
+  "config": {
+    "model": "google/gemma-2-2b",
+    "init_adapter": "",
+    "adapter": "",
+    "eval_file": "data/eval.jsonl",
+    "n_eval": 16,
+    "max_new_tokens": 256,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.0,
+    "dtype": "bfloat16",
+    "attn": "eager",
+    "device": "cuda",
+    "seed": 0,
+    "fewshot": true,
+    "generation": "batched",
+    "batch_size": 16,
+    "control": "real",
+    "out": "runs/E4b_bat.json",
+    "dump": ""
+  },
+  "metrics": {
+    "n": 16,
+    "pass@1": 0.0,
+    "format_compliance": 0.5,
+    "length_mean": 203.125,
+    "length_p50": 204,
+    "length_p95": 214,
+    "length_max": 214,
+    "per_tier_pass@1": {
+      "easy": 0.0,
+      "hard": 0.0,
+      "medium": 0.0
+    },
+    "mean_code_rounds": 2.0,
+    "hallucination_rate": 0.0,
+    "n_failing": 16,
+    "self_correction_correct": 0.0,
+    "self_correction_backtrack": 1.0
+  }
+}

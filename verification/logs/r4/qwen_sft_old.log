@@ -1,0 +1,43 @@
+W1104 10:08:35.651000 46659 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 4317.53it/s]
+{
+  "config": {
+    "model": "Qwen/Qwen2.5-0.5B",
+    "init_adapter": "outputs/sft_coldstart",
+    "adapter": "",
+    "eval_file": "data/eval.jsonl",
+    "n_eval": 24,
+    "max_new_tokens": 320,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.0,
+    "dtype": "float32",
+    "attn": "eager",
+    "device": "mps",
+    "seed": 0,
+    "fewshot": false,
+    "control": "real",
+    "out": "verification/logs/r4/qwen_sft_old.json",
+    "dump": "verification/logs/r4/qwen_sft_old.jsonl"
+  },
+  "metrics": {
+    "n": 24,
+    "pass@1": 0.0,
+    "format_compliance": 1.0,
+    "length_mean": 107.75,
+    "length_p50": 107,
+    "length_p95": 115,
+    "length_max": 130,
+    "per_tier_pass@1": {
+      "easy": 0.0,
+      "hard": 0.0,
+      "medium": 0.0
+    },
+    "mean_code_rounds": 2.0,
+    "hallucination_rate": 0.0,
+    "n_failing": 24,
+    "self_correction_correct": 0.0,
+    "self_correction_backtrack": 0.0
+  }
+}
+$CR/.venv/bin/python eval.py --model Qwen/Qwen2.5-0.5B ${=a} --n-eval 24  320  17.52s user 2.98s system 44% cpu 46.303 total

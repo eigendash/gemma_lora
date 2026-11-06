@@ -1,0 +1,7 @@
+$ /Users/dash/Documents/dev/gemma_lora/.venv/bin/python -m pytest -q -s -p no:cacheprovider verification/test_eval_metrics.py
+
+ {'n': 5, 'pass@1': 0.4, 'format_compliance': 0.6, 'length_mean': 40.0, 'length_p50': 30, 'length_p95': 100, 'length_max': 100, 'per_tier_pass@1': {'easy': 0.5, 'hard': 0.3333333333333333}, 'mean_code_rounds': 0.0, 'hallucination_rate': 0.0, 'n_failing': 0, 'self_correction_correct': 0.0, 'self_correction_backtrack': 0.0}
+.
+ {'n': 1, 'pass@1': 1.0, 'format_compliance': 1.0, 'length_mean': 1.0, 'length_p50': 1, 'length_p95': 1, 'length_max': 1, 'per_tier_pass@1': {'easy': 1.0}, 'mean_code_rounds': 0.0, 'hallucination_rate': 0.0, 'n_failing': 1, 'self_correction_correct': 1.0, 'self_correction_backtrack': 1.0}
+..
+3 passed in 0.43s

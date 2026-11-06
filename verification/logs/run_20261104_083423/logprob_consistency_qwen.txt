@@ -1,0 +1,16 @@
+$ /tmp/scratch/cleanroom2/.venv/bin/python verification/check_logprob_consistency.py --model Qwen/Qwen2.5-0.5B
+W1104 08:36:08.660000 43252 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 3951.07it/s]
+model=Qwen/Qwen2.5-0.5B dtype=float32 attn=eager device=mps final_logit_softcapping=None
+rollout: code_rounds=1 has_answer=True n_completion=67 n_env=12
+--- BEFORE first <output>
+    ground-truth HF log_softmax: n= 40 max|new-old|=2.003e-05 ratio min=1.0000 max=1.0000
+    train_rl chunked_logprobs  : n= 40 max|new-old|=1.907e-05 ratio min=1.0000 max=1.0000
+    forward_logprobs_chunked   : n= 40 max|new-old|=2.281e-05 ratio min=1.0000 max=1.0000
+--- AFTER  first <output>
+    ground-truth HF log_softmax: n= 15 max|new-old|=0.7122 ratio min=0.6811 max=2.0384
+    train_rl chunked_logprobs  : n= 15 max|new-old|=0.7122 ratio min=0.6811 max=2.0384
+    forward_logprobs_chunked   : n= 15 max|new-old|=0.7122 ratio min=0.6811 max=2.0384
+RATIO≈1 CHECK chunked_logprobs: max|Δlogp|=0.7122 (tol 0.001) -> FAIL
+RATIO≈1 CHECK forward_logprobs_chunked: max|Δlogp|=0.7122 (tol 0.001) -> FAIL
+forward_logprobs_chunked vs HF ground truth (same ids, same context): max|Δ|=2.539e-05

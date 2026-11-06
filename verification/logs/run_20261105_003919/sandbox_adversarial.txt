@@ -1,0 +1,111 @@
+$ /Users/dash/Documents/dev/gemma_lora/.venv/bin/python -m pytest -q -s -p no:cacheprovider verification/test_sandbox_adversarial.py
+
+__import__         ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+assert             ok=False     0.0ms  'SecurityError: forbidden syntax: Assert'
+.
+async              ok=False     0.0ms  'SecurityError: forbidden syntax: AsyncFunctionDef'
+.
+attribute          ok=False     0.0ms  'SecurityError: forbidden syntax: Attribute'
+.
+builtins_name      ok=True      0.2ms  "{'print': <built-in function print>, 'range': <class 'range'>, 'len': <built-in function l"
+.
+bytes              ok=False     0.0ms  'SecurityError: only integer/bool literals are allowed'
+.
+class              ok=False     0.0ms  'SecurityError: forbidden syntax: ClassDef'
+.
+decorator          ok=False     0.0ms  'SecurityError: forbidden syntax: FunctionDef'
+.
+deep_parens_10k    ok=False     0.0ms  'SecurityError: code too long (>4096 chars)'
+.
+deep_parens_2k     ok=False     0.1ms  'SecurityError: syntax error: too many nested parentheses'
+.
+def                ok=False     0.0ms  'SecurityError: forbidden syntax: FunctionDef'
+.
+del                ok=False     0.0ms  'SecurityError: forbidden syntax: Delete'
+.
+dict               ok=False     0.0ms  'SecurityError: forbidden syntax: Dict'
+.
+dir                ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+dunder_bases       ok=False     0.0ms  'SecurityError: forbidden syntax: Attribute'
+.
+eval               ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+exec               ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+float              ok=False     0.0ms  'SecurityError: only integer/bool literals are allowed'
+.
+from_import        ok=False     0.0ms  'SecurityError: forbidden syntax: ImportFrom'
+.
+fstring            ok=False     0.0ms  'SecurityError: forbidden syntax: JoinedStr'
+.
+genexp             ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+getattr            ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+global             ok=False     0.0ms  'SecurityError: forbidden syntax: Global'
+.
+globals            ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+huge_int_literal   ok=False     0.0ms  'SecurityError: integer literal too large'
+.
+import             ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+kw_file            ok=False     0.0ms  'SecurityError: forbidden syntax: keyword'
+.
+kw_sep             ok=False     0.0ms  'SecurityError: forbidden syntax: keyword'
+.
+lambda             ok=False     0.0ms  'SecurityError: forbidden syntax: Lambda'
+.
+listcomp           ok=False     0.0ms  'SecurityError: forbidden syntax: ListComp'
+.
+long_expr          ok=False     0.0ms  'SecurityError: code too long (>4096 chars)'
+.
+one_mb_source      ok=False     0.0ms  'SecurityError: code too long (>4096 chars)'
+.
+open               ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+pow                ok=False     0.0ms  'SecurityError: forbidden syntax: Pow'
+.
+print_obj          ok=True      0.1ms  '<built-in function print>'
+.
+print_str_bomb     ok=False     0.0ms  'SecurityError: only integer/bool literals are allowed'
+.
+raise              ok=False     0.0ms  'SecurityError: forbidden syntax: Raise'
+.
+set                ok=False     0.0ms  'SecurityError: forbidden syntax: Set'
+.
+star_args          ok=False     0.0ms  'SecurityError: forbidden syntax: Starred'
+.
+str_literal        ok=False     0.0ms  'SecurityError: only integer/bool literals are allowed'
+.
+str_mult_bomb      ok=False     0.0ms  'SecurityError: only integer/bool literals are allowed'
+.
+subscript          ok=False     0.0ms  'SecurityError: forbidden syntax: Subscript'
+.
+try                ok=False     0.0ms  'SecurityError: forbidden syntax: Try'
+.
+vars               ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+walrus             ok=False     0.0ms  'SecurityError: forbidden syntax: NamedExpr'
+.
+with               ok=False     0.0ms  'SecurityError: forbidden syntax: With'
+.
+yield              ok=False     0.0ms  'SecurityError: forbidden syntax: Yield'
+.
+'print(len(range(1000000000000)))'            ok=True 0.1ms '1000000000000'
+.
+'print(range(1000000000))'                    ok=True 0.1ms 'range(0, 1000000000)'
+.
+'x = 1000000000000\nwhile True:\n    x = x '  ok=False 55.6ms 'TimeoutError: execution exceeded 50ms'
+.
+'while True:\n    pass'                       ok=False 56.4ms 'TimeoutError: execution exceeded 50ms'
+.
+'for i in range(1000000000000):\n    pass'    ok=False 69.1ms 'TimeoutError: execution exceeded 50ms'
+..
+print-loop 100k -> ok=True '0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n'
+.
+infinite loop returned after 56.5 ms: 'TimeoutError: execution exceeded 50ms'
+...
+57 passed in 4.71s

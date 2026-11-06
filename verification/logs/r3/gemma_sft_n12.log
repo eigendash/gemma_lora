@@ -1,0 +1,43 @@
+W1104 09:07:46.575000 45276 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+Loading weights:   0%|          | 0/288 [00:00<?, ?it/s]Loading weights: 100%|██████████| 288/288 [00:00<00:00, 6865.43it/s]
+{
+  "config": {
+    "model": "google/gemma-2-2b",
+    "init_adapter": "outputs/sft_gemma",
+    "adapter": "",
+    "eval_file": "data/eval.jsonl",
+    "n_eval": 12,
+    "max_new_tokens": 320,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.0,
+    "dtype": "float32",
+    "attn": "eager",
+    "device": "mps",
+    "seed": 0,
+    "fewshot": false,
+    "control": "real",
+    "out": "verification/logs/r3/gemma_sft_n12.json",
+    "dump": "verification/logs/r3/gemma_sft_n12.jsonl"
+  },
+  "metrics": {
+    "n": 12,
+    "pass@1": 0.0,
+    "format_compliance": 1.0,
+    "length_mean": 175.5,
+    "length_p50": 162,
+    "length_p95": 224,
+    "length_max": 224,
+    "per_tier_pass@1": {
+      "easy": 0.0,
+      "hard": 0.0,
+      "medium": 0.0
+    },
+    "mean_code_rounds": 2.0,
+    "hallucination_rate": 0.0,
+    "n_failing": 12,
+    "self_correction_correct": 0.0,
+    "self_correction_backtrack": 1.0
+  }
+}
+ eval.py --model google/gemma-2-2b --init-adapter outputs/sft_gemma --n-eval   19.99s user 8.45s system 22% cpu 2:08.63 total

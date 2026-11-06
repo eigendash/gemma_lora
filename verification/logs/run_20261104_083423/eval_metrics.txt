@@ -1,0 +1,44 @@
+$ /tmp/scratch/cleanroom2/.venv/bin/python -m pytest -q -s -p no:cacheprovider verification/test_eval_metrics.py
+
+ {'n': 5, 'pass@1': 0.4, 'format_compliance': 0.6, 'length_mean': 40.0, 'length_p50': 30, 'length_p95': 100, 'length_max': 100, 'per_tier_pass@1': {'easy': 0.5, 'hard': 0.3333333333333333}, 'n_failing': 0, 'self_correction_correct': 0.0, 'self_correction_backtrack': 0.0}
+.
+ {'n': 1, 'pass@1': 1.0, 'format_compliance': 1.0, 'length_mean': 1.0, 'length_p50': 1, 'length_p95': 1, 'length_max': 1, 'per_tier_pass@1': {'easy': 1.0}, 'n_failing': 0, 'self_correction_correct': 0.0, 'self_correction_backtrack': 0.0}
+FF
+=================================== FAILURES ===================================
+___________ test_self_correction_on_transcripts_with_failing_output ____________
+
+    def test_self_correction_on_transcripts_with_failing_output():
+        """Rows whose (real) transcript contains a failing execution ('False ...').
+        With completion_text as produced by rollout.run_rollout (generated text only),
+        eval must still find them."""
+        gen_only = "<think>\nx\n</think>\n<python>\nprint(2 == 1, 2)\n</python>\nwrong, retry\n<answer>\n1\n</answer>"
+        full = gen_only.replace("</python>\n", "</python>\n<output>\nFalse 2\n</output>\n", 1)
+        rr = RolloutResult(prompt_ids=[0], completion_ids=[1], loss_mask=[1], old_logprobs=[0.0],
+                           transcript="PROMPT" + full, completion_text=gen_only)
+        rw = RewardResult(total=1.0, correct=1.0, exec=0.0, format=0.0, length_penalty=0.0, hallucinated=False)
+        m = ev.compute_metrics([{"nums": [1], "target": 1, "tier": "easy", "rollout": rr, "reward": rw}])
+        print("\n", m)
+>       assert m["n_failing"] == 1, "failing execution in the transcript is invisible to the metric"
+E       AssertionError: failing execution in the transcript is invisible to the metric
+E       assert 0 == 1
+
+verification/test_eval_metrics.py:52: AssertionError
+______________________ test_backtrack_cue_false_positive _______________________
+
+    def test_backtrack_cue_false_positive():
+        """'correct' is a cue, so plain non-backtracking text counts as backtracking."""
+>       assert not ev.has_backtracking_text(RolloutResult(
+            prompt_ids=[], completion_ids=[], loss_mask=[], old_logprobs=[], transcript="",
+            completion_text="<think>\nLet me compute the correct value directly.\n</think>")), \
+            "non-backtracking text classified as backtracking"
+E       AssertionError: non-backtracking text classified as backtracking
+E       assert not True
+E        +  where True = <function has_backtracking_text at 0x11e2ffab0>(RolloutResult(prompt_ids=[], completion_ids=[], loss_mask=[], old_logprobs=[], transcript='', completion_text='<think>...ks=[], code_rounds=0, hallucinated_output=False, has_answer=False, answer_text='', truncated=False, terminal_reason=''))
+E        +    where <function has_backtracking_text at 0x11e2ffab0> = ev.has_backtracking_text
+E        +    and   RolloutResult(prompt_ids=[], completion_ids=[], loss_mask=[], old_logprobs=[], transcript='', completion_text='<think>...ks=[], code_rounds=0, hallucinated_output=False, has_answer=False, answer_text='', truncated=False, terminal_reason='') = RolloutResult(prompt_ids=[], completion_ids=[], loss_mask=[], old_logprobs=[], transcript='', completion_text='<think>\nLet me compute the correct value directly.\n</think>')
+
+verification/test_eval_metrics.py:57: AssertionError
+=========================== short test summary info ============================
+FAILED verification/test_eval_metrics.py::test_self_correction_on_transcripts_with_failing_output
+FAILED verification/test_eval_metrics.py::test_backtrack_cue_false_positive
+2 failed, 1 passed in 0.50s

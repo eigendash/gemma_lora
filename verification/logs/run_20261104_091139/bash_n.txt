@@ -1,0 +1,1 @@
+$ bash -c for f in scripts/*.sh; do bash -n "$f" || exit 1; done

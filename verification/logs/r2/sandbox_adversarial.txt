@@ -1,0 +1,170 @@
+
+__import__         ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+assert             ok=False     0.0ms  'SecurityError: forbidden syntax: Assert'
+.
+async              ok=False     0.0ms  'SecurityError: forbidden syntax: AsyncFunctionDef'
+.
+attribute          ok=False     0.0ms  'SecurityError: forbidden syntax: Attribute'
+.
+builtins_name      ok=True      0.2ms  "{'print': <built-in function print>, 'range': <class 'range'>, 'len': <built-in function l"
+.
+bytes              ok=False     0.0ms  'SecurityError: only integer/bool literals are allowed'
+.
+class              ok=False     0.0ms  'SecurityError: forbidden syntax: ClassDef'
+.
+decorator          ok=False     0.0ms  'SecurityError: forbidden syntax: FunctionDef'
+.
+deep_parens_10k    ok=False     0.0ms  'SecurityError: code too long (>4096 chars)'
+.
+deep_parens_2k     ok=False     0.1ms  'SecurityError: syntax error: too many nested parentheses'
+.
+def                ok=False     0.0ms  'SecurityError: forbidden syntax: FunctionDef'
+.
+del                ok=False     0.0ms  'SecurityError: forbidden syntax: Delete'
+.
+dict               ok=False     0.0ms  'SecurityError: forbidden syntax: Dict'
+.
+dir                ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+dunder_bases       ok=False     0.0ms  'SecurityError: forbidden syntax: Attribute'
+.
+eval               ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+exec               ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+float              ok=False     0.0ms  'SecurityError: only integer/bool literals are allowed'
+.
+from_import        ok=False     0.0ms  'SecurityError: forbidden syntax: ImportFrom'
+.
+fstring            ok=False     0.0ms  'SecurityError: forbidden syntax: JoinedStr'
+.
+genexp             ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+getattr            ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+global             ok=False     0.0ms  'SecurityError: forbidden syntax: Global'
+.
+globals            ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+huge_int_literal   ok=False     0.0ms  'SecurityError: integer literal too large'
+.
+import             ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+kw_file            ok=False     0.0ms  'SecurityError: forbidden syntax: keyword'
+.
+kw_sep             ok=False     0.0ms  'SecurityError: forbidden syntax: keyword'
+.
+lambda             ok=False     0.0ms  'SecurityError: forbidden syntax: Lambda'
+.
+listcomp           ok=False     0.0ms  'SecurityError: forbidden syntax: ListComp'
+.
+long_expr          ok=False     0.0ms  'SecurityError: code too long (>4096 chars)'
+.
+one_mb_source      ok=False     0.0ms  'SecurityError: code too long (>4096 chars)'
+.
+open               ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+pow                ok=False     0.0ms  'SecurityError: forbidden syntax: Pow'
+.
+print_obj          ok=True      0.2ms  '<built-in function print>'
+.
+print_str_bomb     ok=False     0.0ms  'SecurityError: only integer/bool literals are allowed'
+.
+raise              ok=False     0.0ms  'SecurityError: forbidden syntax: Raise'
+.
+set                ok=False     0.0ms  'SecurityError: forbidden syntax: Set'
+.
+star_args          ok=False     0.0ms  'SecurityError: forbidden syntax: Starred'
+.
+str_literal        ok=False     0.0ms  'SecurityError: only integer/bool literals are allowed'
+.
+str_mult_bomb      ok=False     0.0ms  'SecurityError: only integer/bool literals are allowed'
+.
+subscript          ok=False     0.0ms  'SecurityError: forbidden syntax: Subscript'
+.
+try                ok=False     0.0ms  'SecurityError: forbidden syntax: Try'
+.
+vars               ok=False     0.0ms  "SecurityError: forbidden call: only ['len', 'print', 'range'] are allowed"
+.
+walrus             ok=False     0.0ms  'SecurityError: forbidden syntax: NamedExpr'
+.
+with               ok=False     0.0ms  'SecurityError: forbidden syntax: With'
+.
+yield              ok=False     0.0ms  'SecurityError: forbidden syntax: Yield'
+.
+'print(len(range(1000000000000)))'            ok=True 0.1ms '1000000000000'
+.
+'print(range(1000000000))'                    ok=True 0.1ms 'range(0, 1000000000)'
+.
+'x = 1000000000000\nwhile True:\n    x = x '  ok=False 51.6ms 'TimeoutError: execution exceeded 50ms'
+.
+'while True:\n    pass'                       ok=False 51.4ms 'TimeoutError: execution exceeded 50ms'
+.
+'for i in range(1000000000000):\n    pass'    ok=False 74.6ms 'TimeoutError: execution exceeded 50ms'
+..
+print-loop 100k -> ok=False 'OutputError: output exceeded limit'
+.
+infinite loop returned after 51.8 ms: 'TimeoutError: execution exceeded 50ms'
+...
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[__import__]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[assert]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[async]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[attribute]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[builtins_name]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[bytes]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[class]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[decorator]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[deep_parens_10k]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[deep_parens_2k]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[def]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[del]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[dict]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[dir]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[dunder_bases]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[eval]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[exec]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[float]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[from_import]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[fstring]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[genexp]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[getattr]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[global]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[globals]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[huge_int_literal]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[import]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[kw_file]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[kw_sep]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[lambda]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[listcomp]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[long_expr]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[one_mb_source]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[open]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[pow]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[print_obj]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[print_str_bomb]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[raise]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[set]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[star_args]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[str_literal]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[str_mult_bomb]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[subscript]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[try]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[vars]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[walrus]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[with]
+PASSED verification/test_sandbox_adversarial.py::test_escape_rejected_and_no_leak[yield]
+PASSED verification/test_sandbox_adversarial.py::test_resource_abuse_bounded[print(len(range(1000000000000)))-True]
+PASSED verification/test_sandbox_adversarial.py::test_resource_abuse_bounded[print(range(1000000000))-True]
+PASSED verification/test_sandbox_adversarial.py::test_resource_abuse_bounded[x = 1000000000000\nwhile True:\n    x = x * x-False]
+PASSED verification/test_sandbox_adversarial.py::test_resource_abuse_bounded[while True:\n    pass-False]
+PASSED verification/test_sandbox_adversarial.py::test_resource_abuse_bounded[for i in range(1000000000000):\n    pass-False]
+PASSED verification/test_sandbox_adversarial.py::test_stdout_truncated_to_200
+PASSED verification/test_sandbox_adversarial.py::test_big_print_loop_bounded
+PASSED verification/test_sandbox_adversarial.py::test_timeout_is_50ms_not_relaxed
+PASSED verification/test_sandbox_adversarial.py::test_worker_killed_and_respawned_after_timeout
+PASSED verification/test_sandbox_adversarial.py::test_result_integrity_alternating_timeouts
+57 passed in 5.05s
+.venv/bin/python -m pytest -q -s -p no:cacheprovider -rA   4.61s user 0.50s system 98% cpu 5.187 total
