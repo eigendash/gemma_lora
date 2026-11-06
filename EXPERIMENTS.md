@@ -566,6 +566,20 @@ Paired McNemar tests (only-A / only-B):
 - REPORT.md must not credit hints for the gains.
 - The "recipe v2" candidate list gains "drop the hint cycles; just train longer".
 
+### 2.7n SPEC analyses for P10b s80: test-time compute, feedback controls, zero-shot, pass@k (2026-11-06)
+Run on soos with `eval.py` on the test set (descriptive; the test set was already reused), `--merge-adapter`. Logs: `verification/logs/spec_suite/`.
+- **Rounds sweep:** P10b 17.8 / 47.3 / 51.8% at 0 / 1 / 2 rounds; base few-shot 0.6 / 10.2 / 11.1%.
+- **Controls** (2 rounds):
+  - blank `<output>`: 12.8%;
+  - shuffled digits: 47.4%;
+  - real output: 51.8%.
+- **Zero-shot prompt:** 1.1% (format 98.9%).
+- **T = 0.9, 4 samples:** P10b mean pass@1 49.5% (per sample 500 / 496 / 502 / 482), pass@4 65.3%. Base 9.9% / 27.6%.
+- **Reading:**
+  - The policy needs the execution feedback, but mostly the True/False flag.
+  - It is tied to the trained prompt format.
+  - pass@4 shows a large gap to pass@1, which motivates verifier-based best-of-k or larger G (§ "recipe v2").
+
 ### 2.7l From-scratch replays: Qwen3-8B, Gemma-4-E4B, Qwen3-4B seeds (pre-registered 2026-11-06, before any result)
 **Question:** does the recipe that worked on Qwen3-4B transfer to another size, another model family and other seeds?
 This is a question about the recipe, not a model-capability comparison: hyperparameters are kept identical on purpose.

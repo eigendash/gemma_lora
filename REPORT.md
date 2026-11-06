@@ -72,6 +72,29 @@ All 67 recoveries on the test set follow the same pattern. A full first check fa
 - **Hard case:** 6 8 1 10 4 9 → 132. The first round produced 180/190/288/120. The second round added `4 * (10 + 9 + 8 + 6)`, which printed True and became the answer.
 - **Limits:** many retries still sample new candidates without clearly using the printed values. The strict recovery rate (12.6%) is the honest number; most of the gain since P8 comes from first checks that succeed more often.
 
+## 3b. Test-time compute and feedback controls (P10b s80, test set)
+
+Run with `eval.py` (HF backend, soos, merged adapter); logs in `verification/logs/spec_suite/`.
+
+| | 0 code rounds | 1 round | 2 rounds (default) |
+|---|---|---|---|
+| P10b s80 | 17.8% | 47.3% | 51.8% |
+| Base, few-shot | 0.6% | 10.2% | 11.1% |
+
+| P10b s80, 2 rounds | Pass@1 |
+|---|---|
+| Real `<output>` | 51.8% |
+| **Blanked `<output>`** (code runs, but the model sees nothing) | **12.8%** |
+| Shuffled digits in `<output>` | 47.4% |
+| Zero-shot prompt (no format demo) | 1.1% |
+| T = 0.9 sampling: mean pass@1 / **pass@4** | 49.5% / **65.3%** (base: 9.9% / 27.6%) |
+
+**What this shows:**
+- **The policy depends on execution feedback.** Removing the feedback costs 39 pp, and allowing no code at all costs 34 pp. It isn't solving in its head and merely formatting a check.
+- **It reads mainly the True/False flag, not the printed value.** Scrambling the digits costs only 4 pp. That fits the observation that retries rarely use the printed numbers (§3).
+- **The policy needs the format it was trained with.** Zero-shot it almost never solves anything (1.1%), so the SPEC's "base zero-shot vs RL" comparison is 0% vs 52% only *with* the few-shot demo.
+- **Sampling has large headroom:** pass@4 is 65%. That makes best-of-k with the verifier, or more rollouts per prompt, an obvious next lever.
+
 ## 4. Compute bottlenecks and mitigations
 
 | Bottleneck | Mitigation | Effect |
