@@ -34,6 +34,19 @@ injected mid-generation and masked out of the loss.
 - **What these p-values cover:** they compare two *checkpoints* on a fixed problem set. They don't include run-to-run variance, so they don't show that one *recipe* beats another. A P10b replicate with a different seed and from-scratch seed replays are running to measure that spread. Per-tier p-values are descriptive only (uncorrected).
 - Checkpoints were chosen on a 300-problem validation split, never on test or holdout.
 
+### Does the recipe transfer? (fresh holdout3, every model evaluated once)
+
+| Model | Base | After the same 4-phase recipe | Hard tier (final) |
+|---|---|---|---|
+| Qwen3-4B (original lineage / replicate) | 9.4% | 52.1% / 54.4% | 85 / 101 of 300 |
+| **Qwen3-8B** (from scratch) | 12.0% | **55.7%** | 82 of 300 |
+| Gemma-4-E4B (from scratch) | 3.7% | 30.9% | 19 of 300 |
+
+- **Same hyperparameters for every model,** and each phase starts from the previous phase's final step.
+- **Qwen3-8B vs P10b:** significantly above P10b (p = 0.009). It is not significantly above the better 4B seed (p = 0.35), so model size helps less than the 4B run-to-run spread would suggest.
+- **Gemma:** the recipe works there too (8× its base), but from a far weaker starting point.
+- **Still running:** Qwen3-4B seed 1 and 2 replays, for a clean 4B-vs-8B comparison under one rule.
+
 ## 2. Learning dynamics
 
 ![learning curves](docs/figures/learning_curves.png)

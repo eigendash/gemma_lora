@@ -639,6 +639,31 @@ This is a question about the recipe, not a model-capability comparison: hyperpar
 
 **Also queued:** a P10b replicate (seed 1, same P10 s90 init), so the hint ablation can be read against run-to-run spread rather than against a single run.
 
+### 2.7o From-scratch replays: results so far (holdout3; 2026-11-07)
+Every model in this table was evaluated **once** on `data/holdout3.jsonl` with soos `eval.py` (greedy, `fewshot_multi_retry`, 768 tokens, 2 rounds, batch 128). Qwen uses `sdpa_gqa`; Gemma uses `eager` (VERIFICATION §21). Lineage models are the **final step** of phase d; nothing on holdout3 was selected.
+
+| Model | holdout3 /1000 | easy /400 | medium /300 | hard /300 | test /1000 (vLLM) |
+|---|---|---|---|---|---|
+| Qwen3-4B base | 94 | 71 | 21 | 2 | 113 |
+| Qwen3-4B P10b s80 (original lineage, 300 steps) | 521 | 324 | 112 | 85 | 527 |
+| Qwen3-4B P10b replicate s80 (seed 1, last phase) | 544 | 329 | 114 | 101 | 554 |
+| Qwen3-8B base | 120 | 103 | 12 | 5 | 118 |
+| **Qwen3-8B replay, final** (`q8b-d` s80, 300 steps) | **557** | 350 | 125 | 82 | **585** |
+| Gemma-4-E4B base (text-only) | 37 | 26 | 10 | 1 | 46 |
+| Gemma-4-E4B replay, final (`g4e4b-d` s80) | 309 | 233 | 57 | 19 | 317 |
+
+Paired McNemar tests on holdout3 (only-A / only-B):
+- **Qwen3-8B final vs Qwen3-4B P10b s80:** 109 / 73, **p = 0.009**.
+- **Qwen3-8B final vs the 4B replicate s80:** 88 / 75, p = 0.35.
+- **Every final model vs its base:** p < 1e-60.
+
+**Reading:**
+- **The recipe transfers.** Every model improves 5–8× over its own base, with the same hyperparameters and no per-model tuning.
+- **Qwen3-8B is the strongest so far** (557 holdout3, 585 test). Its margin over the two 4B references (+36 and +13) is about the size of the 4B run-to-run spread (521 vs 544), so "8B > 4B" is clear against P10b but not against the better 4B seed.
+  - The clean comparison is the 4B seed replays: same recipe, final-step rule, still running (`q4s1` in phase d, then `q4s2`).
+- **Gemma-4-E4B learns, but ends far lower** (309): mostly easy problems, 19/300 hard. Its base is the weakest (37), and phase d slightly lowered its validation and test scores vs phase c (98.7 → 92.3 val; 341 → 317 test).
+- **Validation tracks test closely for the replays.** The final step was also the validation-best phase end for Qwen3-8B.
+
 ### 2.7f Final test set (data/eval.jsonl, 1,000 problems; 400 easy / 300 medium / 300 hard), greedy
 Each checkpoint was chosen on the 300-problem validation split before this run. The test set had not been used before.
 The run used vLLM on the RTX PRO 6000 (`verification/eval_vllm.py --set test`).
