@@ -85,7 +85,8 @@ _NON_HASHED = {"resume", "force_resume", "device", "output_dir", "run_id", "back
                "grad_ckpt"}
 # fields added after runs were launched: left out of the hash while at their default, so existing
 # configs (and their resumable checkpoints) keep the same hash
-_HASH_IF_NOT_DEFAULT = {"kl_ref": "base", "hint_schedule": "", "hint_max_groups": 16, "lr_warmup_steps": 0}
+_HASH_IF_NOT_DEFAULT = {"kl_ref": "base", "hint_schedule": "", "hint_max_groups": 16, "lr_warmup_steps": 0,
+                        "train_nocorrect_groups": True, "max_grad_norm": 0.0, "shuffle_minibatches": False}
 
 
 @dataclass
@@ -99,6 +100,12 @@ class GRPOConfig:
     max_new_tokens: int = 128
     lr: float = 1e-5
     lr_warmup_steps: int = 0      # linear LR warmup over the first N steps of THIS run (warm starts get a fresh AdamW); 0 = off
+    # recipe v2 options (EXPERIMENTS.md §2.7p); all off by default, so existing configs keep their hashes
+    train_nocorrect_groups: bool = True  # False: a group with no correct answer is not trained (its advantages would come
+                                         # only from exec/format/length shaping, z-scored to full size); DAPO refills it
+    max_grad_norm: float = 0.0    # > 0: clip the LoRA gradient norm before each optimizer step (always logged as grad_norm)
+    shuffle_minibatches: bool = False  # True: shuffle groups before splitting into updates_per_batch mini-batches
+                                       # (otherwise later mini-batches always hold the hinted/refill groups)
     clip_eps: float = 0.2
     clip_eps_high: float = 0.0    # DAPO clip-higher upper bound (0 = same as clip_eps); matters when updates_per_batch > 1
     updates_per_batch: int = 1    # optimizer steps per generated batch (verl ppo_mini_batch: batch split into this many mini-batches)
@@ -884,7 +891,7 @@ def train(cfg: GRPOConfig) -> None:
                     continue
                 # zero-variance groups have zero advantage: no policy signal (DAPO dynamic
                 # sampling refills them with fresh prompts instead of shrinking the batch)
-                if not zv and n_signal < cfg.prompts_per_step:
+                if not zv and n_signal < cfg.prompts_per_step and (cfg.train_nocorrect_groups or any(x.correct > 0 for x in gr)):
                     train_rollouts.extend(group)
                     train_advs.extend(a.tolist())
                     n_signal += 1
@@ -908,7 +915,8 @@ def train(cfg: GRPOConfig) -> None:
                         all_rewards.extend(gr)        # logged, but NOT fed to the curriculum
                         all_rollouts.extend(group)
                         hint_rollouts.extend(group)
-                        if not zv and n_signal < cfg.prompts_per_step:
+                        if (not zv and n_signal < cfg.prompts_per_step
+                                and (cfg.train_nocorrect_groups or any(x.correct > 0 for x in gr))):
                             train_rollouts.extend(group)
                             train_advs.extend(a.tolist())
                             n_signal += 1
@@ -926,6 +934,7 @@ def train(cfg: GRPOConfig) -> None:
         t_loss = time.time()
         kl_val, ratio_dev = float("nan"), float("nan")
         U = max(1, cfg.updates_per_batch)
+        grad_norms = []
         upd = {"gen_logp_dev_mean": float("nan"), "gen_logp_dev_p99": float("nan"),
                "tis_w_mean": float("nan"), "clip_frac": float("nan"), "n_updates": 0}
         if train_rollouts:
@@ -936,6 +945,13 @@ def train(cfg: GRPOConfig) -> None:
             # detached (ratio exactly 1). With several updates (verl ppo_mini_batch style) it must be
             # computed before the first optimizer step.
             old_lps = {}
+            if cfg.shuffle_minibatches and U > 1 and N % cfg.G == 0:
+                # whole groups, deterministic per step (so a resumed step shuffles the same way)
+                order = list(range(N // cfg.G))
+                random.Random(cfg.seed * 100_003 + step).shuffle(order)
+                idx = [g * cfg.G + k for g in order for k in range(cfg.G)]
+                train_rollouts = [train_rollouts[i] for i in idx]
+                train_advs = [train_advs[i] for i in idx]
             mini = -(-N // U)
             mini = -(-mini // cfg.micro_batch) * cfg.micro_batch  # mini-batches hold whole micro-batches
             if U > 1:
@@ -986,6 +1002,7 @@ def train(cfg: GRPOConfig) -> None:
                     tok_n += float(pmask.sum())
                     del policy_lp, loss, batch, per_tok, surr, ratio
                 if U > 1:
+                    grad_norms.append(_clip_and_norm(optimizer, cfg.max_grad_norm))
                     optimizer.step()
                     optimizer.zero_grad(set_to_none=True)
                     upd["n_updates"] += 1
@@ -1003,6 +1020,7 @@ def train(cfg: GRPOConfig) -> None:
                 kl_coef = max(kl_coef / cfg.kl_adapt_rate, cfg.min_kl_coef)
 
         if U == 1 and (step + 1) % cfg.grad_accum == 0:
+            grad_norms.append(_clip_and_norm(optimizer, cfg.max_grad_norm))
             optimizer.step()
             optimizer.zero_grad(set_to_none=True)
         if device == "mps":
@@ -1032,6 +1050,7 @@ def train(cfg: GRPOConfig) -> None:
                "lr": optimizer.param_groups[0]["lr"], "hint_frac": hint_frac, "n_hint_groups": n_hint_groups, "n_hint_signal": n_hint_signal,
                "hint_correct": n_hint_correct / max(1, n_hint_groups * cfg.G),
                "n_hint_nocorrect": n_hint_nocorrect,
+               "grad_norm": round(max(grad_norms), 4) if grad_norms else float("nan"),
                **sampled_nll(all_rollouts),
                **val_row}
         log_rows.append(row)
@@ -1086,6 +1105,14 @@ def behaviour_metrics(rollouts) -> dict:
             "retry_after_allfalse": (sum(len(r.outputs) > 1 for r in af) / len(af)) if af else float("nan"),
             "n_first_allfalse": len(af),
             "frac_max_length": sum(r.terminal_reason == "max_length" for r in rollouts) / len(rollouts)}
+
+
+def _clip_and_norm(optimizer, max_norm: float) -> float:
+    """Total gradient norm of the optimized parameters (pre-clip); clips to max_norm when it is > 0."""
+    params = [p for g in optimizer.param_groups for p in g["params"] if p.grad is not None]
+    if not params:
+        return float("nan")
+    return float(torch.nn.utils.clip_grad_norm_(params, max_norm if max_norm > 0 else float("inf")))
 
 
 def sampled_nll(rollouts) -> dict:

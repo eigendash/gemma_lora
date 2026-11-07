@@ -389,3 +389,27 @@ def test_solution_hint_on_chain_reveals_up_to_all_but_last_step():
 
     sol = "(4+(9+(2*7)))"                               # chain of 3 operations
     assert [sft_coldstart.solution_hint(sol, f) for f in (0.25, 0.5, 1.0)] == ["2 * 7", "9 + 2 * 7", "9 + 2 * 7"]
+
+
+# --- recipe v2 options (EXPERIMENTS.md §2.7p) --------------------------------------------------
+def test_recipe_v2_options_are_hash_neutral_at_default():
+    c = train_rl.GRPOConfig()
+    h = c.hash()
+    c.train_nocorrect_groups, c.max_grad_norm, c.shuffle_minibatches = True, 0.0, False
+    assert c.hash() == h
+    for field, val in (("train_nocorrect_groups", False), ("max_grad_norm", 1.0), ("shuffle_minibatches", True)):
+        d = train_rl.GRPOConfig(**{field: val})
+        assert d.hash() != h, field
+
+
+def test_clip_and_norm_reports_preclip_norm_and_clips():
+    p = torch.nn.Parameter(torch.zeros(4))
+    q = torch.nn.Parameter(torch.zeros(3))
+    opt = torch.optim.SGD([p, q], lr=0.1)
+    p.grad = torch.tensor([3.0, 0.0, 0.0, 0.0])
+    q.grad = torch.tensor([0.0, 4.0, 0.0])
+    assert train_rl._clip_and_norm(opt, 0.0) == pytest.approx(5.0)      # off: measure only
+    assert p.grad[0].item() == pytest.approx(3.0)
+    assert train_rl._clip_and_norm(opt, 1.0) == pytest.approx(5.0)      # returns the pre-clip norm
+    total = torch.sqrt(p.grad.pow(2).sum() + q.grad.pow(2).sum()).item()
+    assert total == pytest.approx(1.0, rel=1e-4)

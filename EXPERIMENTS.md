@@ -664,6 +664,31 @@ Paired McNemar tests on holdout3 (only-A / only-B):
 - **Gemma-4-E4B learns, but ends far lower** (309): mostly easy problems, 19/300 hard. Its base is the weakest (37), and phase d slightly lowered its validation and test scores vs phase c (98.7 → 92.3 val; 341 → 317 test).
 - **Validation tracks test closely for the replays.** The final step was also the validation-best phase end for Qwen3-8B.
 
+### 2.7p Recipe v2 on Qwen3-4B (pre-registered 2026-11-07, before any v2 result)
+**Question:** at equal compute, does a recipe with the review's fixes beat the replayed recipe?
+
+**Design:**
+- The schedule is the same 4-phase, 300-step replay (a 40 / b 90 / c 90 / d 80 steps; final-step warm starts), with seeds 1 and 2.
+- **Comparison arms:** the replay lineages `q4s1` / `q4s2`, same seeds and same rule.
+- Configs: `configs/lineage/q4v2s{1,2}-*.yaml` (`scripts/make_lineage_configs.py` with overrides).
+
+**v2 changes** (every phase; new `train_rl` options are hash-neutral at their defaults):
+
+| Change | Why |
+|---|---|
+| `hint_schedule: ""` (no hint cycles in c and d) | §2.7m: hints showed no effect |
+| `train_nocorrect_groups: false` | Shaping-only groups were about 25% of hint-free batches, trained at full advantage scale (review) |
+| `max_grad_norm: 1.0` | There was no gradient clipping; P10 had a KL spike to 0.57 |
+| `shuffle_minibatches: true` | The second update always held the hinted/refill groups |
+| `kl_coef = min_kl_coef = max_kl_coef = 0` | The KL coefficient sat at its 0.001 floor (inactive). This removes the per-micro-batch reference forward; KL is still logged from the first micro-batch |
+
+**Unchanged:** LR, LoRA rank, batch size (64 × G 8), clip-higher, TIS, curriculum, reward, prompts and phase lengths.
+
+**Primary outcome:**
+- **Measure:** holdout3 accuracy of the phase-d final step, evaluated once per lineage (soos `eval.py`, same settings as §2.7o).
+- **Pre-specified reading:** v2 − replay, averaged over the 2 seeds. With a run-to-run spread of about ±20 per run, a mean difference under about 20 is "no clear difference".
+- **Secondary:** 3-pass validation and test per phase, step time, `grad_norm`, `entropy_est`.
+
 ### 2.7f Final test set (data/eval.jsonl, 1,000 problems; 400 easy / 300 medium / 300 hard), greedy
 Each checkpoint was chosen on the 300-problem validation split before this run. The test set had not been used before.
 The run used vLLM on the RTX PRO 6000 (`verification/eval_vllm.py --set test`).
