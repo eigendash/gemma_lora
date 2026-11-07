@@ -715,3 +715,9 @@ The runs used the real Qwen3-4B base, 4 prompts × G=4, 1–2 steps, `--hint-sch
   - The real fault was the ssh-based end-of-run waiter, which dropped silently, so the VM idled until max-run-duration deleted it at 05:14 (about 2.5 GPU-hours wasted).
   - **Fixes:** `cloud_train.sh` now also syncs logs every 5 min; `scripts/cloud_chain.sh` writes a DONE marker to the bucket and powers the VM off; waiters poll the bucket and the VM status, not an ssh session.
   - A second issue: the first eval-only VM script omitted `VLLM_USE_FLASHINFER_SAMPLER=0`, and vLLM failed on the FlashInfer JIT build. It was rerun with the variable set; no results came from the failed attempt.
+
+## 21. Gemma-4-E4B evaluation on soos: ROCm SDPA gives NaN (2026-11-07)
+- **FOUND:** the pre-registered sanity check of the HF backend on soos scored the final Gemma adapter 0/300 on the validation problems (vLLM: 92.3/300). Every completion was `<pad>` repeated, i.e. argmax of NaN logits.
+- **Cause** (`verification/check_gemma4_rocm_sdpa.py`): on soos's ROCm build, `attn_implementation="sdpa"` returns NaN logits for Gemma 4, even for a single unpadded prompt. `sdpa_gqa` uses SDPA for prefill, so it fails too. `eager` gives finite logits with the same argmax as an unpadded run.
+- **Scope:** training was not affected; it ran on CUDA (vLLM generation, SDPA training forward) and learned normally. The Qwen evaluations on soos are not affected.
+- **FIX:** Gemma evaluations on soos use `--attn eager`. A second sanity run must land within 75–110/300 (band fixed before the run) before Gemma's one holdout3 evaluation.
