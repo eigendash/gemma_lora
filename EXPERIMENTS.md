@@ -701,6 +701,25 @@ Paired McNemar tests on holdout3 (only-A / only-B):
 - **Pre-specified reading:** v2 − replay, averaged over the 2 seeds. With a run-to-run spread of about ±20 per run, a mean difference under about 20 is "no clear difference".
 - **Secondary:** 3-pass validation and test per phase, step time, `grad_norm`, `entropy_est`.
 
+**v2 result so far (2026-11-07): length runaway; seed 1 stopped by the pre-registered guard.**
+- **Seed 1, phase b, step 49:** `GUARD: frac_max_length 0.43 > 0.4 over the last 5 steps`. The checkpoint was saved and the chain stopped; logs are in `verification/logs/q4v2_lineages/`.
+- **Seed 2** shows the same drift in phase b (cap share 0.26 → 0.40) and continues under the same guard.
+
+| Phase a, first 10 → last 10 steps | replay seed 1 | v2 seed 1 | v2 seed 2 |
+|---|---|---|---|
+| tokens per rollout | 189 → 157 | 185 → 403 | 185 → 320 |
+| share hitting the 768-token cap | 0.04 → 0.00 | 0.05 → 0.33 | 0.05 → 0.19 |
+| entropy estimate | 0.30 → 0.15 | 0.30 → 0.30 | 0.30 → 0.31 |
+
+In phase b, around step 45: v2 ran 420–520 tokens per rollout, with 0.3–0.5 hitting the cap and entropy 0.3–0.45. The replay ran about 290 tokens, 0.00 at the cap and entropy about 0.20. v2's in-run validation (51–53% in phase b, 42% at the end of phase a vs 30%) looked better while the lengths grew.
+
+**Diagnosis:** the "shaping-only" groups, the ones with no correct answer that the review flagged as noise, were acting as the recipe's **length and format regulariser**.
+- In an all-fail group, a short well-formed attempt beats a truncated one (truncation loses exec and format credit). So training on those groups pushes the policy towards concise outputs.
+- With them dropped, and with the KL penalty off as well, the only signal left comes from groups that contain a correct answer. There, longer outputs that check more candidates are sometimes rewarded, and the length penalty (beyond 512 tokens) is too weak to compete with correctness.
+- Lengths and entropy grow until the guard trips.
+
+This is a pre-registered negative: **v2 as specified is not a viable recipe.** The review's suggestion has a side effect that its analysis did not anticipate.
+
 ### 2.7f Final test set (data/eval.jsonl, 1,000 problems; 400 easy / 300 medium / 300 hard), greedy
 Each checkpoint was chosen on the 300-problem validation split before this run. The test set had not been used before.
 The run used vLLM on the RTX PRO 6000 (`verification/eval_vllm.py --set test`).
