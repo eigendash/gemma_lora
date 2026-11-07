@@ -664,6 +664,18 @@ Paired McNemar tests on holdout3 (only-A / only-B):
 - **Gemma-4-E4B learns, but ends far lower** (309): mostly easy problems, 19/300 hard. Its base is the weakest (37), and phase d slightly lowered its validation and test scores vs phase c (98.7 → 92.3 val; 341 → 317 test).
 - **Validation tracks test closely for the replays.** The final step was also the validation-best phase end for Qwen3-8B.
 
+**Update: Qwen3-4B seed replays** (`q4s1`, `q4s2`; logs in `verification/logs/q4_seed_replays/`; final step of phase d; holdout3 evaluated once each):
+
+| Model | holdout3 | easy | medium | hard | test (vLLM) | 3-pass val, phases a/b/c/d |
+|---|---|---|---|---|---|---|
+| 4B replay, seed 1 | 512 | 321 | 104 | 87 | 530 | 98.0 / 135.3 / 143.7 / 152.7 |
+| 4B replay, seed 2 | 498 | 321 | 101 | 76 | 509 | 94.7 / 135.3 / 151.0 / 139.3 |
+| Qwen3-8B replay (seed 0) | 557 | 350 | 125 | 82 | 585 | 132.3 / 153.3 / 169.7 / 172.3 |
+
+- **Clean 4B vs 8B comparison** (same recipe, final-step rule): 8B vs 4B seed 1 is 116 / 71, **p = 0.001**; vs seed 2 it is 117 / 58, **p < 1e-5**. The 8B is about +50 (5 pp) above the 4B seed mean (505).
+- **4B seed spread:** 512 vs 498 (p = 0.33). The original, hand-steered 4B lineage (P10b s80, 521) sits just above both replays, consistent with its being a selected run.
+- **Phase d** (second hint cycle) lowered validation in 2 of 4 from-scratch lineages: Gemma, and 4B seed 2 (151.0 → 139.3). That fits the hint-ablation result (§2.7m).
+
 ### 2.7p Recipe v2 on Qwen3-4B (pre-registered 2026-11-07, before any v2 result)
 **Question:** at equal compute, does a recipe with the review's fixes beat the replayed recipe?
 

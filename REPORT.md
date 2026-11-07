@@ -38,14 +38,15 @@ injected mid-generation and masked out of the loss.
 
 | Model | Base | After the same 4-phase recipe | Hard tier (final) |
 |---|---|---|---|
-| Qwen3-4B (original lineage / replicate) | 9.4% | 52.1% / 54.4% | 85 / 101 of 300 |
+| Qwen3-4B, from scratch (seeds 1 / 2) | 9.4% | 51.2% / 49.8% | 87 / 76 of 300 |
+| Qwen3-4B (original, hand-steered lineage / its replicate) | 9.4% | 52.1% / 54.4% | 85 / 101 of 300 |
 | **Qwen3-8B** (from scratch) | 12.0% | **55.7%** | 82 of 300 |
 | Gemma-4-E4B (from scratch) | 3.7% | 30.9% | 19 of 300 |
 
 - **Same hyperparameters for every model,** and each phase starts from the previous phase's final step.
-- **Qwen3-8B vs P10b:** significantly above P10b (p = 0.009). It is not significantly above the better 4B seed (p = 0.35), so model size helps less than the 4B run-to-run spread would suggest.
+- **Qwen3-8B vs 4B under the same rule:** clearly better. Against the from-scratch 4B seeds it scores 557 vs 512 / 498 (p = 0.001 / p < 1e-5), about +5 pp. The two 4B seeds differ by only 14 (p = 0.33), so the recipe is fairly stable across seeds.
 - **Gemma:** the recipe works there too (8× its base), but from a far weaker starting point.
-- **Still running:** Qwen3-4B seed 1 and 2 replays, for a clean 4B-vs-8B comparison under one rule.
+- **Still running:** "recipe v2" (no hints, no shaping-only groups, gradient clipping, no KL penalty) on the same two 4B seeds, compared at equal compute (EXPERIMENTS §2.7p).
 
 ## 2. Learning dynamics
 
