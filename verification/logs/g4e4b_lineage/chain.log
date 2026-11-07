@@ -1,0 +1,16 @@
+TRAIN g4e4b-a configs/lineage/g4e4b-a.yaml 2026-11-06T10:20:35Z
+TRAINED g4e4b-a 2026-11-06T11:12:07Z
+gate: smoothed val 14.2% vs need 4.6% -> ok; train acc first10 0.042 -> last10 0.301 -> ok; val evals [2.0, 1.0, 3.7, 8.7, 12.0, 14.7, 12.7, 15.3]
+GATE PASS g4e4b-a 2026-11-06T11:12:08Z
+INIT g4e4b-b from runs/g4e4b-a step_40 2026-11-06T11:12:19Z
+TRAIN g4e4b-b configs/lineage/g4e4b-b.yaml 2026-11-06T11:12:20Z
+TRAINED g4e4b-b 2026-11-06T14:59:52Z
+INIT g4e4b-c from runs/g4e4b-b step_90 2026-11-06T15:00:04Z
+TRAIN g4e4b-c configs/lineage/g4e4b-c.yaml 2026-11-06T15:00:05Z
+TRAINED g4e4b-c 2026-11-06T19:35:38Z
+INIT g4e4b-d from runs/g4e4b-c step_90 2026-11-06T19:35:51Z
+TRAIN g4e4b-d configs/lineage/g4e4b-d.yaml 2026-11-06T19:35:51Z
+TRAINED g4e4b-d 2026-11-06T23:49:40Z
+VAL3 g4_a g4_b g4_c g4_d (model models/gemma-4-E4B-text) 2026-11-06T23:49:45Z
+TEST g4_a g4_b g4_c g4_d 2026-11-06T23:57:54Z
+DONE 2026-11-07T00:02:09Z

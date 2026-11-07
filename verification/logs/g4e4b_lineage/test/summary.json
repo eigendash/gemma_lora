@@ -1,0 +1,52 @@
+{
+  "base": {
+    "val_correct": 0.046,
+    "val_n": 1000,
+    "val_tier": {
+      "easy": 0.095,
+      "hard": 0.013,
+      "medium": 0.013
+    },
+    "val_s": 43.7
+  },
+  "g4_a": {
+    "val_correct": 0.139,
+    "val_n": 1000,
+    "val_tier": {
+      "easy": 0.302,
+      "hard": 0.017,
+      "medium": 0.043
+    },
+    "val_s": 28.3
+  },
+  "g4_b": {
+    "val_correct": 0.218,
+    "val_n": 1000,
+    "val_tier": {
+      "easy": 0.458,
+      "hard": 0.033,
+      "medium": 0.083
+    },
+    "val_s": 37.6
+  },
+  "g4_c": {
+    "val_correct": 0.341,
+    "val_n": 1000,
+    "val_tier": {
+      "easy": 0.703,
+      "hard": 0.05,
+      "medium": 0.15
+    },
+    "val_s": 43.9
+  },
+  "g4_d": {
+    "val_correct": 0.317,
+    "val_n": 1000,
+    "val_tier": {
+      "easy": 0.63,
+      "hard": 0.07,
+      "medium": 0.147
+    },
+    "val_s": 57.1
+  }
+}
