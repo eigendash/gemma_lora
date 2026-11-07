@@ -1,0 +1,45 @@
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 5224.89it/s]
+{
+  "config": {
+    "model": "Qwen/Qwen3-4B-Base",
+    "init_adapter": "",
+    "adapter": "baselines/p10brep1_s80",
+    "eval_file": "data/holdout3.jsonl",
+    "n_eval": 0,
+    "max_new_tokens": 768,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.0,
+    "dtype": "bfloat16",
+    "attn": "sdpa_gqa",
+    "device": "cuda",
+    "seed": 0,
+    "fewshot": false,
+    "prompt_style": "fewshot_multi_retry",
+    "generation": "batched",
+    "batch_size": 128,
+    "control": "real",
+    "merge_adapter": false,
+    "out": "outputs/holdout/h3_p10brep1_s80.json",
+    "dump": "outputs/holdout/h3_p10brep1_s80.jsonl"
+  },
+  "metrics": {
+    "n": 1000,
+    "pass@1": 0.544,
+    "format_compliance": 0.997,
+    "length_mean": 306.503,
+    "length_p50": 308,
+    "length_p95": 460,
+    "length_max": 768,
+    "per_tier_pass@1": {
+      "easy": 0.8225,
+      "hard": 0.33666666666666667,
+      "medium": 0.38
+    },
+    "mean_code_rounds": 1.51,
+    "hallucination_rate": 0.0,
+    "n_failing": 745,
+    "self_correction_correct": 0.3932885906040268,
+    "self_correction_backtrack": 0.0013422818791946308
+  }
+}

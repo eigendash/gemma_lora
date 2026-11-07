@@ -1,0 +1,5 @@
+base: correct 0.118 (118/1000) {'easy': 0.255, 'hard': 0.017, 'medium': 0.037} 93s
+q8b_a: correct 0.450 (450/1000) {'easy': 0.77, 'hard': 0.173, 'medium': 0.3} 44s
+q8b_b: correct 0.525 (525/1000) {'easy': 0.828, 'hard': 0.297, 'medium': 0.35} 38s
+q8b_c: correct 0.557 (557/1000) {'easy': 0.838, 'hard': 0.323, 'medium': 0.417} 37s
+q8b_d: correct 0.585 (585/1000) {'easy': 0.87, 'hard': 0.343, 'medium': 0.447} 52s

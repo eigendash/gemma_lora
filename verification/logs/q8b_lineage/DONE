@@ -1,0 +1,14 @@
+TRAIN q8b-a configs/lineage/q8b-a.yaml 2026-11-06T09:47:10Z
+TRAINED q8b-a 2026-11-06T11:14:24Z
+INIT q8b-b from runs/q8b-a step_40 2026-11-06T11:14:34Z
+TRAIN q8b-b configs/lineage/q8b-b.yaml 2026-11-06T11:14:34Z
+TRAINED q8b-b 2026-11-06T16:05:29Z
+INIT q8b-c from runs/q8b-b step_90 2026-11-06T16:05:39Z
+TRAIN q8b-c configs/lineage/q8b-c.yaml 2026-11-06T16:05:40Z
+TRAINED q8b-c 2026-11-06T21:23:18Z
+INIT q8b-d from runs/q8b-c step_90 2026-11-06T21:23:28Z
+TRAIN q8b-d configs/lineage/q8b-d.yaml 2026-11-06T21:23:28Z
+TRAINED q8b-d 2026-11-07T02:14:48Z
+VAL3 q8b_a q8b_b q8b_c q8b_d (model Qwen/Qwen3-8B-Base) 2026-11-07T02:14:53Z
+TEST q8b_a q8b_b q8b_c q8b_d 2026-11-07T02:23:11Z
+DONE 2026-11-07T02:28:14Z

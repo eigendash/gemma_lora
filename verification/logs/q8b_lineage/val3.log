@@ -1,0 +1,18 @@
+=== pass 1 order: q8b_b q8b_a q8b_c q8b_d
+base: correct 0.103 (31/300) {'easy': 0.25, 'hard': 0.02, 'medium': 0.04} 39s
+q8b_b: correct 0.507 (152/300) {'easy': 0.87, 'hard': 0.2, 'medium': 0.45} 23s
+q8b_a: correct 0.447 (134/300) {'easy': 0.76, 'hard': 0.23, 'medium': 0.35} 17s
+q8b_c: correct 0.567 (170/300) {'easy': 0.87, 'hard': 0.34, 'medium': 0.49} 15s
+q8b_d: correct 0.573 (172/300) {'easy': 0.86, 'hard': 0.37, 'medium': 0.49} 26s
+=== pass 2 order: q8b_c q8b_b q8b_a q8b_d
+base: correct 0.117 (35/300) {'easy': 0.31, 'hard': 0.02, 'medium': 0.02} 38s
+q8b_c: correct 0.570 (171/300) {'easy': 0.86, 'hard': 0.39, 'medium': 0.46} 15s
+q8b_b: correct 0.523 (157/300) {'easy': 0.89, 'hard': 0.23, 'medium': 0.45} 23s
+q8b_a: correct 0.443 (133/300) {'easy': 0.77, 'hard': 0.22, 'medium': 0.34} 15s
+q8b_d: correct 0.577 (173/300) {'easy': 0.87, 'hard': 0.34, 'medium': 0.52} 26s
+=== pass 3 order: q8b_d q8b_b q8b_c q8b_a
+base: correct 0.103 (31/300) {'easy': 0.24, 'hard': 0.02, 'medium': 0.05} 41s
+q8b_d: correct 0.573 (172/300) {'easy': 0.88, 'hard': 0.33, 'medium': 0.51} 20s
+q8b_b: correct 0.503 (151/300) {'easy': 0.87, 'hard': 0.18, 'medium': 0.46} 23s
+q8b_c: correct 0.560 (168/300) {'easy': 0.85, 'hard': 0.34, 'medium': 0.49} 16s
+q8b_a: correct 0.433 (130/300) {'easy': 0.75, 'hard': 0.18, 'medium': 0.37} 15s

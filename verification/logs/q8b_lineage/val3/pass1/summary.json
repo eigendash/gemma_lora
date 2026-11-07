@@ -1,0 +1,52 @@
+{
+  "base": {
+    "val_correct": 0.10333333333333333,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.25,
+      "hard": 0.02,
+      "medium": 0.04
+    },
+    "val_s": 39.3
+  },
+  "q8b_b": {
+    "val_correct": 0.5066666666666667,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.87,
+      "hard": 0.2,
+      "medium": 0.45
+    },
+    "val_s": 23.2
+  },
+  "q8b_a": {
+    "val_correct": 0.44666666666666666,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.76,
+      "hard": 0.23,
+      "medium": 0.35
+    },
+    "val_s": 16.5
+  },
+  "q8b_c": {
+    "val_correct": 0.5666666666666667,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.87,
+      "hard": 0.34,
+      "medium": 0.49
+    },
+    "val_s": 15.2
+  },
+  "q8b_d": {
+    "val_correct": 0.5733333333333334,
+    "val_n": 300,
+    "val_tier": {
+      "easy": 0.86,
+      "hard": 0.37,
+      "medium": 0.49
+    },
+    "val_s": 26.2
+  }
+}
