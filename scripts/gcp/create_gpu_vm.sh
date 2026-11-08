@@ -26,11 +26,11 @@ for z in $ZONES; do
       --boot-disk-size 200GB --boot-disk-type hyperdisk-balanced \
       --metadata install-nvidia-driver=True \
       --service-account "$SA" \
-      --scopes devstorage.read_write,logging.write \
+      --scopes storage-rw,logging-write \
       --shielded-vtpm --shielded-integrity-monitoring; then ZONE="$z"; break; fi
   echo "create failed in $z; trying the next zone"
 done
-[ -n "$ZONE" ] || { echo "no zone had capacity"; exit 2; }
+[ -n "$ZONE" ] || { echo "VM creation failed in every zone (capacity or error above)"; exit 2; }
 echo "created $VM in $ZONE; waiting for ssh and the GPU driver"
 for i in $(seq 1 40); do
   gcloud compute ssh "$VM" --zone "$ZONE" --command 'nvidia-smi -L' >/dev/null 2>&1 && break; sleep 30
