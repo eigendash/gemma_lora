@@ -53,6 +53,7 @@ injected mid-generation and masked out of the loss.
   - The cost is more truncation: 8.3% hit the cap, and format compliance is 91.7%.
   - Until holdout3 and a second seed are in, this is a single-seed result on a reused test set.
 - **More training does not help the original recipe:** Qwen3-8B continued for 102 more steps stayed flat on validation (58% → 54–59%; §2.7q).
+- **More training does not help v2 either:** v2 seed 2 scores 681 on holdout3 (the pre-registered primary outcome; replay seed 2: 498). Continued for 45 more steps, it scores 682 (p = 1.00). The run was stopped by hand on a flat validation curve (EXPERIMENTS §2.7r).
 
 ## 2. Learning dynamics
 

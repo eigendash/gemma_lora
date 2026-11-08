@@ -771,6 +771,14 @@ Same seed, same rule, replay seed 2: 3-pass val 139.3 at phase d, test 509.
 - **Not run:** the chain's 3-pass validation (the chain logged the stop as `FAILED`, since it recognises only budget stops).
 - Logs: `verification/logs/q4v2s2long/`.
 
+**Result (holdout3, s45, evaluated once): 682 / 1000 vs 681 for d80. PLATEAU** (pre-registered band ±20).
+- Paired McNemar: 82 problems solved only by d80, 83 only by s45; p = 1.00.
+- **By tier:** easy 351, medium 171, hard 160 (d80: 355 / 173 / 153).
+- **Format and length:** format compliance 90.0%, cap share 9.9%; both unchanged.
+- **One behavioural shift:** after an all-False first check the model gives up less often. It retried 554 times vs 464, and recovered 332 vs 272, at the same rate (59.9% vs 58.6%).
+- **Reading:** like the original recipe on Qwen3-8B (§2.7q), v2 on Qwen3-4B stops improving after its 300-step schedule. Both continuations were flat from the first eval.
+- `verification/logs/holdout/h3_q4v2s2long_s45.*`
+
 **B. Zero-shot arm:** the design follows a literature review of R1-Zero-style recipes and is recorded in §2.7s before launch.
 
 ### 2.7s Pre-registration (2026-11-08, before any training result): zero-shot (no-demo) arm `q4v2z2`
