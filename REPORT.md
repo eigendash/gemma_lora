@@ -113,8 +113,38 @@ Run with `eval.py` (HF backend, soos, merged adapter); logs in `verification/log
 **What this shows:**
 - **The policy depends on execution feedback.** Removing the feedback costs 39 pp, and allowing no code at all costs 34 pp. It isn't solving in its head and merely formatting a check.
 - **It reads mainly the True/False flag, not the printed value.** Scrambling the digits costs only 4 pp. That fits the observation that retries rarely use the printed numbers (§3).
-- **The policy needs the format it was trained with.** Zero-shot it almost never solves anything (1.1%), so the SPEC's "base zero-shot vs RL" comparison is 0% vs 52% only *with* the few-shot demo.
+- **The policy needs the format it was trained with.** Zero-shot it almost never solves anything (1.1%), so the SPEC's "base zero-shot vs RL" comparison is 0% vs 52% only *with* the few-shot demo. A policy trained from a zero-shot prompt that describes the tool is §3c.
 - **Sampling has large headroom:** pass@4 is 65%. That makes best-of-k with the verifier, or more rollouts per prompt, an obvious next lever.
+
+## 3c. Finding: zero-shot RL works once the prompt says the tool exists (in progress)
+
+**Background.** Every model above was trained and evaluated with a one-example demo and a strategy sentence. SPEC asks for emergence without demonstrations. We had set zero-shot aside early because the base model scored 0% zero-shot, writing the target number as its answer.
+
+**The cause was our prompt.** The `zero` prompt showed the tag skeleton but never said that `<python>` code is executed or that its output comes back.
+- We wrote a new zero-shot prompt, `r1zero_tool`. It uses the R1-Zero/TinyZero conversation frame and a plain description of the tool, as in ToRL/ZeroTIR. It has no example, no "check several candidates" and no "retry" (EXPERIMENTS §2.7s).
+- One description of the tool changes whether RL can start at all. Base Qwen3-4B, 256 training problems × 8 samples, T = 0.9:
+
+| Zero-shot prompt | Problems with ≥1 correct sample (= GRPO signal) | Pass@1 | Bare-number answers |
+|---|---|---|---|
+| `zero` (skeleton only) | 3 / 256 | 0.2% | 38% |
+| `r1zero_tool` (tool described) | **58 / 256** | 4.4% | 1% |
+
+**Training from it** (zero-shot arm `q4v2z2`: recipe v2, seed 2, the same schedule as the best model; only the prompt differs; pre-registered):
+
+| In-run validation, step | 0 | 5 | 10 | 15 | 20 |
+|---|---|---|---|---|---|
+| Zero-shot arm (no demo) | 4.3% | 10.0% | 17.7% | 24.3% | 29.7% |
+| v2 seed 2 (with demo) | 15.0% | 23.0% | 24.3% | 27.0% | 30.7% |
+
+- **It starts 11 points behind the demo prompt and catches up within about 20 steps.** Without a demonstration, the policy runs code, learns to stop inventing `<output>` blocks (8.8% → 1.0% of rollouts), and climbs as fast as the demo-primed policy.
+- **Why we missed it:**
+  - The zero-shot test used a prompt that hid the tool.
+  - The first pilots (8 prompts × 8 samples, ≤45 steps) were too small to learn from a near-0% start.
+  - Every later experiment inherited the demo prompt.
+  - The original recipe would also have struggled: at a 4% start, its format and execution credit on all-fail groups dominates the gradient, which is what produced the pilot-B shortcut (§5). v2 trains only on groups that contain a correct answer.
+- **Status:** 20 of 300 steps. Outputs are getting longer (cap share 0.17 → 0.30, against a 0.40 auto-stop guard).
+  - The pre-registered verdict is holdout3 of the final step, compared with v2 seed 2's 681.
+  - A Gemma-4-E4B zero-shot arm follows, to test whether the finding transfers across model families.
 
 ## 4. Compute bottlenecks and mitigations
 
