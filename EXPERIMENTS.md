@@ -843,6 +843,11 @@ Under v2, groups without a correct answer are not trained, so `zero` would give 
 - **Reported beside the Qwen zero-shot arm.**
 - **Secondary:** the same checkpoint with `fewshot_multi_retry`, so it can be set beside g4e4b's 309 (descriptive only, because the recipes differ), plus code-use, fake-`<output>` and cap-share trajectories.
 
+**Operational change (2026-11-08 17:13 UTC, before the gate):** phase a crashed with a CUDA out-of-memory error at step 14 (4 attempts, chain `FAILED`). It had been learning: in-run validation went 1.7% → 7.3% by step 10.
+- **Cause:** `g4v2z0-a` inherited `micro_batch: 8` from its source config. The earlier Gemma lineage ran with 4, and zero-shot Gemma writes much longer rollouts (cap share 20% vs 0.9% with the demo).
+- **Fix:** `micro_batch=2` for all phases (generator override). `micro_batch` only sets how many rollouts share one forward/backward pass, and it is excluded from the resume hash. The one side effect is that mini-batch boundaries round to whole micro-batches.
+- Resumed from the committed `step_14` on the same (restarted) VM. No other setting changed.
+
 ### 2.7q Qwen3-8B long continuation (`configs/q8b_long.yaml`, 2026-11-08): plateau
 **Question:** does the best model at the time (q8b-d s80: holdout3 557, test 585) keep improving with more training?
 

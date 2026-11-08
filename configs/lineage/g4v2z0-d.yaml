@@ -19,7 +19,7 @@ lora_alpha: 32
 dtype: bfloat16
 attn: sdpa
 chunked_vocab: true
-micro_batch: 4
+micro_batch: 2
 grad_ckpt: false
 generation: vllm
 vllm_gpu_util: 0.6
