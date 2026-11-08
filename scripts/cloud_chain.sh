@@ -13,9 +13,10 @@
 #        [EVAL_MODEL=Qwen/Qwen3-8B-Base] [EVAL_BASE=1] [POWEROFF=1] bash scripts/cloud_chain.sh
 # A config whose init_lora is baselines/<run id>_final warm-starts from that run's final committed step
 # (fetched from the bucket), which is how the lineage phases of scripts/make_lineage_configs.py chain together.
-# GATE=<run id>:<base val %>:<min gain pp> runs scripts/gate_check.py after that run and stops the chain if it fails.
+# GATE=<run id>:<base val % | step0>:<min gain pp> runs scripts/gate_check.py after that run and stops the chain if it fails.
 # A config model under models/ is fetched from the bucket (with its SHA256SUMS checked).
 # EVAL_MODEL is the base model of every adapter evaluated (one per process); EVAL_BASE=1 adds the bare base model.
+# EVAL_PROMPT is the prompt style of the val3/test evals (default fewshot_multi_retry).
 set -uo pipefail
 cd "$(dirname "$0")/.."
 : "${CHAIN_ID:?}"; : "${GCS_BUCKET:?}"; : "${COST_PER_HOUR:?}"; : "${RUNS:?}"; : "${VAL_ADAPTERS:?}"
@@ -94,14 +95,14 @@ for pass in 1 2 3; do
   ORD=$(printf "%s\n" "${NAMES[@]}" | shuf --random-source=<(yes $pass))
   ARGS=(); for n in $ORD; do ARGS+=(--adapter "$n=baselines/$n"); done
   echo "=== pass $pass order: $(echo $ORD)" >> "$LOG/val3.log"
-  "$PY" verification/eval_vllm.py --set val --val-n 300 --prompt-style fewshot_multi_retry --gpu-util 0.85 "${EV[@]}" \
+  "$PY" verification/eval_vllm.py --set val --val-n 300 --prompt-style "${EVAL_PROMPT:-fewshot_multi_retry}" --gpu-util 0.85 "${EV[@]}" \
     --out-dir "$LOG/val3/pass$pass" "${ARGS[@]}" 2>&1 | grep -E ": correct |Traceback|Error" >> "$LOG/val3.log"
   gcloud storage rsync -r "$LOG" "$B/chain/$CHAIN_ID" >/dev/null 2>&1
 done
 if [ -n "${TEST_ADAPTERS:-}" ]; then
   ARGS=(); for n in $TEST_ADAPTERS; do ARGS+=(--adapter "$n=baselines/$n"); done
   mark "TEST $TEST_ADAPTERS"
-  "$PY" verification/eval_vllm.py --set test --prompt-style fewshot_multi_retry --gpu-util 0.85 "${EV[@]}" \
+  "$PY" verification/eval_vllm.py --set test --prompt-style "${EVAL_PROMPT:-fewshot_multi_retry}" --gpu-util 0.85 "${EV[@]}" \
     --out-dir "$LOG/test" "${ARGS[@]}" 2>&1 | grep -E ": correct |Traceback|Error" >> "$LOG/test.log"
 fi
 gcloud storage rsync -r "$LOG" "$B/chain/$CHAIN_ID" >/dev/null 2>&1

@@ -766,6 +766,44 @@ Same seed, same rule, replay seed 2: 3-pass val 139.3 at phase d, test 509.
 
 **B. Zero-shot arm:** the design follows a literature review of R1-Zero-style recipes and is recorded in §2.7s before launch.
 
+### 2.7s Pre-registration (2026-11-08, before any training result): zero-shot (no-demo) arm `q4v2z2`
+**Question:** is the worked example in the prompt needed for the v2 recipe to learn, or does it only speed learning up? SPEC asks for emergence without demonstrations; every model so far was trained and evaluated with a one-example demo plus a strategy sentence.
+
+**Prompt `r1zero_tool`** (`rollout.format_prompt_r1zero_tool`; test `test_r1zero_tool_prompt_has_no_demo_or_strategy`):
+- **Frame:** the R1-Zero / TinyZero conversation frame ("A conversation between User and Assistant…"), plus TinyZero's answer-format example `<answer> (1 + 2) / 3 </answer>`.
+- **Tool:** a plain description, as in ToRL and ZeroTIR prompts: code in `<python>` is executed and its printed output is returned in `<output>`; at most 2 runs; the allowed operations.
+- **Left out:** no worked example, no "check several candidates", no "retry", no hints.
+
+**Why this prompt rather than the existing `zero` style** (probe on soos, base Qwen3-4B, 256 train problems × 8 samples, T = 0.9; `verification/logs/zeroprobe/`):
+
+| Prompt | Groups with ≥1 correct (= GRPO signal) | Pass@1 | Runs code | Bare-number answers |
+|---|---|---|---|---|
+| `zero` (format skeleton only; never says code runs) | 3 / 256 | 0.2% | 81% | 38% |
+| **`r1zero_tool`** | **58 / 256** (easy 44, medium 10, hard 4) | 4.4% | 70% | 1% |
+
+Under v2, groups without a correct answer are not trained, so `zero` would give almost no gradient. Describing the tool is what makes the zero-shot start learnable. `r1zero_tool` also has costs at the start: 22% of samples hit the 768-token cap and 12% write their own `<output>`.
+
+**Design:**
+- **Configs:** `configs/lineage/q4v2z2-{a,b,c,d}.yaml` (`scripts/make_lineage_configs.py q4v2z2 Qwen/Qwen3-4B-Base 2` with the v2 overrides plus `prompt_style=r1zero_tool max_total_usd=16.0`).
+- **Identical to v2 seed 2** (`q4v2s2-*`): seed, schedule (40 / 90 / 90 / 80 steps, final-step warm starts), every hyperparameter and the guards. The only difference is the prompt, in all four phases. v2 seed 2 used `fewshot_direct_retry` in phase a and `fewshot_multi_retry` in b–d.
+- **Budget:** at most $16 per phase.
+- **Gate after phase a** (`GATE=q4v2z2-a:4.3:3`): continue only if the smoothed in-run validation (last 3 evals) is ≥ 7.3% and first-round train accuracy is rising.
+  - The baseline is 4.3%: base model, `r1zero_tool`, greedy, on the same 300-problem validation split (soos HF; `verification/logs/zeroprobe/base_r1zero_tool_val300_greedy.*`).
+  - For reference, v2 seed 2 started phase a at 15% with its demo prompt.
+- **A length-guard trip is an outcome.** It is reported, not rerun or tuned around.
+- **The VM's lifetime ends at about 00:55 UTC.** If the chain is cut off, finishing it needs a new VM (resume from the bucket). If that isn't approved, the last committed checkpoint is evaluated and the run is reported as truncated, with its step count.
+
+**Primary outcome:** holdout3 accuracy of the final step reached, evaluated once on soos `eval.py` (§2.7o settings) with the arm's own prompt `r1zero_tool`. It is compared with v2 seed 2 (681, with its demo prompt):
+- **Gate fails:** "under this recipe, the demo is needed to start learning".
+- **Gate passes and the result is ≥ 661 (within 20 of 681, or above):** "the demo is not needed; the behaviour emerges from a tool description alone".
+- **Gate passes, but the result is below 661:** "the demo speeds up or improves RL but is not required". The gap is reported with paired McNemar.
+
+**Secondary:**
+- Holdout3 of the same checkpoint with `fewshot_multi_retry`, to check whether the policy also uses the demo.
+- 3-pass validation at each phase end, compared with v2 seed 2's phase ends (123.7 / 177.3 / 203.7 / 213.3 of 300) at equal steps.
+- Code-use rate, cap share, all-False → recovery rate, and whether retries reason from the printed values (§2.7p).
+- No test-set evals.
+
 ### 2.7q Qwen3-8B long continuation (`configs/q8b_long.yaml`, 2026-11-08): plateau
 **Question:** does the best model at the time (q8b-d s80: holdout3 557, test 585) keep improving with more training?
 

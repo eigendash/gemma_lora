@@ -45,7 +45,7 @@ from itertools import combinations
 
 import torch
 
-from rollout import assemble, encode_text, format_prompt
+from rollout import assemble, encode_text, format_prompt, format_prompt_r1zero_tool
 from verifier import verify_answer
 from sandbox import Sandbox
 from solver import solve
@@ -361,6 +361,7 @@ FEWSHOT_PROBLEMS = [  # not in the eval split ([25, 3, 1] -> 76 is a train probl
 ]
 PROMPT_STYLES = {
     "zero": (),                              # no examples
+    "r1zero_tool": (),                       # no examples: R1-Zero conversation frame + tool description only
     "fewshot_direct": ("direct",),           # format only: one direct, correct check -> answer
     "fewshot_direct_retry": ("direct",),     # same + one instruction sentence (rollout.RETRY_HINT)
     "fewshot": ("near_miss", "direct"),      # also demonstrates a failed check + systematic fix
@@ -371,6 +372,10 @@ PROMPT_STYLES = {
 
 def problem_prompt(nums: list[int], target: int, style: str = "zero", solution_hint: str = "") -> str:
     """The per-problem prompt for a prompt style (the ``*_retry`` styles add RETRY_HINT)."""
+    if style == "r1zero_tool":
+        if solution_hint:
+            raise ValueError("r1zero_tool takes no solution hint")
+        return format_prompt_r1zero_tool(nums, target)
     return format_prompt(nums, target, retry_hint=style.endswith("_retry"), multi=style.startswith("fewshot_multi"),
                          wide=style.startswith("fewshot_wide"), solution_hint=solution_hint)
 

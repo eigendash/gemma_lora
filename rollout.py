@@ -99,6 +99,24 @@ def format_prompt(nums: list[int], target: int, retry_hint: bool = False, multi:
     )
 
 
+def format_prompt_r1zero_tool(nums: list[int], target: int) -> str:
+    """Zero-shot prompt in the R1-Zero / TinyZero conversation frame, plus a description of the tool (as in
+    ToRL / ZeroTIR prompts). It has no worked example and no strategy (no "check several candidates", no
+    "retry"): it says only what the tags do and that code really runs. The answer example is TinyZero's."""
+    nums_s = ", ".join(str(n) for n in nums)
+    return (
+        "A conversation between User and Assistant. The User gives a problem and the Assistant solves it. "
+        "The Assistant first thinks about the reasoning process inside <think> </think> tags. "
+        "The Assistant can run Python code by writing it inside <python> </python> tags: the code is executed "
+        "and its printed output is returned inside <output> </output> tags. Code may use integers, arithmetic, "
+        "variables, print, range and len, and can be run at most 2 times. "
+        "The Assistant then gives the final answer, an arithmetic expression, inside <answer> </answer> tags, "
+        "for example <answer> (1 + 2) / 3 </answer>.\n"
+        f"User: Using the numbers {nums_s}, make {target} with +, -, *, / (each number can be used at most once).\n"
+        "Assistant:"
+    )
+
+
 # ---------------------------------------------------------------------------
 # Tokenization of protocol text
 # ---------------------------------------------------------------------------

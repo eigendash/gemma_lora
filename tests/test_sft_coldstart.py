@@ -201,3 +201,14 @@ def test_segments_from_sampled_completion_mask_outputs(tok):
     text_trained = tok.decode([i for i in ex["labels"] if i != -100])
     assert "True 14" not in text_trained and "False 9" not in text_trained   # env tokens masked
     assert "2 * 7" in text_trained and "</answer>" in text_trained
+
+
+def test_r1zero_tool_prompt_has_no_demo_or_strategy(sandbox):
+    """The zero-shot arm's prompt: tool description only, no worked example, no strategy sentence, no hint."""
+    assert sft_coldstart.fewshot_prefix(sandbox, "r1zero_tool") == ""
+    p = sft_coldstart.problem_prompt([25, 3, 7, 50], 182, "r1zero_tool")
+    assert "25, 3, 7, 50" in p and "182" in p and p.endswith("Assistant:")
+    for s in ("several", "retry", "try a different", "Hint:", "<output>\n", "True"):
+        assert s not in p
+    with pytest.raises(ValueError):
+        sft_coldstart.problem_prompt([25, 3, 7, 50], 182, "r1zero_tool", solution_hint="25 * 7")
