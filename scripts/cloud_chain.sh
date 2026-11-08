@@ -5,7 +5,8 @@
 #   2. 3-pass validation (separate vLLM processes, shuffled adapter order; EXPERIMENTS.md §2.7j) of VAL_ADAPTERS;
 #   3. one test-set pass of TEST_ADAPTERS (all in one process, so the comparison is paired);
 #   4. writes <bucket>/chain/<CHAIN_ID>/DONE and powers the VM off (POWEROFF=1), so an idle GPU is never billed.
-# Adapters are given as name=src, src = a local dir or runs/<id>/ckpt/step_<n> (fetched from the bucket).
+# Adapters are given as name=src, src = a local dir, runs/<id>/ckpt/step_<n> or runs/<id>/ckpt/latest (fetched from the
+# bucket). A run stopped by its cost/time budget (--max-total-usd, max_hours) is evaluated from its last checkpoint.
 # Never reads the final-evaluation sets; a test greps this file to keep it that way.
 # usage: CHAIN_ID=x GCS_BUCKET=gs://... COST_PER_HOUR=2.0 RUNS="id1=configs/a.yaml id2=configs/b.yaml" \
 #        VAL_ADAPTERS="ref=baselines/p10b_s80 a80=runs/id1/ckpt/step_80" TEST_ADAPTERS="ref a80" \
@@ -49,8 +50,16 @@ for rc in $RUNS; do
   fi
   mark "TRAIN $id $cfg"
   RUN_ID="$id" CONFIG="$cfg" GCS_BUCKET="$B" COST_PER_HOUR="$COST_PER_HOUR" bash scripts/cloud_train.sh > "$LOG/$id.wrapper.log" 2>&1
-  gcloud storage ls "$B/runs/$id/ckpt/step_$steps/COMMIT.json" >/dev/null 2>&1 || { mark "FAILED $id"; exit 1; }
-  mark "TRAINED $id"
+  if ! gcloud storage ls "$B/runs/$id/ckpt/step_$steps/COMMIT.json" >/dev/null 2>&1; then
+    # a cost/time budget stop (--max-total-usd / max_hours) saves a checkpoint and exits cleanly: evaluate what we have
+    if grep -qE "^(max-total-usd|max-hours): saved checkpoint at step" "outputs/$id/train.log" 2>/dev/null; then
+      mark "STOPPED_BUDGET $id ($(grep -oE "^(max-total-usd|max-hours): saved checkpoint at step [0-9]+" "outputs/$id/train.log" | tail -1))"
+    else
+      mark "FAILED $id"; exit 1
+    fi
+  else
+    mark "TRAINED $id"
+  fi
   if [ -n "${GATE:-}" ] && [ "${GATE%%:*}" = "$id" ]; then  # GATE=<run id>:<base val %>:<min gain pp>
     IFS=: read -r _ gbase ggain <<< "$GATE"
     if "$PY" scripts/gate_check.py "outputs/$id/run/train_log.jsonl" --baseline "$gbase" --min-gain-pp "$ggain" >> "$LOG/chain.log" 2>&1; then
@@ -65,6 +74,11 @@ done
 NAMES=()
 for a in $VAL_ADAPTERS; do
   n="${a%%=*}"; src="${a#*=}"
+  if [[ "$src" =~ ^runs/([^/]+)/ckpt/latest$ ]]; then  # the highest committed step of that run
+    r="${BASH_REMATCH[1]}"
+    last=$(gcloud storage ls "$B/runs/$r/ckpt/" 2>/dev/null | sed -nE 's#.*/step_([0-9]+)/$#\1#p' | sort -n | tail -1)
+    src="runs/$r/ckpt/step_$last"; mark "LATEST $n = $src"
+  fi
   if [ ! -d "baselines/$n" ]; then
     if [[ "$src" == baselines/* ]] && [ ! -d "$src" ]; then mkdir -p "$src" && gcloud storage cp "$B/$src/*" "$src/" >/dev/null 2>&1; fi
     if [ -d "$src" ]; then [ "$src" = "baselines/$n" ] || cp -r "$src" "baselines/$n"
