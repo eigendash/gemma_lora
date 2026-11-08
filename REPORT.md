@@ -46,7 +46,13 @@ injected mid-generation and masked out of the loss.
 - **Same hyperparameters for every model,** and each phase starts from the previous phase's final step.
 - **Qwen3-8B vs 4B under the same rule:** clearly better. Against the from-scratch 4B seeds it scores 557 vs 512 / 498 (p = 0.001 / p < 1e-5), about +5 pp. The two 4B seeds differ by only 14 (p = 0.33), so the recipe is fairly stable across seeds.
 - **Gemma:** the recipe works there too (8× its base), but from a far weaker starting point.
-- **Still running:** "recipe v2" (no hints, no shaping-only groups, gradient clipping, no KL penalty) on the same two 4B seeds, compared at equal compute (EXPERIMENTS §2.7p).
+- **Recipe v2, preliminary (1 seed, primary holdout3 eval pending).** v2 drops hints, drops the training on all-fail ("shaping-only") groups and the KL penalty, and adds gradient clipping (EXPERIMENTS §2.7p).
+  - Seed 1 was stopped by the length guard in phase b.
+  - **Seed 2 finished at 70.0% on test,** against 50.9% for the same-seed replay (p = 3e-33) and 58.5% for Qwen3-8B (p = 2e-13).
+  - **Its self-correction changed in kind:** after an all-False first check it recovers 61% of the time (12% for the replay). It reasons from the printed values, then runs one targeted check.
+  - The cost is more truncation: 8.3% hit the cap, and format compliance is 91.7%.
+  - Until holdout3 and a second seed are in, this is a single-seed result on a reused test set.
+- **More training does not help the original recipe:** Qwen3-8B continued for 102 more steps stayed flat on validation (58% → 54–59%; §2.7q).
 
 ## 2. Learning dynamics
 
@@ -146,8 +152,9 @@ Reward: `R = R_correct + R_exec + R_format − λ·len`, with λ applied only be
 - Hints are training-only; the evaluation code never passes them.
 - The holdout sets are frozen by sha256, disjoint from all other data, absent from the training VM image, and checked by tests.
 
-## 6. What's next (in progress)
+## 6. What's next
 
-- **Ablation:** P10b with hints off, everything else identical. It answers whether P10b's gain came from the hints or simply from 80 more steps.
-- **P10c:** a third hint cycle from P10b s80.
-- **Evaluation:** both are chosen on 3-pass validation and then evaluated once on a fresh holdout (`data/holdout2.jsonl`).
+The hint ablation and P10c are done (§2: no hint effect).
+- **v2 seed 2:** a holdout3 eval of the phase-d final step, once, as pre-registered (EXPERIMENTS §2.7p).
+- **v2 seed 1:** resume from its guard stop. More v2 seeds are needed before v2 can replace the recipe above.
+- If v2 holds up, a continuation of v2 seed 2 to test whether it is still improving. The original recipe has plateaued (§2.7q).

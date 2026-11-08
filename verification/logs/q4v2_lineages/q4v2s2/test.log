@@ -1,0 +1,4 @@
+v2s2_a: correct 0.421 (421/1000) {'easy': 0.698, 'hard': 0.203, 'medium': 0.27} 56s
+v2s2_b: correct 0.556 (556/1000) {'easy': 0.843, 'hard': 0.333, 'medium': 0.397} 49s
+v2s2_c: correct 0.658 (658/1000) {'easy': 0.875, 'hard': 0.463, 'medium': 0.563} 44s
+v2s2_d: correct 0.700 (700/1000) {'easy': 0.895, 'hard': 0.56, 'medium': 0.58} 41s

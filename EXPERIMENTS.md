@@ -1,6 +1,6 @@
 # Experiment log: Countdown tool-use GRPO (gemma-lora)
 
-Last updated: 2026-11-04. This covers everything tried so far: what changed, what worked and what didn't.
+Last updated: 2026-11-08 (§2.7p v2 seed 2 result, §2.7q Qwen3-8B continuation). The §1 summary table below dates from 2026-11-04; REPORT.md has the current picture. This covers everything tried so far: what changed, what worked and what didn't.
 Detailed evidence is in `VERIFICATION.md` (sections are cited as §N) and in `verification/logs/`.
 
 **Task:** given 3–6 numbers and a target, the model writes `<think>` → optional `<python>` (run in a
@@ -718,7 +718,47 @@ In phase b, around step 45: v2 ran 420–520 tokens per rollout, with 0.3–0.5 
 - With them dropped, and with the KL penalty off as well, the only signal left comes from groups that contain a correct answer. There, longer outputs that check more candidates are sometimes rewarded, and the length penalty (beyond 512 tokens) is too weak to compete with correctness.
 - Lengths and entropy grow until the guard trips.
 
-This is a pre-registered negative: **v2 as specified is not a viable recipe.** The review's suggestion has a side effect that its analysis did not anticipate.
+~~This is a pre-registered negative: **v2 as specified is not a viable recipe.**~~ *Superseded by the seed 2 result below.* The diagnosis of the length drift stands, but seed 1 hit the guard and seed 2 did not, so "not viable" was premature.
+
+**v2 seed 2 completed all 4 phases (2026-11-08, chain DONE 09:40 UTC). Strongest model so far; the primary holdout3 eval is NOT yet run.**
+- **Course:** phase b was preempted and resumed from step 30, and phase c from step 12. The resumed segments never tripped the guard; the step 0–29 segment of phase b was not kept locally, but the chain ran to the end, which it doesn't do after a guard trip.
+- **The length drift reversed during training:** share of rollouts at the 768-token cap 0.32 (phase b) → 0.20 (end of c) → 0.06 (end of d); tokens per rollout about 440 → 380; train accuracy 0.45 → 0.62.
+
+| v2 seed 2, final step of each phase | a | b | c | d |
+|---|---|---|---|---|
+| 3-pass validation /300 (mean) | 123.7 | 177.3 | 203.7 | **213.3** |
+| test /1000 (vLLM) | 421 | 556 | 658 | **700** |
+
+Same seed, same rule, replay seed 2: 3-pass val 139.3 at phase d, test 509.
+
+**Test set, phase-d final steps** (`verification/report_metrics.py` on the dumps):
+
+| | replay seed 2 | Qwen3-8B replay | **v2 seed 2** |
+|---|---|---|---|
+| Pass@1 | 50.9% | 58.5% | **70.0%** |
+| Format compliance | 92.5% | 98.8% | 91.7% |
+| Generated tokens (mean) | 383 | 314 | 341 |
+| Hit the 768-token cap | 7.5% | 1.2% | 8.3% |
+| Lines printed per check, round 1 / round 2 | 5.2 / 3.6 | 4.4 / 3.0 | 3.5 / **1.0** |
+| All-False first check → retried → solved | 66 / 531 (12.4%) | 86 / 494 (17.4%) | **274 / 450 (60.9%)** |
+
+- Paired McNemar (only-A / only-B): v2 s2 vs replay s2 42 / 233, p = 3e-33; v2 s2 vs Qwen3-8B 67 / 182, p = 2e-13.
+- **The behaviour changed, not only the score.** After a failed wide check, v2 reasons from the printed values in `<think>` ("6 * 50 + 2 * 3 = 306, not 312. Wait, 312 = 50 * 6 + 12, and 12 = 9 + 3") and then runs a *single* targeted check. The replay lineages sample a new batch of candidates instead. This is the value-using backtracking the earlier lineages lacked (REPORT §3 "Limits").
+- **Hypothesis (untested):** the shaping-only groups rewarded short, well-formed failures, which also suppressed long in-`<think>` arithmetic after a failed check. Removing them allowed that behaviour to emerge, at the cost of more truncation.
+- **Caveats:** n = 1 seed (seed 1 is stopped at phase b step 49 by the guard); the test set has been used for earlier decisions; the primary outcome (holdout3, once) is pending; format compliance and cap share are worse than the replays.
+- Logs: `verification/logs/q4v2_lineages/q4v2s2*` (chain, val3 passes, test dumps, per-phase train logs).
+
+### 2.7q Qwen3-8B long continuation (`configs/q8b_long.yaml`, 2026-11-08): plateau
+**Question:** does the best model at the time (q8b-d s80: holdout3 557, test 585) keep improving with more training?
+
+**Setup:** phase-d settings without hints, a fresh AdamW with a 5-step warmup, up to 300 more steps, and a $36 budget cap.
+
+**Result:** it ran 102 steps (6.09 GPU-h) and was stopped by an external SIGTERM at 10:01 UTC. The checkpoint at step 102 was saved, but the chain's eval and power-off did not run.
+- **In-run validation (300 problems, 1 pass)** was flat to slightly down: 58.3% at step 0, 59.3% at its peak (s50), 53.7% at s100. The single-pass SD is about 1.5 pp.
+- **Train accuracy** was flat (0.45 → 0.43). KL stayed at about 0.08, there was no length drift (0.1% at the cap, about 300 tokens), and entropy rose slightly (0.22 → 0.28).
+- **The original recipe has saturated on Qwen3-8B by 300 steps;** another 100 steps buy nothing.
+- **No eval was run** on the step-102 checkpoint. Logs: `verification/logs/q8b_long/`.
+- *Note:* `gen_train_logp_dev` reads 1.0–1.8 in these vLLM runs. It is not the per-token gap, which is `gen_logp_dev_mean` ≈ 0.01, the same as every earlier vLLM run.
 
 ### 2.7f Final test set (data/eval.jsonl, 1,000 problems; 400 easy / 300 medium / 300 hard), greedy
 Each checkpoint was chosen on the 300-problem validation split before this run. The test set had not been used before.

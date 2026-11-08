@@ -1,0 +1,11 @@
+SKIP q4v2s2-a (step_40 committed) 2026-11-08T01:17:42Z
+SKIP q4v2s2-b (step_90 committed) 2026-11-08T01:17:49Z
+INIT q4v2s2-c from runs/q4v2s2-b step_90 2026-11-08T01:18:01Z
+TRAIN q4v2s2-c configs/lineage/q4v2s2-c.yaml 2026-11-08T01:18:02Z
+TRAINED q4v2s2-c 2026-11-08T05:31:19Z
+INIT q4v2s2-d from runs/q4v2s2-c step_90 2026-11-08T05:31:32Z
+TRAIN q4v2s2-d configs/lineage/q4v2s2-d.yaml 2026-11-08T05:31:32Z
+TRAINED q4v2s2-d 2026-11-08T09:29:19Z
+VAL3 v2s2_a v2s2_b v2s2_c v2s2_d (model Qwen/Qwen3-4B-Base) 2026-11-08T09:29:27Z
+TEST v2s2_a v2s2_b v2s2_c v2s2_d 2026-11-08T09:36:56Z
+DONE 2026-11-08T09:40:43Z
