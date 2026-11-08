@@ -764,6 +764,13 @@ Same seed, same rule, replay seed 2: 3-pass val 139.3 at phase d, test 509.
 - **Secondary:** 3-pass validation of d80, s50 and s100 in the same chain (paired passes), plus cap share, format and recovery rate.
 - No test-set eval: the test set is already overused.
 
+**Deviation (2026-11-08 13:08 UTC, recorded before the holdout3 eval):** the continuation was stopped by hand at **step 45** (SIGTERM; the trainer finished the step and committed `step_45`, sha256 `680a7c80…`). It was not run to s100.
+- **Reason:** in-run validation was flat (70.7% at s0, then 68.0–69.7% in all 8 evals from s5 to s40), as was train accuracy. The user chose to give the remaining VM time to the zero-shot arm (B), which then started at 13:10 UTC.
+- **Primary measure:** holdout3 of s45, evaluated once, with the same thresholds as pre-registered.
+- **Caveat:** the decision used in-run validation, so a plateau verdict at s45 cannot exclude a later rise between s45 and s100.
+- **Not run:** the chain's 3-pass validation (the chain logged the stop as `FAILED`, since it recognises only budget stops).
+- Logs: `verification/logs/q4v2s2long/`.
+
 **B. Zero-shot arm:** the design follows a literature review of R1-Zero-style recipes and is recorded in §2.7s before launch.
 
 ### 2.7s Pre-registration (2026-11-08, before any training result): zero-shot (no-demo) arm `q4v2z2`
