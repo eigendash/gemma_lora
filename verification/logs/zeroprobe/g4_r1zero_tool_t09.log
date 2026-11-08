@@ -1,0 +1,45 @@
+Loading weights:   0%|          | 0/665 [00:00<?, ?it/s]Loading weights:  69%|██████▊   | 456/665 [00:00<00:00, 4552.99it/s]Loading weights: 100%|██████████| 665/665 [00:00<00:00, 5650.03it/s]
+{
+  "config": {
+    "model": "models/gemma-4-E4B-text",
+    "init_adapter": "",
+    "adapter": "",
+    "eval_file": "outputs/probe_train256x8.jsonl",
+    "n_eval": 0,
+    "max_new_tokens": 768,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.9,
+    "dtype": "bfloat16",
+    "attn": "eager",
+    "device": "cuda",
+    "seed": 0,
+    "fewshot": false,
+    "prompt_style": "r1zero_tool",
+    "generation": "batched",
+    "batch_size": 128,
+    "control": "real",
+    "merge_adapter": false,
+    "out": "outputs/zeroprobe/g4_r1zero_tool_t09.json",
+    "dump": "outputs/zeroprobe/g4_r1zero_tool_t09.jsonl"
+  },
+  "metrics": {
+    "n": 2048,
+    "pass@1": 0.00439453125,
+    "format_compliance": 0.44677734375,
+    "length_mean": 305.46923828125,
+    "length_p50": 194,
+    "length_p95": 768,
+    "length_max": 768,
+    "per_tier_pass@1": {
+      "easy": 0.010817307692307692,
+      "hard": 0.0,
+      "medium": 0.0
+    },
+    "mean_code_rounds": 0.43408203125,
+    "hallucination_rate": 0.24853515625,
+    "n_failing": 0,
+    "self_correction_correct": 0.0,
+    "self_correction_backtrack": 0.0
+  }
+}

@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 # Create the RTX PRO 6000 spot VM (same settings as tp-rtx6000 on 2026-11-07), ship the repo (git HEAD + train/eval
 # data only; holdout files never leave the Mac), and start a chain script on it detached.
-# usage: CHAIN_SCRIPT=path/to/chain_cmd.sh [VM=tp-rtx6000] [ZONES="us-central1-c us-central1-b"] bash scripts/gcp/create_gpu_vm.sh
+# usage: CHAIN_SCRIPT=path/to/chain_cmd.sh [VM=tp-rtx6000] [PROJECT=countdown-rl-16875] [SA=<project number>-compute@...]
+#        [MAX_RUN=21h] [ZONES="us-central1-c us-central1-b"] bash scripts/gcp/create_gpu_vm.sh
+# A VM in another project needs its service account granted roles/storage.objectAdmin on the checkpoint bucket.
 # CHAIN_SCRIPT is a bash script run on the VM from ~/run (it should end with POWEROFF=1 / sudo poweroff).
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 : "${CHAIN_SCRIPT:?}"
 VM="${VM:-tp-rtx6000}"; ZONES="${ZONES:-us-central1-c us-central1-b}"
+MAX_RUN="${MAX_RUN:-21h}"; PROJECT="${PROJECT:-countdown-rl-16875}"; SA="${SA:-516504598961-compute@developer.gserviceaccount.com}"
+export CLOUDSDK_CORE_PROJECT="$PROJECT"
 git diff --quiet HEAD -- || { echo "commit first: the VM gets git HEAD"; exit 1; }
 STAGE="$(mktemp -d)"
 git archive --format=tar HEAD | tar xf - -C "$STAGE"
@@ -16,12 +20,12 @@ COPYFILE_DISABLE=1 tar czf "$STAGE.tgz" -C "$STAGE" .
 ZONE=""
 for z in $ZONES; do
   if gcloud compute instances create "$VM" --zone "$z" --machine-type g4-standard-48 \
-      --provisioning-model SPOT --instance-termination-action DELETE --max-run-duration 21h \
+      --provisioning-model SPOT --instance-termination-action DELETE --max-run-duration "${MAX_RUN:-21h}" \
       --maintenance-policy TERMINATE --no-restart-on-failure \
       --image-project deeplearning-platform-release --image common-cu129-ubuntu-2404-nvidia-580-v20261029 \
       --boot-disk-size 200GB --boot-disk-type hyperdisk-balanced \
       --metadata install-nvidia-driver=True \
-      --service-account 516504598961-compute@developer.gserviceaccount.com \
+      --service-account "$SA" \
       --scopes devstorage.read_write,logging.write \
       --shielded-vtpm --shielded-integrity-monitoring; then ZONE="$z"; break; fi
   echo "create failed in $z; trying the next zone"

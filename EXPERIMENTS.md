@@ -819,6 +819,29 @@ Under v2, groups without a correct answer are not trained, so `zero` would give 
 - Code-use rate, cap share, all-False → recovery rate, and whether retries reason from the printed values (§2.7p).
 - No test-set evals.
 
+### 2.7t Pre-registration (2026-11-09, before any training result): Gemma-4-E4B zero-shot arm `g4v2z0`
+**Question:** does the zero-shot finding (§2.7s, REPORT §3c) transfer to another model family?
+- **Not asked:** whether the demo helps Gemma. The only Gemma reference (g4e4b, holdout3 309) used the original recipe with the demo, so it differs in recipe *and* prompt. The clean demo-vs-no-demo pair would need a Gemma v2-with-demo run, which is deferred to available credits.
+
+**Configs:** `configs/lineage/g4v2z0-{a,b,c,d}.yaml`, identical to `q4v2z2-*` except `model: models/gemma-4-E4B-text` and `seed: 0` (the seed of g4e4b).
+
+**Probe** (soos, base model, `r1zero_tool`, 256 train × 8, T = 0.9, eager attention; `verification/logs/zeroprobe/g4_*`):
+- Learning signal on 8 / 256 problems (all easy); pass@1 0.4%.
+- Runs code 33%, ends with an answer 52%, writes its own `<output>` 25%, cap share 20%.
+- **Greedy validation baseline:** 1.3% (4 / 300).
+
+**Gate after phase a:** `GATE=g4v2z0-a:1.3:3`. Continue only if the smoothed in-run validation is ≥ 4.3% and first-round train accuracy is rising. A gate fail means "zero-shot from a tool description does not start on Gemma-4-E4B under v2", and is reported as such.
+
+**Compute:**
+- **Where:** a separate VM in project `gdrive-cli-513614` (same billing account, own GPU quota), run in parallel with `q4v2z2`.
+- **Limits:** 16-hour maximum lifetime, set by the user for safety; $16 cap per phase.
+- **If the VM's lifetime ends before phase d finishes:** the last committed step is evaluated and the run is reported as truncated with its step count. No new VM without the user's approval.
+
+**Primary outcome:** holdout3 of the final step reached, evaluated once on soos (eager attention, VERIFICATION §21; otherwise §2.7o settings) with `r1zero_tool`.
+- **Gain over the base:** reported with paired McNemar. The base on holdout3 with `r1zero_tool` is evaluated once alongside, since base Gemma with the demo prompt scored 37.
+- **Reported beside the Qwen zero-shot arm.**
+- **Secondary:** the same checkpoint with `fewshot_multi_retry`, so it can be set beside g4e4b's 309 (descriptive only, because the recipes differ), plus code-use, fake-`<output>` and cap-share trajectories.
+
 ### 2.7q Qwen3-8B long continuation (`configs/q8b_long.yaml`, 2026-11-08): plateau
 **Question:** does the best model at the time (q8b-d s80: holdout3 557, test 585) keep improving with more training?
 
