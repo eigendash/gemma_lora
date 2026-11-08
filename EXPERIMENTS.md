@@ -748,6 +748,24 @@ Same seed, same rule, replay seed 2: 3-pass val 139.3 at phase d, test 509.
 - **Caveats:** n = 1 seed (seed 1 is stopped at phase b step 49 by the guard); the test set has been used for earlier decisions; the primary outcome (holdout3, once) is pending; format compliance and cap share are worse than the replays.
 - Logs: `verification/logs/q4v2_lineages/q4v2s2*` (chain, val3 passes, test dumps, per-phase train logs).
 
+**v2 seed 2 on holdout3 (primary outcome, evaluated once, soos `eval.py`, same settings as §2.7o): 681 / 1000** (easy 355, medium 173, hard 153). The adapter's sha256 matches the bucket's step-80 COMMIT.
+- **Comparison:** replay seed 2 scored 498, replay seed 1 512, and Qwen3-8B 557.
+- **Format and recovery:** format compliance 90.5% and 9.5% at the 768-token cap; after an all-False first check, 272 of 464 recovered (58.6%, against 13–17% for the replays). Logs: `verification/logs/holdout/h3_q4v2s2_d80.*`.
+- **Pre-specified reading:** v2 − replay averaged over 2 seeds. Only seed 2 exists, so the reading is incomplete. Seed 1 is counted as a guard stop, not resumed.
+
+### 2.7r Pre-registration (2026-11-08, before any result): v2 seed 2 continuation, and a zero-shot (no-demo) arm
+**A. Continuation** (`configs/q4v2s2_long.yaml`, run `q4v2s2long`, cloud RTX PRO 6000):
+- **Question:** is the best model still improving after 300 steps?
+- **Setup:** 100 more steps from q4v2s2-d s80. Identical v2 settings and seed; fresh AdamW with the 5-step warmup used at every phase boundary; budget cap $16.
+- **Primary measure:** holdout3 of the final step (s100, or the last checkpoint if the budget stops it), evaluated once on soos with the §2.7o settings, paired against d80 (681).
+  - **Improving:** ≥ +20, outside the ±15–20 run-to-run spread, and McNemar p < 0.05.
+  - **Plateau:** within ±20.
+  - **Degrading:** ≤ −20.
+- **Secondary:** 3-pass validation of d80, s50 and s100 in the same chain (paired passes), plus cap share, format and recovery rate.
+- No test-set eval: the test set is already overused.
+
+**B. Zero-shot arm:** the design follows a literature review of R1-Zero-style recipes and is recorded in §2.7s before launch.
+
 ### 2.7q Qwen3-8B long continuation (`configs/q8b_long.yaml`, 2026-11-08): plateau
 **Question:** does the best model at the time (q8b-d s80: holdout3 557, test 585) keep improving with more training?
 
