@@ -5,9 +5,11 @@
 #        [MAX_RUN=21h] [ZONES="us-central1-c us-central1-b"] bash scripts/gcp/create_gpu_vm.sh
 # A VM in another project needs its service account granted roles/storage.objectAdmin on the checkpoint bucket.
 # CHAIN_SCRIPT is a bash script run on the VM from ~/run (it should end with POWEROFF=1 / sudo poweroff).
+# BUCKET is its GCS bucket: the prebuilt venv is restored from it BEFORE the chain starts (cloud_chain.sh reads configs
+# with the venv python, so a missing venv silently skips the model fetch).
 set -euo pipefail
 cd "$(dirname "$0")/../.."
-: "${CHAIN_SCRIPT:?}"
+: "${CHAIN_SCRIPT:?}"; BUCKET="${BUCKET:?BUCKET=gs://... (the chain bucket, for the venv restore)}"
 VM="${VM:-tp-rtx6000}"; ZONES="${ZONES:-us-central1-c us-central1-b}"
 MAX_RUN="${MAX_RUN:-21h}"; PROJECT="${PROJECT:-countdown-rl-16875}"; SA="${SA:-516504598961-compute@developer.gserviceaccount.com}"
 export CLOUDSDK_CORE_PROJECT="$PROJECT"
@@ -37,7 +39,9 @@ for i in $(seq 1 40); do
 done
 gcloud compute scp "$STAGE.tgz" "$VM:code.tgz" --zone "$ZONE"
 gcloud compute scp "$CHAIN_SCRIPT" "$VM:chain_cmd.sh" --zone "$ZONE"
-gcloud compute ssh "$VM" --zone "$ZONE" --command 'mkdir -p ~/run && tar xzf ~/code.tgz -C ~/run && chmod +x ~/chain_cmd.sh &&
-  (setsid nohup bash ~/chain_cmd.sh > ~/chain.log 2>&1 < /dev/null &) && sleep 5 && echo started && nvidia-smi -L'
+gcloud compute ssh "$VM" --zone "$ZONE" --command \
+  "mkdir -p ~/run && tar xzf ~/code.tgz -C ~/run && chmod +x ~/chain_cmd.sh && cd ~/run && GCS_BUCKET=$BUCKET bash scripts/cloud_restore_env.sh && .venv-vllm/bin/python -c 'import vllm'"
+gcloud compute ssh "$VM" --zone "$ZONE" --command \
+  '(setsid nohup bash ~/chain_cmd.sh > ~/chain.log 2>&1 < /dev/null &) && sleep 5 && echo started && nvidia-smi -L'
 rm -rf "$STAGE" "$STAGE.tgz"
 echo "ZONE=$ZONE"
