@@ -834,6 +834,7 @@ Under v2, groups without a correct answer are not trained, so `zero` would give 
 
 **Compute:**
 - **Where:** a separate VM in project `gdrive-cli-513614` (same billing account, own GPU quota), run in parallel with `q4v2z2`.
+- **Storage:** its own bucket `gs://gdrive-cli-513614-g4ckpt`, which holds a byte-identical copy of `envs/` and `models/gemma-4-E4B-text/` from the main bucket. A cross-project IAM grant on the main bucket was not used.
 - **Limits:** 16-hour maximum lifetime, set by the user for safety; $16 cap per phase.
 - **If the VM's lifetime ends before phase d finishes:** the last committed step is evaluated and the run is reported as truncated with its step count. No new VM without the user's approval.
 
