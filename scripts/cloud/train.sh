@@ -4,18 +4,18 @@
 # would otherwise survive and hold GPU memory; see VERIFICATION.md §15). Spot preemption deletes
 # the VM; relaunch on a new VM with the same RUN_ID and it resumes from the bucket.
 # usage: RUN_ID=p7-... GCS_BUCKET=gs://... COST_PER_HOUR=2.0 CONFIG=configs/p7_rtx6000.yaml \
-#        [MAX_TOTAL_USD=40] bash scripts/cloud_train.sh
+#        [MAX_TOTAL_USD=40] bash scripts/cloud/train.sh
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
+export PYTHONPATH="$PWD/src${PYTHONPATH:+:$PYTHONPATH}"
 export VLLM_USE_FLASHINFER_SAMPLER=0  # the FlashInfer sampler JIT-builds with ninja (not on PATH) and was never tested; vLLM's torch sampler was
 : "${RUN_ID:?}"; : "${GCS_BUCKET:?}"; : "${COST_PER_HOUR:?}"; : "${CONFIG:?}"
 export CKPT_BACKEND=gcs GCS_BUCKET PYTHONUNBUFFERED=1
 PY="${PY:-.venv-vllm/bin/python}"
 OUT="outputs/$RUN_ID"; mkdir -p "$OUT"
-bash scripts/cloud_restore_env.sh
-if [ ! -x "$PY" ]; then  # restore failed: build it (same as cloud_smoke.sh)
-  ~/.local/bin/uv venv .venv-vllm --python 3.14
-  ~/.local/bin/uv pip install --python "$PY" -r requirements-vllm.txt google-cloud-storage==3.17.1 pyyaml pytest
+bash scripts/cloud/restore_env.sh
+if [ ! -x "$PY" ]; then  # restore failed: build it (uv sync --extra cuda)
+  UV_PROJECT_ENVIRONMENT=.venv-vllm ~/.local/bin/uv sync --frozen --extra cuda --no-dev
 fi
 EXTRA=(); [ -n "${MAX_TOTAL_USD:-}" ] && EXTRA+=(--max-total-usd "$MAX_TOTAL_USD")
 sync_logs() {  # logs live on the VM disk, which spot preemption / max-run-duration deletes; mirror them to the bucket
@@ -32,7 +32,7 @@ gcloud storage cp "$CONFIG" "$OUT/provenance.txt" "${GCS_BUCKET%/}/runs/$RUN_ID/
 ( while sleep "${LOG_SYNC_S:-300}"; do sync_logs; done ) &
 SYNC_PID=$!
 for attempt in 1 2 3 4; do
-  setsid "$PY" -u train_rl.py --config "$CONFIG" --run-id "$RUN_ID" --backend gcs --output-dir "$OUT/run" \
+  setsid "$PY" -u -m countdown_rl.rl.grpo --config "$CONFIG" --run-id "$RUN_ID" --backend gcs --output-dir "$OUT/run" \
     --device cuda --resume auto --cost-per-hour "$COST_PER_HOUR" "${EXTRA[@]}" >> "$OUT/train.log" 2>&1 &
   P=$!; wait $P; rc=$?
   kill -9 -- -$P 2>/dev/null || true

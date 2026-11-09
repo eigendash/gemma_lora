@@ -1,0 +1,63 @@
+[project]
+name = "countdown-rl"
+version = "1.0.0"
+description = "GRPO with sandboxed code execution on the Countdown numbers game"
+readme = "README.md"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "accelerate==1.15.0",
+    "huggingface-hub==2.4.0",
+    "numpy>=2.4,<2.6",
+    "peft==0.21.2",
+    "psutil>=7",
+    "pyyaml==6.0.3",
+]
+
+[project.optional-dependencies]
+# AMD Strix Halo workstation (ROCm 7.2): HF generation, used for evaluation and probes.
+rocm = [
+    "numpy==2.5.4",
+    "torch==2.14.1",
+    "transformers==5.22.1",
+    "triton-rocm==3.8.0",
+]
+# GCP RTX PRO 6000 (CUDA 13): colocated vLLM rollouts, used for all training runs.
+cuda = [
+    "numpy==2.4.6",
+    "torch==2.14.0",
+    "transformers==5.20.2",
+    "google-cloud-storage==3.17.1",
+    "vllm==0.33.0",
+]
+
+[project.scripts]
+countdown-data = "countdown_rl.data.generator:main"
+countdown-train = "countdown_rl.rl.grpo:main"
+countdown-eval = "countdown_rl.evaluation.evaluate:main"
+
+[dependency-groups]
+dev = [
+    "matplotlib>=3.10",
+    "pytest==9.2.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.12,<0.13"]
+build-backend = "uv_build"
+
+[tool.uv]
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+conflicts = [[{ extra = "rocm" }, { extra = "cuda" }]]
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-rocm", extra = "rocm" }]
+triton-rocm = [{ index = "pytorch-rocm", extra = "rocm" }]
+
+[[tool.uv.index]]
+name = "pytorch-rocm"
+url = "https://download.pytorch.org/whl/rocm7.2"
+explicit = true
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

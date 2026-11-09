@@ -2,7 +2,7 @@
 # Create the RTX PRO 6000 spot VM (same settings as tp-rtx6000 on 2026-11-07), ship the repo (git HEAD + train/eval
 # data only; holdout files never leave the Mac), and start a chain script on it detached.
 # usage: CHAIN_SCRIPT=path/to/chain_cmd.sh [VM=tp-rtx6000] [PROJECT=countdown-rl-16875] [SA=<project number>-compute@...]
-#        [MAX_RUN=21h] [ZONES="us-central1-c us-central1-b"] bash scripts/gcp/create_gpu_vm.sh
+#        [MAX_RUN=21h] [ZONES="us-central1-c us-central1-b"] bash scripts/cloud/create_gpu_vm.sh
 # A VM in another project needs its service account granted roles/storage.objectAdmin on the checkpoint bucket.
 # CHAIN_SCRIPT is a bash script run on the VM from ~/run (it should end with POWEROFF=1 / sudo poweroff).
 # BUCKET is its GCS bucket: the prebuilt venv is restored from it BEFORE the chain starts (cloud_chain.sh reads configs
@@ -40,7 +40,7 @@ done
 gcloud compute scp "$STAGE.tgz" "$VM:code.tgz" --zone "$ZONE"
 gcloud compute scp "$CHAIN_SCRIPT" "$VM:chain_cmd.sh" --zone "$ZONE"
 gcloud compute ssh "$VM" --zone "$ZONE" --command \
-  "mkdir -p ~/run && tar xzf ~/code.tgz -C ~/run && chmod +x ~/chain_cmd.sh && cd ~/run && GCS_BUCKET=$BUCKET bash scripts/cloud_restore_env.sh && .venv-vllm/bin/python -c 'import vllm'"
+  "mkdir -p ~/run && tar xzf ~/code.tgz -C ~/run && chmod +x ~/chain_cmd.sh && cd ~/run && GCS_BUCKET=$BUCKET bash scripts/cloud/restore_env.sh && .venv-vllm/bin/python -c 'import vllm'"
 gcloud compute ssh "$VM" --zone "$ZONE" --command \
   '(setsid nohup bash ~/chain_cmd.sh > ~/chain.log 2>&1 < /dev/null &) && sleep 5 && echo started && nvidia-smi -L'
 rm -rf "$STAGE" "$STAGE.tgz"

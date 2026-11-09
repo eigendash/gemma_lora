@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Run several GRPO configs back to back on one cloud GPU VM, then evaluate, then power off.
-#   1. each RUN (id=config) through scripts/cloud_train.sh; a run whose final COMMIT is already in the bucket is
+#   1. each RUN (id=config) through scripts/cloud/train.sh; a run whose final COMMIT is already in the bucket is
 #      skipped, so relaunching this script on a fresh VM after a spot preemption resumes where it stopped;
 #   2. 3-pass validation (separate vLLM processes, shuffled adapter order; EXPERIMENTS.md §2.7j) of VAL_ADAPTERS;
 #   3. one test-set pass of TEST_ADAPTERS (all in one process, so the comparison is paired);
@@ -10,7 +10,7 @@
 # Never reads the final-evaluation sets; a test greps this file to keep it that way.
 # usage: CHAIN_ID=x GCS_BUCKET=gs://... COST_PER_HOUR=2.0 RUNS="id1=configs/a.yaml id2=configs/b.yaml" \
 #        VAL_ADAPTERS="ref=baselines/p10b_s80 a80=runs/id1/ckpt/step_80" TEST_ADAPTERS="ref a80" \
-#        [EVAL_MODEL=Qwen/Qwen3-8B-Base] [EVAL_BASE=1] [POWEROFF=1] bash scripts/cloud_chain.sh
+#        [EVAL_MODEL=Qwen/Qwen3-8B-Base] [EVAL_BASE=1] [POWEROFF=1] bash scripts/cloud/chain.sh
 # A config whose init_lora is baselines/<run id>_final warm-starts from that run's final committed step
 # (fetched from the bucket), which is how the lineage phases of scripts/make_lineage_configs.py chain together.
 # GATE=<run id>:<base val % | step0>:<min gain pp> runs scripts/gate_check.py after that run and stops the chain if it fails.
@@ -18,7 +18,8 @@
 # EVAL_MODEL is the base model of every adapter evaluated (one per process); EVAL_BASE=1 adds the bare base model.
 # EVAL_PROMPT is the prompt style of the val3/test evals (default fewshot_multi_retry).
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
+export PYTHONPATH="$PWD/src${PYTHONPATH:+:$PYTHONPATH}"
 : "${CHAIN_ID:?}"; : "${GCS_BUCKET:?}"; : "${COST_PER_HOUR:?}"; : "${RUNS:?}"; : "${VAL_ADAPTERS:?}"
 B="${GCS_BUCKET%/}"; PY="${PY:-.venv-vllm/bin/python}"; LOG="outputs/chain_$CHAIN_ID"; mkdir -p "$LOG"
 export VLLM_USE_FLASHINFER_SAMPLER=0
@@ -50,7 +51,7 @@ for rc in $RUNS; do
     mark "INIT $id from bucket $init"
   fi
   mark "TRAIN $id $cfg"
-  RUN_ID="$id" CONFIG="$cfg" GCS_BUCKET="$B" COST_PER_HOUR="$COST_PER_HOUR" bash scripts/cloud_train.sh > "$LOG/$id.wrapper.log" 2>&1
+  RUN_ID="$id" CONFIG="$cfg" GCS_BUCKET="$B" COST_PER_HOUR="$COST_PER_HOUR" bash scripts/cloud/train.sh > "$LOG/$id.wrapper.log" 2>&1
   if ! gcloud storage ls "$B/runs/$id/ckpt/step_$steps/COMMIT.json" >/dev/null 2>&1; then
     # a cost/time budget stop (--max-total-usd / max_hours) saves a checkpoint and exits cleanly: evaluate what we have
     if grep -qE "^(max-total-usd|max-hours): saved checkpoint at step" "outputs/$id/train.log" 2>/dev/null; then
@@ -95,14 +96,14 @@ for pass in 1 2 3; do
   ORD=$(printf "%s\n" "${NAMES[@]}" | shuf --random-source=<(yes $pass))
   ARGS=(); for n in $ORD; do ARGS+=(--adapter "$n=baselines/$n"); done
   echo "=== pass $pass order: $(echo $ORD)" >> "$LOG/val3.log"
-  "$PY" verification/eval_vllm.py --set val --val-n 300 --prompt-style "${EVAL_PROMPT:-fewshot_multi_retry}" --gpu-util 0.85 "${EV[@]}" \
+  "$PY" -m countdown_rl.evaluation.evaluate_vllm --set val --val-n 300 --prompt-style "${EVAL_PROMPT:-fewshot_multi_retry}" --gpu-util 0.85 "${EV[@]}" \
     --out-dir "$LOG/val3/pass$pass" "${ARGS[@]}" 2>&1 | grep -E ": correct |Traceback|Error" >> "$LOG/val3.log"
   gcloud storage rsync -r "$LOG" "$B/chain/$CHAIN_ID" >/dev/null 2>&1
 done
 if [ -n "${TEST_ADAPTERS:-}" ]; then
   ARGS=(); for n in $TEST_ADAPTERS; do ARGS+=(--adapter "$n=baselines/$n"); done
   mark "TEST $TEST_ADAPTERS"
-  "$PY" verification/eval_vllm.py --set test --prompt-style "${EVAL_PROMPT:-fewshot_multi_retry}" --gpu-util 0.85 "${EV[@]}" \
+  "$PY" -m countdown_rl.evaluation.evaluate_vllm --set test --prompt-style "${EVAL_PROMPT:-fewshot_multi_retry}" --gpu-util 0.85 "${EV[@]}" \
     --out-dir "$LOG/test" "${ARGS[@]}" 2>&1 | grep -E ": correct |Traceback|Error" >> "$LOG/test.log"
 fi
 gcloud storage rsync -r "$LOG" "$B/chain/$CHAIN_ID" >/dev/null 2>&1
