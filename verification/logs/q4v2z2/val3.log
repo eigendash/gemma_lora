@@ -1,0 +1,15 @@
+=== pass 1 order: z2_b z2_a z2_c z2_d
+z2_b: correct 0.587 (176/300) {'easy': 0.9, 'hard': 0.44, 'medium': 0.42} 20s
+z2_a: correct 0.433 (130/300) {'easy': 0.84, 'hard': 0.19, 'medium': 0.27} 24s
+z2_c: correct 0.697 (209/300) {'easy': 0.91, 'hard': 0.59, 'medium': 0.59} 18s
+z2_d: correct 0.757 (227/300) {'easy': 0.93, 'hard': 0.74, 'medium': 0.6} 17s
+=== pass 2 order: z2_c z2_b z2_a z2_d
+z2_c: correct 0.690 (207/300) {'easy': 0.93, 'hard': 0.59, 'medium': 0.55} 17s
+z2_b: correct 0.617 (185/300) {'easy': 0.89, 'hard': 0.5, 'medium': 0.46} 22s
+z2_a: correct 0.440 (132/300) {'easy': 0.79, 'hard': 0.22, 'medium': 0.31} 24s
+z2_d: correct 0.750 (225/300) {'easy': 0.93, 'hard': 0.71, 'medium': 0.61} 17s
+=== pass 3 order: z2_d z2_b z2_c z2_a
+z2_d: correct 0.750 (225/300) {'easy': 0.94, 'hard': 0.69, 'medium': 0.62} 17s
+z2_b: correct 0.613 (184/300) {'easy': 0.91, 'hard': 0.46, 'medium': 0.47} 20s
+z2_c: correct 0.717 (215/300) {'easy': 0.93, 'hard': 0.64, 'medium': 0.58} 18s
+z2_a: correct 0.433 (130/300) {'easy': 0.8, 'hard': 0.18, 'medium': 0.32} 25s

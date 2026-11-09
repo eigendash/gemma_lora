@@ -819,6 +819,20 @@ Under v2, groups without a correct answer are not trained, so `zero` would give 
 - Code-use rate, cap share, all-False → recovery rate, and whether retries reason from the printed values (§2.7p).
 - No test-set evals.
 
+**Result (2026-11-09).**
+- **Run:** gate passed (smoothed 36.3% vs 7.3% needed). All 300 steps completed. The VM's lifetime ended at d step 76, and the run resumed from the committed step on a recreated VM, as approved.
+- **Primary outcome, holdout3 `q4v2z2-d` s80 with `r1zero_tool`: 699 / 1000.** v2 seed 2 with its demo prompt scored 681.
+  - **Paired:** zero-shot-only correct on 109 problems, demo-only on 91, exact McNemar p = 0.23.
+  - **By tier:** easy 351 vs 355, medium 167 vs 173, hard **181 vs 153**.
+- **Verdict per the pre-registered rule (≥ 661): "the demo is not needed; the behaviour emerges from a tool description alone".** The +18 is not significant, so the claim is parity, not superiority.
+- **3-pass validation at phase ends** (of 300): 130.7 / 181.7 / 210.3 / 225.7, against v2 seed 2's 123.7 / 177.3 / 203.7 / 213.3. Ahead at every phase end after starting 11 pp behind.
+- **Behaviour difference:**
+  - The zero-shot policy runs code on almost every rollout (holdout mean 1.15 code rounds; hallucinated outputs 0).
+  - It retries much less after an all-False check: in-run, about 0.25 of such rollouts retry in phase d, against about 0.70 for v2 seed 2.
+  - The demo's explicit "retry" instruction is what produces the self-correction loop. Without it, RL finds first-try accuracy instead.
+- **Length guard:** cap share fell from 0.37 at the end of a to 0.01 in d (never tripped).
+- **Logs:** `verification/logs/q4v2z2/`, `verification/logs/holdout/h3_q4v2z2_d80.*`.
+
 ### 2.7t Pre-registration (2026-11-09, before any training result): Gemma-4-E4B zero-shot arm `g4v2z0`
 **Question:** does the zero-shot finding (§2.7s, REPORT §3c) transfer to another model family?
 - **Not asked:** whether the demo helps Gemma. The only Gemma reference (g4e4b, holdout3 309) used the original recipe with the demo, so it differs in recipe *and* prompt. The clean demo-vs-no-demo pair would need a Gemma v2-with-demo run, which is deferred to available credits.

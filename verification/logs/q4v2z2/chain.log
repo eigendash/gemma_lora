@@ -1,0 +1,12 @@
+SKIP q4v2z2-a (step_40 committed) 2026-11-09T01:00:41Z
+SKIP q4v2z2-b (step_90 committed) 2026-11-09T01:00:48Z
+SKIP q4v2z2-c (step_90 committed) 2026-11-09T01:00:55Z
+INIT q4v2z2-d from runs/q4v2z2-c step_90 2026-11-09T01:01:08Z
+TRAIN q4v2z2-d configs/lineage/q4v2z2-d.yaml 2026-11-09T01:01:08Z
+TRAINED q4v2z2-d 2026-11-09T01:12:28Z
+LATEST z2_a = runs/q4v2z2-a/ckpt/step_40 2026-11-09T01:12:29Z
+LATEST z2_b = runs/q4v2z2-b/ckpt/step_90 2026-11-09T01:12:32Z
+LATEST z2_c = runs/q4v2z2-c/ckpt/step_90 2026-11-09T01:12:34Z
+LATEST z2_d = runs/q4v2z2-d/ckpt/step_80 2026-11-09T01:12:37Z
+VAL3 z2_a z2_b z2_c z2_d (model Qwen/Qwen3-4B-Base) 2026-11-09T01:12:39Z
+DONE 2026-11-09T01:19:01Z

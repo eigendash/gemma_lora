@@ -116,7 +116,7 @@ Run with `eval.py` (HF backend, soos, merged adapter); logs in `verification/log
 - **The policy needs the format it was trained with.** Zero-shot it almost never solves anything (1.1%), so the SPEC's "base zero-shot vs RL" comparison is 0% vs 52% only *with* the few-shot demo. A policy trained from a zero-shot prompt that describes the tool is §3c.
 - **Sampling has large headroom:** pass@4 is 65%. That makes best-of-k with the verifier, or more rollouts per prompt, an obvious next lever.
 
-## 3c. Finding: zero-shot RL works once the prompt says the tool exists (in progress)
+## 3c. Finding: zero-shot RL works once the prompt says the tool exists
 
 **Background.** Every model above was trained and evaluated with a one-example demo and a strategy sentence. SPEC asks for emergence without demonstrations. We had set zero-shot aside early because the base model scored 0% zero-shot, writing the target number as its answer.
 
@@ -142,9 +142,20 @@ Run with `eval.py` (HF backend, soos, merged adapter); logs in `verification/log
   - The first pilots (8 prompts × 8 samples, ≤45 steps) were too small to learn from a near-0% start.
   - Every later experiment inherited the demo prompt.
   - The original recipe would also have struggled: at a 4% start, its format and execution credit on all-fail groups dominates the gradient, which is what produced the pilot-B shortcut (§5). v2 trains only on groups that contain a correct answer.
-- **Status:** 20 of 300 steps. Outputs are getting longer (cap share 0.17 → 0.30, against a 0.40 auto-stop guard).
-  - The pre-registered verdict is holdout3 of the final step, compared with v2 seed 2's 681.
-  - A Gemma-4-E4B zero-shot arm follows, to test whether the finding transfers across model families.
+**Result after the full 300 steps (pre-registered verdict):**
+
+| holdout3 (1,000 unseen problems, greedy) | Total | Easy | Medium | Hard |
+|---|---|---|---|---|
+| v2 seed 2, demo prompt (best model so far) | 681 | 355 | 173 | 153 |
+| **Zero-shot arm, tool description only** | **699** | 351 | 167 | **181** |
+
+- **Verdict, from the pre-registered rule (≥ 661): the demo is not needed.** The tool-use behaviour emerges from a tool description alone.
+  - The +18 is not significant (paired McNemar p = 0.23; 109 vs 91 discordant problems), so the claim is parity, not superiority.
+  - The gain is concentrated on hard problems.
+- **The zero-shot policy finds a different strategy.** It runs code on nearly every problem and almost never invents outputs. But after a check where every candidate is false, it retries in about 25% of cases, against about 70% for the demo-trained policy. The demo's "retry" instruction is what produces that explicit self-correction loop. Without it, RL settles on getting the first check right.
+- **Transfer to Gemma (in progress):**
+  - Gemma-4-E4B zero-shot climbs from 1% to about 65% in-run, but almost never runs code: it solves the problem by hand in `<think>`.
+  - A Gemma-4-E2B arm is being probed.
 
 ## 4. Compute bottlenecks and mitigations
 
