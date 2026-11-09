@@ -198,8 +198,17 @@ code is also reported. **Result:** *pending* (at step 26, validation 63–67%).
 **`gemma4-e2b-v2-demo-s0`:** the matched pair. It is identical except `fewshot_direct_retry`, and its gate is its own
 step-0 validation + 3 pp. Question: does the 2B model fail only zero-shot, or with the demo too?
 
-**Results:** *pending*. At step 28 the zero-shot run had validation 2.0% and 13 of 64 groups with signal, up from
-0–2 per step early on.
+**Results.**
+- **`gemma4-e2b-v2-zeroshot-s0`: gate passed.** Smoothed validation 5.9% against 3.0% needed, and first-round
+  training accuracy rose from 0.000 to 0.095. In-run validation by step: 0.3, 0.0, 0.3, 1.0, 0.3, 2.0, 3.7, 5.7, 6.0
+  and 6.0%. 3-pass validation of step 50: 6.0%. Signal groups were 0–2 per step until about step 20, and up to 28
+  afterwards. Reading: "starts". No later phases were run.
+- **`gemma4-e2b-v2-demo-s0`: stopped at step 5 by the contradicted-answer guard** (more than 60% over 5 steps).
+  Contradicted answers were 0.78, 0.79, 0.77, 0.76 and 0.76 from step 0. Training accuracy rose from 0.6% to
+  4.7% and signal groups ran 13–41 per step; validation at step 0 was 1.3%. The guard was set for recipe v1, where
+  contradicted answers earned shaping reward. Under v2 they get no gradient, so here the trip records the base
+  model's behaviour with the demo prompt rather than a learned exploit. Under the registration, a guard stop is an
+  outcome; the run was not resumed. The gate comparison is therefore incomplete.
 
 ## 8. Known gaps
 
