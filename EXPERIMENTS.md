@@ -210,6 +210,22 @@ step-0 validation + 3 pp. Question: does the 2B model fail only zero-shot, or wi
   model's behaviour with the demo prompt rather than a learned exploit. Under the registration, a guard stop is an
   outcome; the run was not resumed. The gate comparison is therefore incomplete.
 
+**Follow-up runs (registered 2026-11-09, after the results above and before either run started).** Both were decided
+after seeing the phase-a outcomes, at the user's request, and are reported as such.
+- **`gemma4-e2b-v2-demo-s0-noguard`** (bucket `e2v2s0n-a`): identical to `gemma4-e2b-v2-demo-s0` except
+  `guard_contradicted: 1.0`, which disables that guard. The length guard stays on. The reason is that under v2 a
+  contradicted answer earns no gradient, so the guard protects nothing in this recipe. Same gate as before: smoothed
+  validation ≥ step-0 validation + 3 pp, with rising training accuracy. The primary reading is the gate verdict,
+  read beside the zero-shot arm's at step 50. A length-guard stop is an outcome.
+- **`gemma4-e2b-v2-zeroshot-s0`, phases b–d** (bucket `e2v2z0-b`, `-c`, `-d`): the standard schedule from phase a's
+  final step (step 50). The configs are those of `gemma4-e4b-v2-zeroshot-s0` with the E2B model, so the lineage is
+  310 steps instead of 300. The primary measure is holdout3 of phase d's final step, evaluated once on the
+  workstation with `r1zero_tool` and eager attention. It is reported as the 2B point beside Gemma-4-E4B (605) and
+  Qwen3-4B (699), with no decision threshold. Secondary: 3-pass validation at each phase end, the share of rollouts
+  that run code, and the cap share.
+- **Order and budget:** both run on `tp-rtx6000`, the demo arm first, under a $16 cap per phase and a 9-hour VM
+  lifetime. A failed gate on the demo arm does not stop the zero-shot phases.
+
 ## 8. Known gaps
 
 - **Lost log steps:** resuming on a fresh VM used to overwrite the start of `train_log.jsonl` (fixed in `rl/grpo.py`
