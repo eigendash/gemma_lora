@@ -28,8 +28,9 @@ The bucket and the chain logs use the short ids from the time of the runs.
 | `qwen3-4b-v2-demo-s2` (+ `-cont`) | `q4v2s2-{a..d}`, `q4v2s2long` | Qwen3-4B-Base | v2 | demo | 2 |
 | `qwen3-4b-v2-zeroshot-s2` | `q4v2z2-{a..d}` | Qwen3-4B-Base | v2 | zero-shot | 2 |
 | `gemma4-e4b-v2-zeroshot-s0` (+ `-cont`) | `g4v2z0-{a..d}`, `g4v2z0long` | Gemma-4-E4B (text) | v2 | zero-shot | 0 |
-| `gemma4-e2b-v2-zeroshot-s0` | `e2v2z0-a` | Gemma-4-E2B (text) | v2 | zero-shot | 0 |
+| `gemma4-e2b-v2-zeroshot-s0` | `e2v2z0-{a..d}` | Gemma-4-E2B (text) | v2 | zero-shot | 0 |
 | `gemma4-e2b-v2-demo-s0` | `e2v2s0-a` | Gemma-4-E2B (text) | v2 | demo | 0 |
+| `gemma4-e2b-v2-demo-s0-noguard` | `e2v2s0n-{a..d}` | Gemma-4-E2B (text) | v2, contradicted guard off | demo | 0 |
 
 **Prompts** (`countdown_rl/rl/prompting.py`, frozen by a hash test):
 - `fewshot_direct_retry` (demo phase a): one worked example and the instruction to retry after a failed check.
@@ -174,8 +175,10 @@ prompt, evaluated once alongside.
 - **3-pass validation at phase ends:** 26.6% / 49.4% / 61.6% / 62.1%.
 - **holdout3: 605** (345 / 128 / 132). The v1 run with the demo scored 309 (35 / 331 discordant, p = 1e-61;
   descriptive only, since the recipes differ).
-- **Base model with `r1zero_tool` on holdout3:** *pending*.
-- **Secondary, the same checkpoint with `fewshot_multi_retry`:** *pending*.
+- **Base model with `r1zero_tool` on holdout3: 19** (18 / 1 / 0). Paired against it, the trained policy is
+  605 vs 19.
+- **Secondary, the same checkpoint with `fewshot_multi_retry`: 427** (239 / 94 / 94). The drop from its own prompt
+  (605) is smaller than Qwen's (699 → 309), but the policy is still best under the prompt it was trained with.
 - **Behaviour:** code on 35% of problems, and its first printed value never equals the target. It enumerates in
   `<think>` and calls code only when stuck.
 
@@ -225,6 +228,28 @@ after seeing the phase-a outcomes, at the user's request, and are reported as su
   that run code, and the cap share.
 - **Order and budget:** both run on `tp-rtx6000`, the demo arm first, under a $16 cap per phase and a 9-hour VM
   lifetime. A failed gate on the demo arm does not stop the zero-shot phases.
+
+**Follow-up results.**
+- **`gemma4-e2b-v2-demo-s0-noguard`, phase a: gate passed.** Smoothed validation 11.4% against 4.0% needed (step 0:
+  1.0%), and first-round training accuracy rose from 0.045 to 0.263. In-run validation by step: 1.0, 4.7, 6.0, 6.0,
+  6.0, 10.0, 10.7, 11.0, 11.7 and 11.7%. 3-pass validation of step 50: 13.1% (39, 40 and 39 of 300). Contradicted answers fell from 0.75
+  at step 0. Signal groups stayed at 6–43 per step through step 50, while the zero-shot arm ended phase a with 3.
+- **`gemma4-e2b-v2-zeroshot-s0`, phase b (interim, recorded before the phase finished):** validation is flat at
+  exactly 6.0% (identical per-tier counts) for the first 25 steps. Sampling entropy had fallen from 0.77 to 0.10 by
+  the end of phase a, and 94% of prompts now give eight identical rollouts, so most steps have no signal group and no
+  update. The lineage continues as registered.
+
+**Further follow-up (registered 2026-11-09, after the results above and before the run started), at the user's
+request: `gemma4-e2b-v2-demo-s0-noguard`, phases b–d** (bucket `e2v2s0n-b`, `-c`, `-d`). The standard schedule from
+phase a's final step, with `fewshot_multi_retry` in every phase as in all demo lineages, and the contradicted guard
+still off. The configs are the E2B zero-shot phase-b–d configs with only the prompt and that guard changed, so the
+two E2B arms differ in the prompt alone. It runs on `tp-rtx6000` after the zero-shot lineage, under a $16 cap per
+phase.
+- **Primary:** holdout3 of phase d's final step, evaluated once on the workstation with `fewshot_multi_retry` and
+  eager attention, paired against the zero-shot arm's final step. This is descriptive, with no decision threshold:
+  one seed per arm, and the arms were extended after their phase-a results were seen.
+- **Secondary:** 3-pass validation at each phase end, signal groups per step, sampling entropy, and the cap share.
+  A length-guard stop is an outcome.
 
 ## 8. Known gaps
 
