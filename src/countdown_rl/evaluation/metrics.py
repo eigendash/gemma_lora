@@ -19,6 +19,26 @@ from countdown_rl.evaluation.dumps import read_dump
 from countdown_rl.rl.rewards import check_format
 
 OUT_RE = re.compile(r"<output>.*?</output>", re.DOTALL)
+NUM_RE = re.compile(r"-?\d+(?:\.\d+)?")
+
+
+def check_hit(stdout: str, target: int) -> bool:
+    """A code check found the answer if it printed True or printed a number equal to the target.
+
+    The True/False test alone misclassifies policies that print values rather than comparisons, so self-correction
+    is measured against the target instead.
+    """
+    return "True" in stdout.split() or any(abs(float(v) - target) < 1e-9 for v in NUM_RE.findall(stdout))
+
+
+def self_correction(rows) -> dict:
+    """Outcome of the first code check and what followed a miss."""
+    ran = [r for r in rows if r.get("outputs")]
+    missed = [r for r in ran if not check_hit(r["outputs"][0], r["target"])]
+    retried = [r for r in missed if len(r["outputs"]) >= 2]
+    return {"no_code": len(rows) - len(ran), "first_check_hit": len(ran) - len(missed), "first_check_missed": len(missed),
+            "missed_retried": len(retried), "missed_recovered": sum(r["correct"] > 0 for r in missed),
+            "missed_retried_recovered": sum(r["correct"] > 0 for r in retried)}
 
 
 def metrics(rows, tok=None):
@@ -43,6 +63,7 @@ def metrics(rows, tok=None):
         "recovered_after_all_false": sum(corr[i] for i in strict),
         "recovery_rate_strict": sum(corr[i] for i in strict) / max(1, len(strict)),
         "max_length_frac": sum(r.get("terminal_reason") == "max_length" for r in rows) / n,
+        **self_correction(rows),
     }
 
 

@@ -29,6 +29,9 @@ sync_logs() {  # logs live on the VM disk, which spot preemption / max-run-durat
 { echo "config: $CONFIG"; echo "host: $(hostname) $(date -u +%FT%TZ)"; sha256sum "$HOME/code.tgz" 2>/dev/null
   nvidia-smi --query-gpu=name,driver_version --format=csv,noheader 2>/dev/null; { "$PY" -m pip freeze 2>/dev/null || ~/.local/bin/uv pip freeze --python "$PY" 2>/dev/null; }; } > "$OUT/provenance.txt"
 gcloud storage cp "$CONFIG" "$OUT/provenance.txt" "${GCS_BUCKET%/}/runs/$RUN_ID/logs/" >/dev/null 2>&1 || true
+# a resumed run on a fresh VM starts from the bucket's log, so the sync below never overwrites earlier steps
+mkdir -p "$OUT/run"
+[ -f "$OUT/run/train_log.jsonl" ] || gcloud storage cp "${GCS_BUCKET%/}/runs/$RUN_ID/logs/train_log.jsonl" "$OUT/run/" >/dev/null 2>&1 || true
 ( while sleep "${LOG_SYNC_S:-300}"; do sync_logs; done ) &
 SYNC_PID=$!
 for attempt in 1 2 3 4; do

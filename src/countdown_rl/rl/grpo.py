@@ -741,7 +741,13 @@ def train(cfg: GRPOConfig) -> None:
     stop_requested = {"flag": False}
     vllm_asleep = False
     llm = None  # generation=vllm: created lazily on the first step (after the training model is on the GPU)
-    log_file = open(os.path.join(cfg.output_dir, "train_log.jsonl"), "a" if start_step > 0 else "w")
+    log_path = os.path.join(cfg.output_dir, "train_log.jsonl")
+    if start_step > 0 and os.path.exists(log_path):  # resume: keep the history, drop steps that will be redone
+        with open(log_path) as f:
+            kept = [line for line in f if line.strip() and json.loads(line)["step"] < start_step]
+        with open(log_path, "w") as f:
+            f.writelines(kept)
+    log_file = open(log_path, "a" if start_step > 0 else "w")
 
     # segment + cost bookkeeping
     seg_t0 = time.time()
