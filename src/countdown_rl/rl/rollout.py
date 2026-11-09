@@ -117,6 +117,38 @@ def format_prompt_r1zero_tool(nums: list[int], target: int) -> str:
     )
 
 
+# Rewordings of the r1zero_tool description, used only at evaluation time to test whether a policy trained on
+# r1zero_tool depends on its exact wording. Each carries the same information (tags, that code really runs, the allowed
+# operations, the two-run limit, the answer format and example) in a different order and different words.
+R1ZERO_TOOL_PARAPHRASES = {
+    "r1zero_tool_p1": (
+        "This is a dialogue between a User and an Assistant. The User poses a problem, which the Assistant solves. "
+        "Before answering, the Assistant reasons inside <think> </think> tags. To check its work it may write Python "
+        "inside <python> </python> tags; that code is actually run, and whatever it prints comes back inside "
+        "<output> </output> tags. At most 2 such runs are allowed, and the code can only use integers, arithmetic, "
+        "variables, print, range and len. The final answer is an arithmetic expression placed inside "
+        "<answer> </answer> tags, e.g. <answer> (1 + 2) / 3 </answer>.\n"
+    ),
+    "r1zero_tool_p2": (
+        "User and Assistant are talking. The User asks a question and the Assistant answers it. "
+        "Tags the Assistant uses: <think> </think> for its reasoning; <python> </python> for Python code, which is "
+        "executed, with the printed result returned in <output> </output> (integers, arithmetic, variables, print, "
+        "range and len only; at most 2 executions); and <answer> </answer> for the final arithmetic expression, "
+        "for example <answer> (1 + 2) / 3 </answer>.\n"
+    ),
+}
+
+
+def format_prompt_r1zero_paraphrase(nums: list[int], target: int, style: str) -> str:
+    """r1zero_tool with the system part replaced by one of R1ZERO_TOOL_PARAPHRASES; the User line is unchanged."""
+    nums_s = ", ".join(str(n) for n in nums)
+    return (
+        R1ZERO_TOOL_PARAPHRASES[style]
+        + f"User: Using the numbers {nums_s}, make {target} with +, -, *, / (each number can be used at most once).\n"
+        "Assistant:"
+    )
+
+
 # ---------------------------------------------------------------------------
 # Tokenization of protocol text
 # ---------------------------------------------------------------------------

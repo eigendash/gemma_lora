@@ -22,7 +22,8 @@ from fractions import Fraction
 from itertools import combinations
 
 
-from countdown_rl.rl.rollout import format_prompt, format_prompt_r1zero_tool
+from countdown_rl.rl.rollout import (R1ZERO_TOOL_PARAPHRASES, format_prompt, format_prompt_r1zero_paraphrase,
+                                     format_prompt_r1zero_tool)
 from countdown_rl.data.verifier import verify_answer
 from countdown_rl.sandbox import Sandbox
 from countdown_rl.data.solver import solve
@@ -302,6 +303,8 @@ FEWSHOT_PROBLEMS = [  # not in the eval split ([25, 3, 1] -> 76 is a train probl
 PROMPT_STYLES = {
     "zero": (),                              # no examples
     "r1zero_tool": (),                       # no examples: R1-Zero conversation frame + tool description only
+    "r1zero_tool_p1": (),                    # evaluation only: r1zero_tool reworded (rollout.R1ZERO_TOOL_PARAPHRASES)
+    "r1zero_tool_p2": (),                    # evaluation only: r1zero_tool reworded more tersely
     "fewshot_direct": ("direct",),           # format only: one direct, correct check -> answer
     "fewshot_direct_retry": ("direct",),     # same + one instruction sentence (rollout.RETRY_HINT)
     "fewshot": ("near_miss", "direct"),      # also demonstrates a failed check + systematic fix
@@ -316,6 +319,10 @@ def problem_prompt(nums: list[int], target: int, style: str = "zero", solution_h
         if solution_hint:
             raise ValueError("r1zero_tool takes no solution hint")
         return format_prompt_r1zero_tool(nums, target)
+    if style in R1ZERO_TOOL_PARAPHRASES:
+        if solution_hint:
+            raise ValueError(f"{style} takes no solution hint")
+        return format_prompt_r1zero_paraphrase(nums, target, style)
     return format_prompt(nums, target, retry_hint=style.endswith("_retry"), multi=style.startswith("fewshot_multi"),
                          wide=style.startswith("fewshot_wide"), solution_hint=solution_hint)
 
