@@ -862,6 +862,23 @@ Under v2, groups without a correct answer are not trained, so `zero` would give 
 - **Fix:** `micro_batch=2` for all phases (generator override). `micro_batch` only sets how many rollouts share one forward/backward pass, and it is excluded from the resume hash. The one side effect is that mini-batch boundaries round to whole micro-batches.
 - Resumed from the committed `step_14` on the same (restarted) VM. No other setting changed.
 
+### 2.7v Zero-shot probes of the ~2B models (2026-11-09, soos; before any decision to train)
+Same probe as §2.7s/t: base model, `r1zero_tool`, 256 train × 8 at T = 0.9, plus greedy val300; eager attention for Gemma. Logs are in `verification/logs/zeroprobe/{g2,e2}_*`.
+
+| Base model | Problems with ≥1 correct (of 256) | Pass@1 | Greedy val300 | Format compliance |
+|---|---|---|---|---|
+| Gemma-4-E4B (§2.7t; trained to 62.1% in-run) | 8 | 0.4% | 1.3% | 45% |
+| Gemma-4-E2B (text-only extraction) | 1 | 0.0% | 0.0% | 8% |
+| gemma-2-2b (the SPEC model) | 0 | 0.0% | 0.0% | 0% |
+
+- **Gemma-4-E2B text-only extraction** (`verification/check_gemma4_text.py`, as for E4B):
+  - 540 language tensors copied, none missing or unexpected; 205 LoRA targets, none in the towers.
+  - Logits are identical to the multimodal model with eager attention (fp32 CPU/GPU and bf16 GPU, max |diff| 0; `e2b_logits.py`). The script's own bf16 check gave NaN on soos because of the default attention path on ROCm, not the weights.
+  - The script's vLLM step needs the cloud venv.
+  - Stored at `gs://…/models/gemma-4-E2B-text/` (model.safetensors sha256 `8ab02fd6…`).
+- **gemma-2-2b:** GRPO gets no learning signal zero-shot, so it is not trained.
+- **Gemma-4-E2B:** 1 problem with signal gives about 0.75 signal groups per step at 64 prompts with 2 refill rounds, against about 6 for E4B.
+
 ### 2.7u Pre-registration (2026-11-09 ~01:20 UTC, while g4v2z0-d was at step ~22 of 80): Gemma zero-shot long continuation `g4v2z0long`
 **Why:** in-run validation was still rising phase over phase (end of a 23.0% → b 50.7% → c 58.7% → d step 20 64.7%). Meanwhile exec reward stayed about 0, and about 1 in 15 recent rollouts ran code: Gemma solves by hand in `<think>`. Asked by the user ("keep it training for longer").
 - **Questions:** does Gemma keep improving, or plateau like both Qwen continuations (§2.7q, §2.7r)? And does tool use ever appear?

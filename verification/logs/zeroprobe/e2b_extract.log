@@ -1,0 +1,16 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/1951 [00:00<?, ?it/s]Loading weights:  39%|███▉      | 759/1951 [00:00<00:00, 7584.22it/s]Loading weights: 100%|██████████| 1951/1951 [00:00<00:00, 10538.51it/s]
+[1] AutoModelForCausalLM -> Gemma4ForConditionalGeneration, params 5.10B, LoRA targets (total, in towers, examples) = (353, 148, ['model.vision_tower.encoder.layers.0.self_attn.q_proj', 'model.vision_tower.encoder.layers.0.self_attn.k_proj', 'model.vision_tower.encoder.layers.0.self_attn.v_proj'])  (647s)
+[1] text-only Gemma4ForCausalLM from prefix 'model.language_model.': copied 540 tensors, missing=[] (0), unexpected=[] (0), params 4.63B
+[2] text-only LoRA targets 205, in towers 0 []
+    final_logit_softcapping=30.0 sliding_window=512 tie_word_embeddings=True
+[2] logits multimodal vs text-only: max |diff| nan, argmax agree 0.000
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:06<00:00,  6.74s/it]Writing model shards: 100%|██████████| 1/1 [00:06<00:00,  6.74s/it]
+[3] saved text-only model to models/gemma-4-E2B-text: ['config.json', 'generation_config.json', 'model.safetensors', 'tokenizer.json', 'tokenizer_config.json']
+Traceback (most recent call last):
+  File "/home/eigendash/gemma_lora_run/verification/check_gemma4_text.py", line 104, in <module>
+    main()
+    ~~~~^^
+  File "/home/eigendash/gemma_lora_run/verification/check_gemma4_text.py", line 91, in main
+    from vllm import LLM, SamplingParams
+ModuleNotFoundError: No module named 'vllm'

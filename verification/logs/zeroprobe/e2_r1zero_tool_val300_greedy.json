@@ -1,0 +1,44 @@
+{
+  "config": {
+    "model": "models/gemma-4-E2B-text",
+    "init_adapter": "",
+    "adapter": "",
+    "eval_file": "outputs/zeroprobe/val300.jsonl",
+    "n_eval": 0,
+    "max_new_tokens": 768,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.0,
+    "dtype": "bfloat16",
+    "attn": "eager",
+    "device": "cuda",
+    "seed": 0,
+    "fewshot": false,
+    "prompt_style": "r1zero_tool",
+    "generation": "batched",
+    "batch_size": 128,
+    "control": "real",
+    "merge_adapter": false,
+    "out": "outputs/zeroprobe/e2_r1zero_tool_val300_greedy.json",
+    "dump": "outputs/zeroprobe/e2_r1zero_tool_val300_greedy.jsonl"
+  },
+  "metrics": {
+    "n": 300,
+    "pass@1": 0.0,
+    "format_compliance": 0.03666666666666667,
+    "length_mean": 471.02666666666664,
+    "length_p50": 768,
+    "length_p95": 768,
+    "length_max": 768,
+    "per_tier_pass@1": {
+      "easy": 0.0,
+      "hard": 0.0,
+      "medium": 0.0
+    },
+    "mean_code_rounds": 0.05,
+    "hallucination_rate": 0.39,
+    "n_failing": 0,
+    "self_correction_correct": 0.0,
+    "self_correction_backtrack": 0.0
+  }
+}
