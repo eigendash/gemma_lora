@@ -1,8 +1,0 @@
-gemma-2-2b vocab_size=256000 padding_side=left eos='<eos>'
-  '</python>' -> ['</', 'python', '>']
-  '</python>\n' -> ['</', 'python', '>', '\n']
-  'print(x)</python>' -> ['print', '(', 'x', ')</', 'python', '>']
-  '</output><answer>' -> ['</', 'output', '><', 'answer', '>']
-  'x</answer>\n' -> ['x', '</', 'answer', '>', '\n']
-  ')\n</python>' -> [')', '\n', '</', 'python', '>']
-concat(segment ids) == tokenize(joined): True  len=18 vs 18

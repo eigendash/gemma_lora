@@ -14,7 +14,7 @@ import types
 import pytest
 import torch
 
-import rollout
+from countdown_rl.rl import rollout
 from test_rollout_engine import RecordingSandbox, script_ids, tok  # noqa: F401  (tok = tokenizer fixture)
 
 KEY = 1000  # logits index KEY + seq_idx marks "row belongs to sequence seq_idx and is live"
@@ -182,7 +182,7 @@ def test_real_model_greedy_batched_matches_sequential(impl, bs):
     must match a training-style forward."""
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    from sandbox import Sandbox
+    from countdown_rl.sandbox import Sandbox
 
     name = "Qwen/Qwen2.5-0.5B"
     tk = AutoTokenizer.from_pretrained(name)

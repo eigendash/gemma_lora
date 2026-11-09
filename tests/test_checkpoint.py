@@ -1,6 +1,6 @@
 import json
 
-import checkpoint as ck
+from countdown_rl.rl import checkpoint as ck
 
 
 def _files():

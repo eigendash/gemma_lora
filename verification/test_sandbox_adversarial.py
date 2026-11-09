@@ -12,7 +12,7 @@ import time
 
 import pytest
 
-from sandbox import Sandbox
+from countdown_rl.sandbox import Sandbox
 
 
 @pytest.fixture(scope="module")

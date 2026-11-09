@@ -1,9 +1,0 @@
-[countdown-tasks] rows=490364
-[countdown-tasks] num_counts: 3=240632 4=249732
-[countdown-tasks] unique keys=449570 duplicate rows=40794
-[countdown-tasks] leakage overlap with our eval=32
-[countdown-tasks] solvable (pos-int intermediates) =2000/2000 = 1.000
-
-[reasoning-gym] installed version=0.1.25
-[reasoning-gym] our verifier accepts their answer =300/300 = 1.000
-[reasoning-gym] our solver solves their problem (pos-int intermediates) =300/300 = 1.000

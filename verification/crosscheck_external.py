@@ -15,8 +15,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ref_countdown import ref_solve, ref_verify  # noqa: E402
 
-from solver import solve as proj_solve
-from verifier import verify_answer
+from countdown_rl.data.solver import solve as proj_solve
+from countdown_rl.data.verifier import verify_answer
 
 
 def rg(n=300):

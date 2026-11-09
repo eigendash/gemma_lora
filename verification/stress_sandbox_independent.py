@@ -20,7 +20,7 @@ import time
 
 import psutil
 
-from sandbox import Sandbox
+from countdown_rl.sandbox import Sandbox
 
 FAILS = []
 
@@ -101,7 +101,7 @@ def memory_bomb():
     code = textwrap.dedent("""
         import resource, sys, time
         sys.path.insert(0, %r)
-        from sandbox import Sandbox
+        from countdown_rl.sandbox import Sandbox
         s = Sandbox(n_workers=1)
         t0 = time.perf_counter()
         r = s.run(%r)
@@ -128,7 +128,7 @@ def torch_isolation():
             import sys, time
             sys.path.insert(0, {os.getcwd()!r})
             import torch, transformers, peft  # like train_rl.py
-            from sandbox import Sandbox
+            from countdown_rl.sandbox import Sandbox
             if __name__ == "__main__":
                 import psutil, subprocess
                 t0 = time.perf_counter()

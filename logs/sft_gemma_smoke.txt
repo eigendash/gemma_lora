@@ -1,4 +1,0 @@
-W1104 01:13:27.351000 33960 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
-Loading weights:   0%|          | 0/288 [00:00<?, ?it/s]Loading weights: 100%|██████████| 288/288 [00:00<00:00, 7561.04it/s]
-done 8 steps | final loss 0.1509 | mean 0.4330
-saved adapter -> outputs/sft_gemma_smoke

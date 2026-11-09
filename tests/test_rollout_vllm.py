@@ -8,8 +8,8 @@ import types
 
 import pytest
 
-import rollout
-import rollout_vllm
+from countdown_rl.rl import rollout
+from countdown_rl.rl import rollout_vllm
 from test_rollout_batched import FIELDS, SCRIPTS, _prompts, _run_sequential, _scripts
 from test_rollout_engine import RecordingSandbox, tok  # noqa: F401
 

@@ -1,4 +1,4 @@
-from verifier import integer_intermediates, verify_answer
+from countdown_rl.data.verifier import integer_intermediates, verify_answer
 
 
 def test_correct_simple():

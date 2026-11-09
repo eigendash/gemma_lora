@@ -1,5 +1,5 @@
-from solver import solve
-from verifier import verify_answer
+from countdown_rl.data.solver import solve
+from countdown_rl.data.verifier import verify_answer
 
 
 def test_solve_simple():

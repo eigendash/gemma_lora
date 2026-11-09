@@ -17,7 +17,6 @@ import time
 
 import torch
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 TARGETS = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
 
@@ -75,13 +74,13 @@ def main():
 
     import json
 
-    import sft_coldstart
-    from sandbox import Sandbox
+    from countdown_rl.rl import prompting
+    from countdown_rl.sandbox import Sandbox
 
     p0 = json.loads(open("data/train.jsonl").readlines()[-1])  # a val problem (val = tail of train.jsonl)
     sb = Sandbox(n_workers=1, timeout=0.050)
-    prefix = sft_coldstart.fewshot_prefix(sb, "fewshot_multi_retry")
-    prompt = sft_coldstart.with_prefix(prefix, sft_coldstart.problem_prompt(p0["nums"], p0["target"], "fewshot_multi_retry"))
+    prefix = prompting.fewshot_prefix(sb, "fewshot_multi_retry")
+    prompt = prompting.with_prefix(prefix, prompting.problem_prompt(p0["nums"], p0["target"], "fewshot_multi_retry"))
     ids = tok(prompt, return_tensors="pt").input_ids.cuda()
     with torch.no_grad():
         hf = text.generate(ids, max_new_tokens=64, do_sample=False)[0, ids.shape[1]:].tolist()

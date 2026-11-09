@@ -26,7 +26,7 @@ def _keys(path):
 
 @pytest.mark.parametrize("name", sorted(SETS))
 def test_holdout_is_frozen_disjoint_and_solvable(name):
-    from verifier import verify_answer
+    from countdown_rl.data.verifier import verify_answer
 
     path = os.path.join(ROOT, "data", name)
     if not os.path.exists(path):
@@ -43,7 +43,7 @@ def test_holdout_is_frozen_disjoint_and_solvable(name):
 
 
 def test_make_holdout_reproduces_the_frozen_file(tmp_path):
-    from scripts.make_holdout import main
+    from countdown_rl.data.holdout import main
 
     if not os.path.exists(os.path.join(ROOT, "data", "holdout.jsonl")):
         pytest.skip("holdout not present")
@@ -58,7 +58,8 @@ def test_make_holdout_reproduces_the_frozen_file(tmp_path):
 
 
 def test_no_training_or_selection_code_reads_the_holdout():
-    for f in ("train_rl.py", "rollout.py", "rollout_vllm.py", "sft_coldstart.py", "eval.py",
-              "verification/p11_traces.py", "scripts/cloud_train.sh", "scripts/cloud_chain.sh"):
+    pkg = "src/countdown_rl"
+    for f in (f"{pkg}/rl/grpo.py", f"{pkg}/rl/rollout.py", f"{pkg}/rl/rollout_vllm.py", f"{pkg}/rl/prompting.py",
+              f"{pkg}/evaluation/evaluate.py", "scripts/cloud/train.sh", "scripts/cloud/chain.sh"):
         src = open(os.path.join(ROOT, f)).read()
         assert not re.search(r"holdout", src, re.I), f

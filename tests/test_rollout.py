@@ -11,7 +11,7 @@ import subprocess  # noqa: E402
 import pytest  # noqa: E402
 from transformers import AutoTokenizer  # noqa: E402
 
-import rollout  # noqa: E402
+from countdown_rl.rl import rollout  # noqa: E402
 
 QWEN = "Qwen/Qwen2.5-0.5B"
 GEMMA = "google/gemma-2-2b"

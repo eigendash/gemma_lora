@@ -1,5 +1,5 @@
-from rewards import RewardConfig, check_format, compute_reward, references_numbers
-from rollout import RolloutResult
+from countdown_rl.rl.rewards import RewardConfig, check_format, compute_reward, references_numbers
+from countdown_rl.rl.rollout import RolloutResult
 
 NUMS = [100, 75, 3, 5]
 TARGET = 875
@@ -120,7 +120,7 @@ def test_config_weights_apply():
 
 
 def test_exec_requires_arithmetic_over_inputs_and_output():
-    from rewards import computes_with_inputs
+    from countdown_rl.rl.rewards import computes_with_inputs
 
     assert computes_with_inputs("res = (100 + 75) * 5\nprint(res)", NUMS)
     assert not computes_with_inputs("print(1)", NUMS)
@@ -183,7 +183,7 @@ def test_retry_after_false_beats_submitting_the_false_answer():
 
 
 def test_contradiction_check_can_be_disabled():
-    from rewards import RewardConfig
+    from countdown_rl.rl.rewards import RewardConfig
     r = make_rollout(codes=["print((100 + 75) * 3 == 875)"], outputs=["False"],
                      answer_text=WRONG, completion_text=WRONG_COMPLETION)
     assert compute_reward(r, NUMS, TARGET, RewardConfig(zero_shaping_if_contradicted=False)).exec > 0
@@ -191,7 +191,7 @@ def test_contradiction_check_can_be_disabled():
 
 # --- invalid-literal zero-shaping (P7) ---------------------------------------------------------
 def _invalid_rollout(answer):
-    from rollout import RolloutResult
+    from countdown_rl.rl.rollout import RolloutResult
     code = f"res = {answer}\nprint(res == 150, res)"
     text = (f"<think>\nTry {answer}.\n</think>\n<python>\n{code}\n</python>\n<output>\nTrue 150\n</output>\n"
             f"<answer>\n{answer}\n</answer>")
@@ -202,14 +202,14 @@ def _invalid_rollout(answer):
 
 
 def test_invalid_literals_gets_shaping_by_default():
-    from rewards import RewardConfig, compute_reward
+    from countdown_rl.rl.rewards import RewardConfig, compute_reward
     r = compute_reward(_invalid_rollout("50 + 25 + 25 + 25 + 25"), [4, 2, 50, 6, 8, 25], 150, RewardConfig())
     assert r.correct == 0.0 and not r.invalid_literals
     assert r.exec + r.format > 0  # old behaviour preserved when the flag is off
 
 
 def test_invalid_literals_zero_shaping_when_enabled():
-    from rewards import RewardConfig, compute_reward
+    from countdown_rl.rl.rewards import RewardConfig, compute_reward
     cfg = RewardConfig(zero_shaping_if_invalid_literals=True)
     for ans, nums in (("50 + 25 + 25 + 25 + 25", [4, 2, 50, 6, 8, 25]),   # 25 reused
                       ("75 + 75", [6, 9, 3, 1, 75])):                       # 75 reused
@@ -218,7 +218,7 @@ def test_invalid_literals_zero_shaping_when_enabled():
 
 
 def test_invalid_literals_flag_does_not_touch_correct_or_wrong_value_answers():
-    from rewards import RewardConfig, compute_reward
+    from countdown_rl.rl.rewards import RewardConfig, compute_reward
     cfg = RewardConfig(zero_shaping_if_invalid_literals=True)
     ok = compute_reward(_invalid_rollout("50 + 25 * 4"), [4, 2, 50, 6, 8, 25], 150, cfg)
     assert ok.correct == 1.0 and not ok.invalid_literals

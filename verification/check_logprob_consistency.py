@@ -2,7 +2,7 @@
 
 A scripted rollout (fixed token choices, REAL model logits for the log-probs)
 through rollout.run_rollout, then the exact training path:
-train_rl.collate_rollouts + (a) forward_logprobs_chunked (presets use
+grpo.collate_rollouts + (a) forward_logprobs_chunked (presets use
 --chunked-vocab) and (b) chunked_logprobs(model(...).logits), compared against
 the generation-time old_logprobs and against the ground truth
 log_softmax(model(ids).logits) (HF forward, includes any final-logit softcap).
@@ -33,16 +33,16 @@ def main():
 
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    import rollout
-    import train_rl
-    from sandbox import Sandbox
+    from countdown_rl.rl import rollout
+    from countdown_rl.rl import grpo
+    from countdown_rl.sandbox import Sandbox
 
     dt = getattr(torch, args.dtype)
     tok = AutoTokenizer.from_pretrained(args.model)
     base = AutoModelForCausalLM.from_pretrained(args.model, dtype=dt, attn_implementation=args.attn)
     print(f"model={args.model} dtype={args.dtype} attn={args.attn} device={args.device} "
           f"final_logit_softcapping={getattr(base.config, 'final_logit_softcapping', None)}")
-    model = train_rl._apply_lora(base, 16, 32).to(args.device)
+    model = grpo._apply_lora(base, 16, 32).to(args.device)
     model.eval()
 
     chunks = ["<think>\nTry 25*3+1.\n</think>\n", "<python>\nres = 25*3+1\nprint(res == 76, res)\n</python>",
@@ -64,12 +64,12 @@ def main():
     print(f"rollout: code_rounds={res.code_rounds} has_answer={res.has_answer} "
           f"n_completion={len(res.completion_ids)} n_env={res.loss_mask.count(0)}")
 
-    batch = train_rl.collate_rollouts([res], tok.pad_token_id or tok.eos_token_id, args.device)
+    batch = grpo.collate_rollouts([res], tok.pad_token_id or tok.eos_token_id, args.device)
     with torch.no_grad():
-        lp_chunked = train_rl.forward_logprobs_chunked(model, batch["input_ids"], batch["attention_mask"],
+        lp_chunked = grpo.forward_logprobs_chunked(model, batch["input_ids"], batch["attention_mask"],
                                                        batch["target_ids"])
         logits = model(input_ids=batch["input_ids"], attention_mask=batch["attention_mask"]).logits
-        lp_full = train_rl.chunked_logprobs(logits, batch["target_ids"])
+        lp_full = grpo.chunked_logprobs(logits, batch["target_ids"])
         lp_truth = torch.log_softmax(logits.float(), dim=-1).gather(-1, batch["target_ids"].unsqueeze(-1)).squeeze(-1)
 
     m = batch["pred_mask"][0].bool()

@@ -16,8 +16,7 @@ import json
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import checkpoint as ck  # noqa: E402
+from countdown_rl.rl import checkpoint as ck  # noqa: E402
 
 
 def main() -> int:

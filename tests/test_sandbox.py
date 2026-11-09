@@ -1,8 +1,10 @@
 import threading
 
+import os
+
 import pytest
 
-from sandbox import Sandbox
+from countdown_rl.sandbox import Sandbox
 
 
 @pytest.fixture(scope="module")
@@ -139,17 +141,18 @@ def test_worker_never_imports_torch_even_if_parent_did():
 
     code = (
         "import sys, json; sys.modules['torch'] = object()  # pretend the parent imported torch\n"
-        "from sandbox import Sandbox\n"
+        "from countdown_rl.sandbox import Sandbox\n"
         "s = Sandbox(n_workers=1)\n"
         "w = next(iter(s._all))\n"
         "print(w.proc.pid)\n"
         "s.close()\n"
     )
-    out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True)
+    env = {**os.environ, "PYTHONPATH": os.pathsep.join(p for p in sys.path if p)}  # the package, installed or not
+    out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True, env=env)
     assert out.stdout.strip().isdigit()
     # the worker command line is the stdlib-only script, isolated (-I) and without site (-S)
-    import sandbox
-    assert sandbox._WORKER_PATH.endswith("sandbox_worker.py")
+    from countdown_rl.sandbox import executor as sandbox
+    assert sandbox._WORKER_PATH.endswith(os.path.join("sandbox", "worker.py"))
 
 
 def test_worker_reuse_many_execs(sb):

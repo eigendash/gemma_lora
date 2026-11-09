@@ -1,7 +1,7 @@
 import random
 
-import data_generator as dg
-from verifier import integer_intermediates, verify_answer
+from countdown_rl.data import generator as dg
+from countdown_rl.data.verifier import integer_intermediates, verify_answer
 
 
 def test_tier_properties_and_solvable():

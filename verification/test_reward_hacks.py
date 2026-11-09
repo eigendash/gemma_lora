@@ -12,8 +12,8 @@ from __future__ import annotations
 
 import pytest
 
-from rewards import RewardConfig, compute_reward
-from rollout import RolloutResult
+from countdown_rl.rl.rewards import RewardConfig, compute_reward
+from countdown_rl.rl.rollout import RolloutResult
 
 NUMS, TARGET = [25, 3, 1, 7], 76      # 1 is an input number (very common: pool has 1..10 twice)
 NUMS_NO1, TARGET_NO1 = [25, 3, 4, 7], 79

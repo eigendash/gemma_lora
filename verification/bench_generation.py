@@ -19,7 +19,6 @@ import statistics as st
 import sys
 import time
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import torch  # noqa: E402
 
@@ -27,31 +26,31 @@ import torch  # noqa: E402
 def load(model_name, dtype=torch.bfloat16, attn="sdpa"):
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    import attention_gqa
+    from countdown_rl.rl import attention
 
     tok = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype,
-                                                 attn_implementation=attention_gqa.resolve(attn)).to("cuda").eval()
+                                                 attn_implementation=attention.resolve(attn)).to("cuda").eval()
     return tok, model
 
 
 def prompts_for(n_prompts, G, style, seed=0):
     import random
 
-    import sft_coldstart
-    from sandbox import Sandbox
+    from countdown_rl.rl import prompting
+    from countdown_rl.sandbox import Sandbox
 
     sb = Sandbox(n_workers=4, timeout=0.05)
-    prefix = sft_coldstart.fewshot_prefix(sb, style)
+    prefix = prompting.fewshot_prefix(sb, style)
     rows = [json.loads(l) for l in open("data/train.jsonl")]
     random.Random(seed).shuffle(rows)
     chosen = rows[:n_prompts]
-    return sb, [sft_coldstart.with_prefix(prefix, sft_coldstart.problem_prompt(p["nums"], p["target"], style))
+    return sb, [prompting.with_prefix(prefix, prompting.problem_prompt(p["nums"], p["target"], style))
                 for p in chosen for _ in range(G)]
 
 
 def micro(args):
-    from rollout import _model_call
+    from countdown_rl.rl.rollout import _model_call
 
     tok, model = load(args.model, attn=args.attn)
     if args.compile:
@@ -89,13 +88,13 @@ def micro(args):
 
 
 def e2e(args):
-    import rollout
+    from countdown_rl.rl import rollout
 
     tok, model = load(args.model, attn=args.attn)
     if args.lora:  # wrap exactly like train_rl (LoRA r=16 on all linear targets, grad ckpt on, eval mode)
-        import train_rl
+        from countdown_rl.rl import grpo
 
-        model = train_rl._apply_lora(model, 16, 32)
+        model = grpo._apply_lora(model, 16, 32)
         if args.grad_ckpt:
             model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
             model.enable_input_require_grads()
@@ -116,7 +115,7 @@ def e2e(args):
     reasons = {}
     for r in res:
         reasons[r.terminal_reason] = reasons.get(r.terminal_reason, 0) + 1
-    from rewards import compute_reward
+    from countdown_rl.rl.rewards import compute_reward
 
     rows = [json.loads(l) for l in open("data/train.jsonl")]
     import random

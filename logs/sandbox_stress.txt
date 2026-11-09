@@ -1,5 +1,0 @@
-executions: 10000 normal + 100 timeout
-workers: 4, timeout: 50ms, recycle_every: 1000
-latency_ms: p50=0.063 p95=0.083 p99=0.190 max=34.009 mean=0.101
-throughput: 9916 exec/s
-rss: base=52.7MB mid=54.4MB final=36.2MB growth=-16.5MB

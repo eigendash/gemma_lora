@@ -18,8 +18,8 @@ pytestmark = pytest.mark.skipif(
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-import rollout
-from sandbox import Sandbox
+from countdown_rl.rl import rollout
+from countdown_rl.sandbox import Sandbox
 
 QWEN = "Qwen/Qwen2.5-0.5B"
 

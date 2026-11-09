@@ -1,8 +1,0 @@
-W1104 02:04:41.838000 37226 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 5853.99it/s]
-W1104 02:04:45.193000 37229 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
-W1104 02:04:46.706000 37230 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
-step 4 reward 0.000 correct 0.000 exec 0.000 format 0.000 kl -0.0005 zero_var 1.00
-step 5 reward 0.000 correct 0.000 exec 0.000 format 0.000 kl -0.0003 zero_var 1.00
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-run rl-1793725437 done; 2 steps -> outputs/rl_resume_test/train_log.jsonl

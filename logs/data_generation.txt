@@ -1,2 +1,0 @@
-wrote 10000 train -> data/train.jsonl
-wrote 1000 eval  -> data/eval.jsonl

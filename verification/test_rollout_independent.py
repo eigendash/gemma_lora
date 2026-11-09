@@ -23,7 +23,7 @@ import types
 import pytest
 import torch
 
-import rollout
+from countdown_rl.rl import rollout
 
 TOKENIZERS = ["Qwen/Qwen2.5-0.5B", "google/gemma-2-2b"]
 
@@ -147,7 +147,7 @@ def test_no_context_divergence_without_tools(monkeypatch, tok):
 #    completion tokens decode to exactly the injected text (real sandbox output).
 # ---------------------------------------------------------------------------
 def test_mask_partition_exact(monkeypatch, tok):
-    from sandbox import Sandbox
+    from countdown_rl.sandbox import Sandbox
 
     with Sandbox(n_workers=1) as real:
         res, lm, sb, _ = run_scripted(monkeypatch, tok, CODE_ROUND + ANSWER, sandbox=RecordingSandbox(real))
@@ -276,8 +276,8 @@ def test_completion_text_contains_injected_output(monkeypatch, tok):
 
 
 def test_eval_detects_failing_execution(monkeypatch, tok):
-    import eval as ev
-    from sandbox import Sandbox
+    from countdown_rl.evaluation import evaluate as ev
+    from countdown_rl.sandbox import Sandbox
 
     chunks = ["<think>\nx\n</think>\n", "<python>\nprint(1+2 == 6, 1+2)\n</python>"] + ANSWER
     with Sandbox(n_workers=1) as real:

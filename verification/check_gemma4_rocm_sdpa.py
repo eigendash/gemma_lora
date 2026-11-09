@@ -2,7 +2,7 @@
 Prints, per attention implementation, whether left-padded / unpadded logits contain NaN."""
 import sys, os, torch
 sys.path.insert(0, os.getcwd())
-import attention_gqa
+from countdown_rl.rl import attention
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 M = "models/gemma-4-E4B-text"
@@ -11,7 +11,7 @@ A = "Target 15. Check several candidates at once: 100 - 10 * 5; 100 / 10 + 5."
 Bp = "Numbers: 3 5 25. Target 17. " * 6 + "Check several candidates at once:"
 for attn in ["eager", "sdpa", "sdpa_gqa"]:
     for adapter in [False, True]:
-        m = AutoModelForCausalLM.from_pretrained(M, dtype=torch.bfloat16, attn_implementation=attention_gqa.resolve(attn)).cuda().eval()
+        m = AutoModelForCausalLM.from_pretrained(M, dtype=torch.bfloat16, attn_implementation=attention.resolve(attn)).cuda().eval()
         if adapter: m = PeftModel.from_pretrained(m, "baselines/g4e4b_d80").eval()
         ids = [tok(A)["input_ids"], tok(Bp)["input_ids"]]
         L = max(map(len, ids)); pad = tok.pad_token_id

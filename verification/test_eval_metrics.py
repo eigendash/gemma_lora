@@ -7,9 +7,9 @@ from __future__ import annotations
 
 import pytest
 
-import eval as ev
-from rewards import RewardResult
-from rollout import RolloutResult
+from countdown_rl.evaluation import evaluate as ev
+from countdown_rl.rl.rewards import RewardResult
+from countdown_rl.rl.rollout import RolloutResult
 
 
 def row(tier, correct, text, n_gen):

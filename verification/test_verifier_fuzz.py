@@ -19,7 +19,7 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ref_countdown import ref_parse, ref_verify, RefError  # noqa: E402
 
-from verifier import verify_answer  # project under test
+from countdown_rl.data.verifier import verify_answer  # project under test
 
 POOL = list(range(1, 11)) * 2 + [25, 50, 75, 100]
 

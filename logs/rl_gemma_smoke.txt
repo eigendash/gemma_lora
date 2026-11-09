@@ -1,8 +1,0 @@
-W1104 01:58:50.727000 36905 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
-Loading weights:   0%|          | 0/288 [00:00<?, ?it/s]Loading weights:   0%|          | 1/288 [00:03<17:08,  3.58s/it]Loading weights:  85%|████████▌ | 245/288 [00:03<00:00, 91.64it/s]Loading weights: 100%|██████████| 288/288 [00:04<00:00, 64.29it/s]
-W1104 01:59:00.360000 36911 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
-W1104 01:59:02.134000 36912 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
-step 0 reward 0.000 correct 0.000 exec 0.000 format 0.000 kl 0.0000 zero_var 1.00
-step 1 reward 0.000 correct 0.000 exec 0.000 format 0.000 kl -0.0831 zero_var 1.00
-step 2 reward 0.000 correct 0.000 exec 0.000 format 0.000 kl -0.2244 zero_var 1.00
-run rl-1793725136 done; 3 steps -> outputs/rl_gemma_smoke/train_log.jsonl

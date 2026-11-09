@@ -1,5 +1,0 @@
-# Dev-only dependencies. reasoning-gym is used ONLY to cross-check the
-# countdown generator/verifier against an independent implementation; it is
-# never imported by runtime code.
--r requirements-mac.txt
-reasoning-gym==0.1.25

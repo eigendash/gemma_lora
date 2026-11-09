@@ -8,7 +8,7 @@ import types
 import pytest
 import torch
 
-import attention_gqa
+from countdown_rl.rl import attention
 
 
 def test_decode_matches_stock_sdpa():
@@ -23,7 +23,7 @@ def test_decode_matches_stock_sdpa():
     mask = torch.ones(B, 1, 1, L, dtype=torch.bool)
     mask[0, ..., :4] = False          # left padding
     mask[2] = False                   # idle slot: fully masked
-    ours, _ = attention_gqa.gqa_decode_attention(mod, q, k, v, mask, scaling=D ** -0.5)
+    ours, _ = attention.gqa_decode_attention(mod, q, k, v, mask, scaling=D ** -0.5)
     ref, _ = sdpa_attention_forward(mod, q, k, v, mask, scaling=D ** -0.5)
     assert ours.shape == ref.shape == (B, 1, H, D)
     assert torch.allclose(ours[:2], ref[:2], atol=1e-5)
@@ -36,10 +36,10 @@ def test_prefill_and_training_delegate_to_sdpa(monkeypatch):
     called = []
     monkeypatch.setattr(sa, "sdpa_attention_forward", lambda *a, **k: called.append(1) or ("x", None))
     mod = types.SimpleNamespace(training=False, num_key_value_groups=2, is_causal=True)
-    attention_gqa.gqa_decode_attention(mod, torch.randn(1, 4, 5, 8), torch.randn(1, 2, 5, 8),
+    attention.gqa_decode_attention(mod, torch.randn(1, 4, 5, 8), torch.randn(1, 2, 5, 8),
                                        torch.randn(1, 2, 5, 8), None)
     mod.training = True
-    attention_gqa.gqa_decode_attention(mod, torch.randn(1, 4, 1, 8), torch.randn(1, 2, 5, 8),
+    attention.gqa_decode_attention(mod, torch.randn(1, 4, 1, 8), torch.randn(1, 2, 5, 8),
                                        torch.randn(1, 2, 5, 8), None)
     assert called == [1, 1]
 
@@ -49,14 +49,14 @@ def test_prefill_and_training_delegate_to_sdpa(monkeypatch):
 def test_real_model_sdpa_gqa_greedy_matches_sequential(impl, bs):
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    import rollout
-    from sandbox import Sandbox
+    from countdown_rl.rl import rollout
+    from countdown_rl.sandbox import Sandbox
 
     name = "Qwen/Qwen2.5-0.5B"
     tk = AutoTokenizer.from_pretrained(name)
     ref = AutoModelForCausalLM.from_pretrained(name, dtype=torch.float32, attn_implementation="eager").eval()
     gqa = AutoModelForCausalLM.from_pretrained(name, dtype=torch.float32,
-                                               attn_implementation=attention_gqa.register()).eval()
+                                               attn_implementation=attention.register()).eval()
     prompts = [rollout.format_prompt(n, t) for n, t in
                [([25, 3, 1], 76), ([100, 75, 3, 5, 8], 875), ([6, 2], 12), ([9, 8, 7, 6, 5, 4], 300)]]
     with Sandbox(n_workers=2) as sb:

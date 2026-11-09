@@ -143,7 +143,7 @@ def main():
     print(f"\nIndependent DFS solver, {args.per_tier} per tier from train + "
           f"{args.per_tier} per tier from eval")
     try:
-        from solver import solve as proj_solve  # cross-agreement only
+        from countdown_rl.data.solver import solve as proj_solve  # cross-agreement only
     except Exception:  # pragma: no cover
         proj_solve = None
     for t in ("easy", "medium", "hard"):
