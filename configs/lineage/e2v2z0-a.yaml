@@ -1,12 +1,12 @@
-# e2v2z0-a: phase a of the from-scratch replay (scripts/make_lineage_configs.py; source p7_rtx6000.yaml).
-# Generated: edit the generator, not this file.
+# e2v2z0-a: Gemma-4-E2B zero-shot, phase a only (EXPERIMENTS.md 2.7w). From the generator, then total_steps 40 -> 50
+# (user request at step 8; total_steps is not hashed and the LR schedule does not depend on it, so the resume is exact).
 model: models/gemma-4-E2B-text
 prompt_style: r1zero_tool
 n_problems: 0
 G: 8
 prompts_per_step: 64
 grad_accum: 1
-total_steps: 40
+total_steps: 50
 max_new_tokens: 768
 lr: 2.0e-05
 kl_coef: 0

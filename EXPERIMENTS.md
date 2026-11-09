@@ -881,7 +881,7 @@ Same probe as §2.7s/t: base model, `r1zero_tool`, 256 train × 8 at T = 0.9, pl
 - **gemma-2-2b:** GRPO gets no learning signal zero-shot, so it is not trained.
 - **Gemma-4-E2B:** 1 problem with signal gives about 0.75 signal groups per step at 64 prompts with 2 refill rounds, against about 6 for E4B.
 
-### 2.7w Pre-registration (2026-11-09, before any training result): Gemma-4-E2B zero-shot, phase a only `e2v2z0-a`
+### 2.7w Pre-registration (2026-11-09, before any training result): Gemma-4-E2B, phase a only, zero-shot `e2v2z0-a` and with the demo `e2v2s0-a`
 **Why:** a fail-fast test instead of extrapolating from the probe (user's choice). The question is whether zero-shot RL starts at about 2B.
 
 **Config:** `configs/lineage/e2v2z0-a.yaml`, identical to `g4v2z0-a` except `model: models/gemma-4-E2B-text`.
@@ -892,6 +892,11 @@ Same probe as §2.7s/t: base model, `r1zero_tool`, 256 train × 8 at T = 0.9, pl
 - **Gate passes:** reported as "starts". Phases b–d need a separate decision; nothing beyond phase a runs without one.
 - **Operational check:** vLLM and the training engine must agree on log-probs (`gen_logp_dev_mean` about 0.01, as for E4B), since the extraction's vLLM step only runs on the VM.
 - **Holdout:** none for phase a alone.
+- **Change (2026-11-09 03:46 UTC, at step 8, user request): 40 → 50 steps.** `total_steps` is not hashed and the LR schedule does not depend on it, so stopping at step 9 and resuming with 50 is exactly a 50-step run. At that point: signal groups per step 0–2, in-run val 0.3% / 0.0%, `gen_logp_dev_mean` about 0.015 (vLLM agrees with the trainer on the extracted model).
+- **Matched demo arm `e2v2s0-a`** (added at the same time, user request): `configs/lineage/e2v2s0-a.yaml` is identical to `e2v2z0-a` except `prompt_style: fewshot_direct_retry`, the phase-a prompt of v2 seed 2.
+  - It differs from `q4v2s2-a` only in model, seed 0, 50 steps and micro_batch 2.
+  - It runs after `e2v2z0-a` on the same VM (`scripts/gcp/chain_e2v2s0a.sh`, gate `step0:3`: smoothed in-run val ≥ its own step-0 val + 3 pp).
+  - **Question:** does the ~2B model fail only zero-shot, or with the demo too? The two gates are read side by side; the probe with the demo (`run_fewshot_2b.sh` on soos) is the step-0 reference.
 
 ### 2.7u Pre-registration (2026-11-09 ~01:20 UTC, while g4v2z0-d was at step ~22 of 80): Gemma zero-shot long continuation `g4v2z0long`
 **Why:** in-run validation was still rising phase over phase (end of a 23.0% → b 50.7% → c 58.7% → d step 20 64.7%). Meanwhile exec reward stayed about 0, and about 1 in 15 recent rollouts ran code: Gemma solves by hand in `<think>`. Asked by the user ("keep it training for longer").
