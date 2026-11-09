@@ -879,6 +879,18 @@ Same probe as §2.7s/t: base model, `r1zero_tool`, 256 train × 8 at T = 0.9, pl
 - **gemma-2-2b:** GRPO gets no learning signal zero-shot, so it is not trained.
 - **Gemma-4-E2B:** 1 problem with signal gives about 0.75 signal groups per step at 64 prompts with 2 refill rounds, against about 6 for E4B.
 
+### 2.7w Pre-registration (2026-11-09, before any training result): Gemma-4-E2B zero-shot, phase a only `e2v2z0-a`
+**Why:** a fail-fast test instead of extrapolating from the probe (user's choice). The question is whether zero-shot RL starts at about 2B.
+
+**Config:** `configs/lineage/e2v2z0-a.yaml`, identical to `g4v2z0-a` except `model: models/gemma-4-E2B-text`.
+- **Chain:** `scripts/gcp/chain_e2v2z0a.sh` on the restarted `tp-rtx6000` (max run duration 3 h).
+
+**Gate** (`GATE=e2v2z0-a:0.0:3`): smoothed in-run validation ≥ 3.0% and first-round training accuracy rising.
+- **Gate fails:** "zero-shot RL from a tool description does not start on Gemma-4-E2B under v2". The size threshold of the finding is reported as between E2B and E4B.
+- **Gate passes:** reported as "starts". Phases b–d need a separate decision; nothing beyond phase a runs without one.
+- **Operational check:** vLLM and the training engine must agree on log-probs (`gen_logp_dev_mean` about 0.01, as for E4B), since the extraction's vLLM step only runs on the VM.
+- **Holdout:** none for phase a alone.
+
 ### 2.7u Pre-registration (2026-11-09 ~01:20 UTC, while g4v2z0-d was at step ~22 of 80): Gemma zero-shot long continuation `g4v2z0long`
 **Why:** in-run validation was still rising phase over phase (end of a 23.0% → b 50.7% → c 58.7% → d step 20 64.7%). Meanwhile exec reward stayed about 0, and about 1 in 15 recent rollouts ran code: Gemma solves by hand in `<think>`. Asked by the user ("keep it training for longer").
 - **Questions:** does Gemma keep improving, or plateau like both Qwen continuations (§2.7q, §2.7r)? And does tool use ever appear?
