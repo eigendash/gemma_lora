@@ -277,7 +277,27 @@ over 5 steps). It is a registered outcome; phases c and d did not run, and the r
 - The registered primary (holdout3 of d80) does not exist. As a post hoc, descriptive number, the step-32 checkpoint
   is evaluated once on holdout3 with `fewshot_multi_retry`: *pending*.
 
-## 8. Known gaps
+## 8. Post hoc analyses of the v2 policies (listed 2026-11-09, before any of them ran)
+
+None of these was planned before the v2 results; all are descriptive and none changes a recorded verdict. They answer
+three objections a reader is likely to raise: that RL only sharpens what the base model already samples, that the
+policies do not really use the tool, and that the zero-shot result depends on the exact wording of the prompt.
+Evaluations run on the workstation and on a second local GPU (RTX A4000, CUDA, same code and lock file).
+- **pass@k on the test set:** T = 0.9, seeds 1–8, for base Qwen3-4B with `r1zero_tool`, `qwen3-4b-v2-zeroshot-s2`
+  and `qwen3-4b-v2-demo-s2`, with the settings of the v1 runs in `results/evals/test_time/`. Reported as unbiased
+  pass@k for k = 1, 2, 4, 8.
+- **Tool dependence on the test set (greedy):** the 0/1/2-round sweep and the blanked and shuffled `<output>`
+  controls for `qwen3-4b-v2-zeroshot-s2`, `qwen3-4b-v2-demo-s2` and `gemma4-e4b-v2-zeroshot-s0-cont`, as was done
+  for v1.
+- **Prompt wording (holdout3):** `qwen3-4b-v2-zeroshot-s2` under two rewordings of `r1zero_tool`
+  (`r1zero_tool_p1`, `_p2` in `rl/rollout.py`) that carry the same information.
+- **Token budget (holdout3):** both Qwen v2 policies with 1,536 new tokens instead of 768.
+- **Seed comparison points (holdout3):** the phase-b final steps of `qwen3-4b-v2-zeroshot-s2` and
+  `qwen3-4b-v2-demo-s2`, to set beside the seed-1 zero-shot run of section 5.
+- **Uncertainty:** paired bootstrap intervals (10,000 resamples) for every holdout3 difference in REPORT, alongside
+  the McNemar tests.
+
+## 9. Known gaps
 
 - **Lost log steps:** resuming on a fresh VM used to overwrite the start of `train_log.jsonl` (fixed in `rl/grpo.py`
   and `scripts/cloud/train.sh`). Lost steps:
