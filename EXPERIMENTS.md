@@ -184,7 +184,8 @@ prompt, evaluated once alongside.
 
 **Continuation `gemma4-e4b-v2-zeroshot-s0-cont`** (registered 2026-11-09 while phase d was at step 22). 100 steps
 from d80. A gain of ≥ 2 pp on holdout3 means "still improving"; less means "plateau". The share of rollouts that run
-code is also reported. **Result:** *pending* (at step 26, validation 63–67%).
+code is also reported. All 100 steps ran. 3-pass validation of step 100: 69.8% (211, 207 and 210 of 300), against
+62.1% for d80. **Result:** holdout3 *pending*.
 
 ## 7. Gemma-4-E2B, phase a only (registered 2026-11-09, before any training result)
 
@@ -234,10 +235,11 @@ after seeing the phase-a outcomes, at the user's request, and are reported as su
   1.0%), and first-round training accuracy rose from 0.045 to 0.263. In-run validation by step: 1.0, 4.7, 6.0, 6.0,
   6.0, 10.0, 10.7, 11.0, 11.7 and 11.7%. 3-pass validation of step 50: 13.1% (39, 40 and 39 of 300). Contradicted answers fell from 0.75
   at step 0. Signal groups stayed at 6–43 per step through step 50, while the zero-shot arm ended phase a with 3.
-- **`gemma4-e2b-v2-zeroshot-s0`, phase b (interim, recorded before the phase finished):** validation is flat at
-  exactly 6.0% (identical per-tier counts) for the first 25 steps. Sampling entropy had fallen from 0.77 to 0.10 by
+- **`gemma4-e2b-v2-zeroshot-s0`, phases b–d: no further learning.** All 260 steps ran. In-run validation stayed at
+  exactly 6.0% (identical per-tier counts) throughout, and 3-pass validation at the end of b, c and d was 18/300 every
+  time, the same as the end of phase a. holdout3 of d80: *pending*. Sampling entropy had fallen from 0.77 to 0.10 by
   the end of phase a, and 94% of prompts now give eight identical rollouts, so most steps have no signal group and no
-  update. The lineage continues as registered.
+  update. This was first recorded at phase-b step 25, before the phase finished.
 
 **Further follow-up (registered 2026-11-09, after the results above and before the run started), at the user's
 request: `gemma4-e2b-v2-demo-s0-noguard`, phases b–d** (bucket `e2v2s0n-b`, `-c`, `-d`). The standard schedule from
@@ -250,6 +252,16 @@ phase.
   one seed per arm, and the arms were extended after their phase-a results were seen.
 - **Secondary:** 3-pass validation at each phase end, signal groups per step, sampling entropy, and the cap share.
   A length-guard stop is an outcome.
+
+**Result: `gemma4-e2b-v2-demo-s0-noguard` phase b stopped at step 32 on the length guard** (cap share above 40%
+over 5 steps). It is a registered outcome; phases c and d did not run, and the run was not resumed.
+- In-run validation with `fewshot_multi_retry` went from 6.0% at step 0 (phase a ended at 13.1% under
+  `fewshot_direct_retry`, so the prompt change costs about half) to 16.7% at step 30.
+- The cap share rose steadily from 0.02 at step 0 to 0.42–0.49 over steps 28–31, and the length penalty from 0.004 to
+  0.12. Contradicted answers fell from 0.88 to 0.24. This is the failure that stopped `qwen3-4b-v2-demo-s1` in its
+  phase b: with no gradient on all-fail groups, nothing pushes failed rollouts to stay short.
+- The registered primary (holdout3 of d80) does not exist. As a post hoc, descriptive number, the step-32 checkpoint
+  is evaluated once on holdout3 with `fewshot_multi_retry`: *pending*.
 
 ## 8. Known gaps
 
