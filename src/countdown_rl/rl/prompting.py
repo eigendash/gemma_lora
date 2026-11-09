@@ -1,51 +1,28 @@
-"""SFT cold start: programmatic protocol traces + LoRA fine-tuning.
+"""Prompt construction: the per-problem prompt for each prompt style and the worked-example prefix.
 
-Traces are generated from the reference solver (no human-written CoT anywhere)
-and are designed to be *imitable*: every correction is derivable from the
-printed sandbox output, and the trace never answers after a ``False``.
+Prompt styles (``PROMPT_STYLES``):
 
-Each trace uses the smallest-subset solution ``L op R`` (top-level split) and is
-one of three kinds:
+- ``r1zero_tool``           no example. An R1-Zero style conversation frame plus a plain description of the tool:
+                            code in ``<python>`` is executed and its printed output comes back in ``<output>``.
+- ``zero``                  no example, tag skeleton only.
+- ``fewshot_direct_retry``  one worked example (a single check that prints True) plus a one-line retry instruction.
+- ``fewshot_multi_retry``   one worked example that checks several candidates in one ``<python>`` block, plus the
+                            multi-candidate instruction.
 
-- ``direct``     check the full expression -> real sandbox ``True`` -> answer.
-- ``near_miss``  check ``L op' R`` with the wrong operator closest to the target
-                 -> real ``False V`` -> "V is too high/low; keep a=L, b=R and try
-                 every operation" -> ``print(a + b, a - b, a * b, a / b)`` -> the
-                 printed value equal to the target picks the operator -> answer.
-- ``split``      split into a=L, b=R and print all four results directly ->
-                 answer.
-- ``resplit``    sweep a WRONG split first (no printed value equals the target)
-                 -> "none is T; split differently" -> sweep the right split ->
-                 answer. This is the backtracking pattern: a miss leads to a
-                 different decomposition, never to an answer.
-
-After every sweep the trace restates the four printed values against their
-operations and says which one equals the target (or that none does), so the
-claim is always grounded in the real output.
-
-The injected ``<output>`` segments hold REAL sandbox stdout and are masked
-(label -100) in SFT, reusing ``rollout.assemble`` so the token sequence is built
-segment-wise and never re-tokenized. Generated ``<python>`` segments end exactly
-at ``</python>`` (where the rollout stops), followed by the injected
-``\n<output>\n...\n</output>\n`` exactly as at rollout time.
-
-Uses train-split problems only (never the eval split), to avoid leakage.
+The worked examples are generated, not written by hand: ``generate_trace`` builds a protocol trace for a fixed
+training problem from the reference solver, and every ``<output>`` in it is real sandbox stdout. ``solution_hint``
+returns a partial solution for the hinted-resampling experiments (training only; evaluation never passes hints).
 """
 
 from __future__ import annotations
 
-import argparse
 import ast
-import re
-import json
-import os
 import random
 from fractions import Fraction
 from itertools import combinations
 
-import torch
 
-from countdown_rl.rl.rollout import assemble, encode_text, format_prompt, format_prompt_r1zero_tool
+from countdown_rl.rl.rollout import format_prompt, format_prompt_r1zero_tool
 from countdown_rl.data.verifier import verify_answer
 from countdown_rl.sandbox import Sandbox
 from countdown_rl.data.solver import solve
@@ -318,43 +295,6 @@ def generate_trace(problem: dict, rng: random.Random, sandbox: Sandbox, kind: st
     raise ValueError(f"unknown trace kind {kind!r}")
 
 
-_OUTPUT_BLOCK = re.compile(r"\n<output>\n.*?\n</output>\n", re.S)
-
-
-def segments_from_completion(completion: str) -> list[tuple[bool, str]]:
-    """Split a sampled transcript into (is_env, text) segments: injected ``<output>`` blocks are env
-    (masked in SFT), everything else is model text. ``"".join`` of the result is the input."""
-    segs, pos = [], 0
-    for m in _OUTPUT_BLOCK.finditer(completion):
-        if m.start() > pos:
-            segs.append((False, completion[pos:m.start()]))
-        segs.append((True, m.group(0)))
-        pos = m.end()
-    if pos < len(completion):
-        segs.append((False, completion[pos:]))
-    assert "".join(t for _, t in segs) == completion
-    return segs
-
-
-def build_example(tokenizer, prompt_text: str, segments: list[tuple[bool, str]], max_length: int = 768):
-    """Tokenize prompt + segments into (input_ids, labels) with env tokens masked.
-
-    Each segment is tokenized separately (never re-tokenized joined). Generated
-    segments (is_env=False) are text -> ids; injected ``<output>`` segments
-    (is_env=True) stay text and are tokenized + masked inside ``assemble``.
-    """
-    prompt_ids = encode_text(tokenizer, prompt_text, add_special_tokens=True)
-    norm_segments = [
-        (is_env, text if is_env else encode_text(tokenizer, text))
-        for is_env, text in segments
-    ]
-    ids, mask = assemble(tokenizer, prompt_ids, norm_segments)
-    if len(ids) > max_length:
-        ids, mask = ids[:max_length], mask[:max_length]
-    labels = [i if m else -100 for i, m in zip(ids, mask)]
-    return {"input_ids": ids, "labels": labels}
-
-
 FEWSHOT_PROBLEMS = [  # not in the eval split ([25, 3, 1] -> 76 is a train problem)
     {"nums": [100, 75, 3, 5], "target": 875, "solution": "(100+75)*5"},
     {"nums": [25, 3, 1], "target": 76, "solution": "(25*3)+1"},
@@ -426,216 +366,3 @@ def fewshot_prefix(sandbox: Sandbox, style: str = "fewshot", seed: int = 0) -> s
 
 def with_prefix(prefix: str, prompt: str) -> str:
     return f"{prefix}\n\n{prompt}" if prefix else prompt
-
-
-def make_traces(problems: list[dict], n: int, seed: int, sandbox: Sandbox):
-    """Return (chosen_problems, traces) for ``n`` sampled problems."""
-    rng = random.Random(seed)
-    if n <= len(problems):
-        chosen = rng.sample(problems, n)
-    else:
-        chosen = [problems[i] for i in rng.choices(range(len(problems)), k=n)]
-    traces = [generate_trace(p, rng, sandbox) for p in chosen]
-    return chosen, traces
-
-
-def _examples_hash(examples: list[dict]) -> str:
-    import hashlib
-
-    h = hashlib.sha256()
-    for ex in examples:
-        h.update(json.dumps([ex["input_ids"], ex["labels"]]).encode())
-    return h.hexdigest()[:16]
-
-
-def train_sft(
-    model,
-    tokenizer,
-    examples: list[dict],
-    *,
-    epochs: int = 1,
-    lr: float = 2e-4,
-    lora_r: int = 16,
-    lora_alpha: int = 32,
-    device: torch.device | str | None = None,
-    output_dir: str | None = None,
-    log_every: int = 10,
-    save_every: int = 0,
-    resume: bool = True,
-    init_lora: str = "",
-):
-    """Minimal LoRA SFT loop (batch=1, no padding, gradient step per example).
-
-    With ``output_dir`` and ``save_every > 0``, a checkpoint (adapter, optimizer,
-    step, losses, RNG state, examples hash) is written atomically to
-    ``output_dir/checkpoint`` every ``save_every`` steps; a rerun with the same
-    examples resumes from it (``resume=True``) instead of starting over.
-    """
-    import shutil
-    import time
-
-    from peft import LoraConfig, get_peft_model, set_peft_model_state_dict
-
-    device = device or next(model.parameters()).device
-    lora = LoraConfig(
-        r=lora_r,
-        lora_alpha=lora_alpha,
-        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
-        lora_dropout=0.05,
-        bias="none",
-        task_type="CAUSAL_LM",
-    )
-    if init_lora:  # continue an existing (e.g. RL) adapter instead of a fresh one (P11 self-distillation)
-        from peft import PeftModel
-
-        model = PeftModel.from_pretrained(model, init_lora, is_trainable=True)
-        lc = model.peft_config["default"]
-        if lc.r != lora_r:
-            raise SystemExit(f"init_lora has r={lc.r}; --lora-r says {lora_r}")
-    else:
-        model = get_peft_model(model, lora)
-    model.to(device)
-    model.train()
-
-    opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=lr)
-    losses: list[float] = []
-    start = 0
-    ex_hash = _examples_hash(examples)
-    ckpt = os.path.join(output_dir, "checkpoint") if output_dir else None
-    if resume and ckpt and os.path.exists(os.path.join(ckpt, "state.pt")):
-        from safetensors.torch import load_file
-
-        state = torch.load(os.path.join(ckpt, "state.pt"), map_location="cpu", weights_only=False)
-        if state["examples_hash"] != ex_hash:
-            raise SystemExit(f"{ckpt} was trained on different examples; delete it or pass --no-resume")
-        set_peft_model_state_dict(model, load_file(os.path.join(ckpt, "adapter", "adapter_model.safetensors")))
-        opt.load_state_dict(state["optimizer"])
-        start, losses = state["step"], state["losses"]
-        torch.set_rng_state(state["rng_cpu"])
-        if state.get("rng_cuda") and torch.cuda.is_available():
-            torch.cuda.set_rng_state_all(state["rng_cuda"])
-        print(f"resumed SFT from {ckpt} at step {start}")
-
-    def save_checkpoint(step):
-        tmp = ckpt + ".tmp"
-        shutil.rmtree(tmp, ignore_errors=True)
-        os.makedirs(tmp)
-        model.save_pretrained(os.path.join(tmp, "adapter"))
-        torch.save({"step": step, "optimizer": opt.state_dict(), "losses": losses, "examples_hash": ex_hash,
-                    "rng_cpu": torch.get_rng_state(),
-                    "rng_cuda": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else []},
-                   os.path.join(tmp, "state.pt"))
-        shutil.rmtree(ckpt, ignore_errors=True)
-        os.replace(tmp, ckpt)
-
-    step, t0 = 0, time.time()
-    for epoch in range(epochs):
-        for ex in examples:
-            if step < start:  # already trained in a previous (resumed) run
-                step += 1
-                continue
-            input_ids = torch.tensor([ex["input_ids"]], device=device)
-            labels = torch.tensor([ex["labels"]], device=device)
-            out = model(input_ids=input_ids, labels=labels)
-            loss = out.loss
-            loss.backward()
-            opt.step()
-            opt.zero_grad()
-            step += 1
-            losses.append(loss.item())
-            if step % log_every == 0:
-                rate = (time.time() - t0) / max(1, step - start)
-                print(f"step {step} loss {sum(losses[-log_every:]) / len(losses[-log_every:]):.4f} "
-                      f"({rate:.2f} s/step)", flush=True)
-            if ckpt and save_every and step % save_every == 0:
-                save_checkpoint(step)
-
-    if losses:
-        print(f"done {step} steps | final loss {losses[-1]:.4f} | mean {sum(losses) / len(losses):.4f}")
-    else:
-        print(f"done {step} steps | no losses recorded")
-
-    if output_dir:
-        model.save_pretrained(output_dir)
-        tokenizer.save_pretrained(output_dir)
-        print(f"saved adapter -> {output_dir}")
-    return model, losses
-
-
-def load_model_and_tokenizer(model_id: str, device: str, dtype: str = "float16", attn: str = "eager"):
-    from transformers import AutoModelForCausalLM, AutoTokenizer
-
-    dt = {"float32": torch.float32, "float16": torch.float16, "bfloat16": torch.bfloat16}[dtype]
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-    model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dt, attn_implementation=attn)
-    model.to(device)
-    model.eval()
-    return model, tokenizer
-
-
-def main(argv=None) -> None:
-    ap = argparse.ArgumentParser(description="Generate SFT cold-start traces and train LoRA.")
-    ap.add_argument("--model", default="Qwen/Qwen2.5-0.5B")
-    ap.add_argument("--train-file", default="data/train.jsonl")
-    ap.add_argument("--n-traces", type=int, default=500)
-    ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--epochs", type=int, default=1)
-    ap.add_argument("--lr", type=float, default=2e-4)
-    ap.add_argument("--lora-r", type=int, default=16)
-    ap.add_argument("--max-length", type=int, default=768)
-    ap.add_argument("--output-dir", default="outputs/sft")
-    ap.add_argument("--device", default="auto", help="cuda|mps|cpu|auto")
-    ap.add_argument("--traces-out", default=None, help="dump traces as JSONL for inspection")
-    ap.add_argument("--dtype", default="float16", help="float32|float16|bfloat16")
-    ap.add_argument("--attn", default="eager", help="sdpa|eager (eager for gemma-2)")
-    ap.add_argument("--save-every", type=int, default=50, help="checkpoint every N steps (0 = off)")
-    ap.add_argument("--no-resume", action="store_true", help="ignore an existing output_dir/checkpoint")
-    ap.add_argument("--traces-file", default="", help="JSONL of SAMPLED transcripts (verification/p11_traces.py "
-                    "filter) instead of programmatic traces; <output> blocks are masked")
-    ap.add_argument("--prompt-style", default="zero", help="prompt context for --traces-file (same as RL)")
-    ap.add_argument("--init-lora", default="", help="continue this adapter (e.g. an RL LoRA) instead of a fresh one")
-    args = ap.parse_args(argv)
-
-    if args.device == "auto":
-        device = "mps" if torch.backends.mps.is_available() else ("cuda" if torch.cuda.is_available() else "cpu")
-    else:
-        device = args.device
-
-    sandbox = Sandbox(n_workers=2, timeout=0.050)
-    if args.traces_file:
-        rows = [json.loads(line) for line in open(args.traces_file)]
-        try:
-            prefix = fewshot_prefix(sandbox, args.prompt_style) if args.prompt_style != "zero" else ""
-        finally:
-            sandbox.close()
-        chosen = rows
-        traces = [segments_from_completion(r["completion"]) for r in rows]
-        prompts = [with_prefix(prefix, problem_prompt(r["nums"], r["target"], args.prompt_style)) for r in rows]
-    else:
-        with open(args.train_file) as f:
-            problems = [json.loads(line) for line in f]
-        try:
-            chosen, traces = make_traces(problems, args.n_traces, args.seed, sandbox)
-        finally:
-            sandbox.close()
-        prompts = [format_prompt(p["nums"], p["target"]) for p in chosen]
-
-    model, tokenizer = load_model_and_tokenizer(args.model, device, args.dtype, args.attn)
-    examples = [build_example(tokenizer, pr, segs, args.max_length) for pr, segs in zip(prompts, traces)]
-
-    if args.traces_out:
-        os.makedirs(os.path.dirname(args.traces_out) or ".", exist_ok=True)
-        with open(args.traces_out, "w") as f:
-            for segs in traces:
-                f.write(json.dumps({"text": "".join(t for _, t in segs)}) + "\n")
-
-    if args.output_dir:
-        os.makedirs(args.output_dir, exist_ok=True)
-
-    train_sft(model, tokenizer, examples, epochs=args.epochs, lr=args.lr, lora_r=args.lora_r,
-              device=device, output_dir=args.output_dir, save_every=args.save_every,
-              resume=not args.no_resume, init_lora=args.init_lora)
-
-
-if __name__ == "__main__":
-    main()

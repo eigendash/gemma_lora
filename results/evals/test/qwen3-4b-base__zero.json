@@ -1,0 +1,17 @@
+{
+  "config": {
+    "engine": "vllm",
+    "prompt_style": "zero",
+    "eval_file": "data/eval.jsonl"
+  },
+  "metrics": {
+    "val_correct": 0.0,
+    "val_n": 1000,
+    "val_tier": {
+      "easy": 0.0,
+      "hard": 0.0,
+      "medium": 0.0
+    },
+    "val_s": 33.4
+  }
+}

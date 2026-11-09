@@ -4,7 +4,7 @@ Reports correct counts, the discordant pairs (solved only by A / only by B) and 
 two-sided McNemar (binomial) p-value. With a fixed eval set, a paired test is far more
 sensitive than comparing two pass@1 numbers with independent-sample error bars.
 
-usage: python countdown_rl.evaluation.paired base.jsonl ckpt.jsonl [more.jsonl ...]
+usage: python -m countdown_rl.evaluation.paired base.jsonl[.gz] ckpt.jsonl[.gz] [more ...]
        (each later file is compared against the first)
 """
 
@@ -14,11 +14,12 @@ import json
 import math
 import sys
 
+from countdown_rl.evaluation.dumps import read_dump
+
 
 def load(path):
     rows = {}
-    for line in open(path):
-        r = json.loads(line)
+    for r in read_dump(path):
         rows[(tuple(r["nums"]), r["target"])] = (r["correct"] > 0, r.get("tier", "?"))
     return rows
 

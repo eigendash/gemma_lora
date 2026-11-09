@@ -1,0 +1,44 @@
+{
+  "config": {
+    "model": "Qwen/Qwen3-4B-Base",
+    "init_adapter": "",
+    "adapter": "",
+    "eval_file": "data/eval.jsonl",
+    "n_eval": 0,
+    "max_new_tokens": 768,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.9,
+    "dtype": "bfloat16",
+    "attn": "sdpa_gqa",
+    "device": "cuda",
+    "seed": 4,
+    "fewshot": false,
+    "prompt_style": "fewshot_multi_retry",
+    "generation": "batched",
+    "batch_size": 128,
+    "control": "real",
+    "merge_adapter": false,
+    "out": "outputs/spec_suite/base_t09_s4.json",
+    "dump": "outputs/spec_suite/base_t09_s4.jsonl"
+  },
+  "metrics": {
+    "n": 1000,
+    "pass@1": 0.106,
+    "format_compliance": 0.739,
+    "length_mean": 376.194,
+    "length_p50": 347,
+    "length_p95": 675,
+    "length_max": 768,
+    "per_tier_pass@1": {
+      "easy": 0.205,
+      "hard": 0.023333333333333334,
+      "medium": 0.056666666666666664
+    },
+    "mean_code_rounds": 1.655,
+    "hallucination_rate": 0.012,
+    "n_failing": 908,
+    "self_correction_correct": 0.08149779735682819,
+    "self_correction_backtrack": 0.09581497797356828
+  }
+}

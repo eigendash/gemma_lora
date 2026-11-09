@@ -6,7 +6,7 @@ are removed before counting, matching the loss mask), mean code rounds, and two 
   - strict: rollouts whose FIRST check printed no True at all (every candidate failed) and that ran a second
     check -> fraction that end correct. With the multi-candidate prompt the first definition also counts a
     check where candidate 1 failed but a later one passed, so the strict one is the real recovery rate.
-usage: python verification/report_metrics.py name=dump.jsonl [name=dump.jsonl ...]
+usage: python -m countdown_rl.evaluation.metrics name=dump.jsonl[.gz] [name=dump.jsonl[.gz] ...]
 """
 from __future__ import annotations
 
@@ -15,7 +15,8 @@ import os
 import re
 import sys
 
-from countdown_rl.rl.rewards import check_format  # noqa: E402
+from countdown_rl.evaluation.dumps import read_dump
+from countdown_rl.rl.rewards import check_format
 
 OUT_RE = re.compile(r"<output>.*?</output>", re.DOTALL)
 
@@ -55,7 +56,7 @@ def main(argv):
     out = {}
     for a in argv:
         name, path = a.split("=", 1)
-        out[name] = metrics([json.loads(l) for l in open(path)], tok)
+        out[name] = metrics(read_dump(path), tok)
     keys = list(next(iter(out.values())).keys())
     print("metric".ljust(32) + "".join(k.rjust(14) for k in out))
     for k in keys:

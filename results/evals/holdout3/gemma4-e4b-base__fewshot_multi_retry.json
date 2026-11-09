@@ -1,0 +1,44 @@
+{
+  "config": {
+    "model": "models/gemma-4-E4B-text",
+    "init_adapter": "",
+    "adapter": "",
+    "eval_file": "data/holdout3.jsonl",
+    "n_eval": 0,
+    "max_new_tokens": 768,
+    "max_rounds": 2,
+    "rounds_sweep": false,
+    "temperature": 0.0,
+    "dtype": "bfloat16",
+    "attn": "eager",
+    "device": "cuda",
+    "seed": 0,
+    "fewshot": false,
+    "prompt_style": "fewshot_multi_retry",
+    "generation": "batched",
+    "batch_size": 128,
+    "control": "real",
+    "merge_adapter": false,
+    "out": "outputs/holdout/h3_g4_base.json",
+    "dump": "outputs/holdout/h3_g4_base.jsonl"
+  },
+  "metrics": {
+    "n": 1000,
+    "pass@1": 0.037,
+    "format_compliance": 0.818,
+    "length_mean": 307.157,
+    "length_p50": 212,
+    "length_p95": 675,
+    "length_max": 768,
+    "per_tier_pass@1": {
+      "easy": 0.065,
+      "hard": 0.0033333333333333335,
+      "medium": 0.03333333333333333
+    },
+    "mean_code_rounds": 1.161,
+    "hallucination_rate": 0.0,
+    "n_failing": 937,
+    "self_correction_correct": 0.023479188900747065,
+    "self_correction_backtrack": 0.0
+  }
+}

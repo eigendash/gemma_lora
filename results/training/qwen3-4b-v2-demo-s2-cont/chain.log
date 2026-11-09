@@ -1,0 +1,10 @@
+Copying gs://countdown-rl-16875-ckpt/runs/q4v2s2-d/ckpt/step_80/adapter/README.md to file://baselines/q4v2s2-d_final.tmp/README.md
+Copying gs://countdown-rl-16875-ckpt/runs/q4v2s2-d/ckpt/step_80/adapter/adapter_config.json to file://baselines/q4v2s2-d_final.tmp/adapter_config.json
+  
+Copying gs://countdown-rl-16875-ckpt/runs/q4v2s2-d/ckpt/step_80/adapter/adapter_model.safetensors to file://baselines/q4v2s2-d_final.tmp/adapter_model.safetensors
+..
+
+Average throughput: 322.9MiB/s
+INIT q4v2s2long from runs/q4v2s2-d step_80 2026-11-08T11:01:28Z
+TRAIN q4v2s2long configs/q4v2s2_long.yaml 2026-11-08T11:01:29Z
+FAILED q4v2s2long 2026-11-08T13:10:24Z
