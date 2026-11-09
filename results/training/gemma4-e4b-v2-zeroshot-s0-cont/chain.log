@@ -1,0 +1,6 @@
+INIT g4v2z0long from runs/g4v2z0-d step_80 2026-11-09T03:16:43Z
+TRAIN g4v2z0long configs/g4v2z0_long.yaml 2026-11-09T03:16:44Z
+TRAINED g4v2z0long 2026-11-09T07:15:54Z
+LATEST g4z_long = runs/g4v2z0long/ckpt/step_100 2026-11-09T07:15:55Z
+VAL3 g4z_long (model models/gemma-4-E4B-text) 2026-11-09T07:15:57Z
+DONE 2026-11-09T07:19:06Z

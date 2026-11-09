@@ -199,7 +199,8 @@ prompt, evaluated once alongside.
 **Continuation `gemma4-e4b-v2-zeroshot-s0-cont`** (registered 2026-11-09 while phase d was at step 22). 100 steps
 from d80. A gain of ≥ 2 pp on holdout3 means "still improving"; less means "plateau". The share of rollouts that run
 code is also reported. All 100 steps ran. 3-pass validation of step 100: 69.8% (211, 207 and 210 of 300), against
-62.1% for d80. **Result:** holdout3 *pending*.
+62.1% for d80. **Result: 681 vs 605 on holdout3 (117 / 41 discordant, p ≈ 1e-9; 358 / 158 / 165 by tier). Still
+improving.** Code now runs on 999 of 1,000 problems, against 345 at d80 (1.12 vs 0.52 executions per problem).
 
 ## 7. Gemma-4-E2B, phase a only (registered 2026-11-09, before any training result)
 
@@ -251,7 +252,7 @@ after seeing the phase-a outcomes, at the user's request, and are reported as su
   at step 0. Signal groups stayed at 6–43 per step through step 50, while the zero-shot arm ended phase a with 3.
 - **`gemma4-e2b-v2-zeroshot-s0`, phases b–d: no further learning.** All 260 steps ran. In-run validation stayed at
   exactly 6.0% (identical per-tier counts) throughout, and 3-pass validation at the end of b, c and d was 18/300 every
-  time, the same as the end of phase a. holdout3 of d80: *pending*. Sampling entropy had fallen from 0.77 to 0.10 by
+  time, the same as the end of phase a. holdout3 of d80: 44 (36 / 5 / 3). Sampling entropy had fallen from 0.77 to 0.10 by
   the end of phase a, and 94% of prompts now give eight identical rollouts, so most steps have no signal group and no
   update. This was first recorded at phase-b step 25, before the phase finished.
 

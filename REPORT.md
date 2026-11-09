@@ -1,5 +1,54 @@
 # Tool-Use Reasoning from a Tool Description: GRPO with LoRA on Countdown
 
+## Summary
+
+This summary is the two-page memo the task asks for; the sections after the abstract give the full account.
+
+**Setup.** We train LoRA adapters (r = 16) on base language models with GRPO on the Countdown numbers game. A
+rollout may reason inside `<think>`, run Python inside `<python>`, read the sandbox's real output inside `<output>`,
+and must commit to an expression inside `<answer>`. Injected output tokens are masked out of the loss. The reward is
+correctness from an exact verifier, plus small terms for working code and well-formed tags, minus a penalty on length
+beyond 512 tokens. Every run uses the same 300-step schedule, and every final checkpoint is scored once on holdout3, a
+1,000-problem set generated after all training and selection decisions were made.
+
+| Model | Training | Prompt | holdout3 pass@1 |
+|---|---|---|---|
+| Qwen3-4B-Base | none | demo | 9.4% |
+| Qwen3-4B-Base | none | zero-shot (`r1zero_tool`) | 6.7% |
+| Qwen3-4B-Base | recipe v1, three lineages | demo | 49.8–52.1% |
+| Qwen3-4B-Base | recipe v2 | demo | 68.1% |
+| Qwen3-4B-Base | recipe v2 | zero-shot | **69.9%** |
+| Qwen3-8B-Base | recipe v1 | demo | 55.7% |
+| Gemma-4-E4B | recipe v2 | zero-shot | 60.5%; 68.1% after 100 more steps |
+| Gemma-4-E2B | recipe v2 | zero-shot | 4.4% |
+
+**Findings.**
+1. *The recipe matters more than model size.* Recipe v2 drops the KL penalty, hinted resampling and training on
+   groups with no correct rollout, and adds gradient clipping. It improves on the v1 replay with the same seed by 18
+   points (p < 10⁻²⁷), more than moving from Qwen3-4B to Qwen3-8B under v1 (Section 2.1).
+2. *A description of the tool is enough.* A zero-shot prompt that only says what the tags do, with no worked
+   example, trains Qwen3-4B to 69.9%, level with the arm trained on a demonstration (68.1%, p = 0.23). The two arms
+   differ in how they use feedback: the zero-shot policy misses on its first check far less often, while the demo
+   policy recovers more often after a miss (Sections 2.2 and 3).
+3. *The result transfers to Gemma-4-E4B, and tool use appears late.* After 300 steps Gemma runs code on only a third
+   of problems. Another 100 steps raise accuracy to 68.1% (p ≈ 10⁻⁹), and it then runs code on all but one (Section 2.3).
+4. *At 2B parameters the zero-shot signal is too thin.* Gemma-4-E2B starts learning but its sampling collapses to a
+   single answer per problem within 50 steps, after which it stops improving. With the demonstration it keeps
+   learning until its responses outgrow the token budget (Section 2.3).
+5. *Self-correction is real and depends on the feedback.* Policies retry after a failed check and rewrite the
+   expression rather than resubmit it. When the tool's output is blanked, the v1 policy falls from 51.8% to 12.8%
+   (Section 3).
+
+**Learning dynamics, backtracking, compute and exploits.** Reward, validation accuracy and length over training are
+in Figure 2 (Section 2.4); a verbatim backtracking trace is in Section 3. The one reward exploit we saw, answering
+straight after a failed check to collect the shaping reward, and the safeguards that closed it are in Section 4.
+Everything ran on single spot GPUs with colocated vLLM generation, at a total of 134 GPU-hours (Section 6). Section 5
+gives the comparison on the original 1,000-problem test set that the task requests, for every model.
+
+**Main caveat.** Each recipe v2 arm on Qwen3-4B has one completed seed. Run-to-run variation measured under v1 is
+about 2 points, which is small next to the recipe effect but of the same order as the gap between the two prompts. We
+therefore claim parity between them, not that either is better (Section 7).
+
 ## Abstract
 
 We study whether reinforcement learning can teach a small base language model to solve arithmetic search problems
@@ -7,15 +56,16 @@ by reasoning, writing code, reading the code's real output, and revising its ans
 Group Relative Policy Optimization (GRPO) on the Countdown numbers game. The model may interleave free-form
 reasoning, Python execution in a sandbox, and a final answer, and the environment's output is injected into its
 context during generation but excluded from the loss. The main result concerns the role of the prompt. We had
-concluded early on that zero-shot training was impossible, because Qwen3-4B-Base scored 0% without a demonstration.
-The cause turned out to be a prompt that showed the output format but never said that code would be executed.
-With a zero-shot prompt that simply describes the tool, the same base model reaches 69.9% pass@1 on a fresh
-1,000-problem holdout set after 300 GRPO steps. A policy trained with a worked demonstration under an otherwise
-identical configuration reaches 68.1% (paired McNemar p = 0.23). The zero-shot policy is the stronger of the two on
-the hardest tier (181 vs 153 of 300 problems). The recipe transfers to Gemma-4-E4B, which reaches 60.5%, although it
-learns to solve the problems in its reasoning trace and uses the tool mainly as a fallback. We also describe the one
-reward exploit we observed, the safeguards built against it, and the compute measures that made roughly 130
-GPU-hours of experiments feasible on single spot GPUs.
+concluded early on that zero-shot training was impossible, because Qwen3-4B-Base scored 0% on the test set when
+given only the tag skeleton. The cause turned out to be that this prompt showed the output format but never said that
+code would be executed. With a zero-shot prompt that simply describes the tool, the base model scores 6.7% on a fresh
+1,000-problem holdout set, and 69.9% after 300 GRPO steps. A policy trained with a worked demonstration under an
+otherwise identical configuration reaches 68.1% (paired McNemar p = 0.23). The zero-shot policy is the stronger of
+the two on the hardest tier (181 vs 153 of 300 problems). The recipe transfers to Gemma-4-E4B, which reaches 60.5%
+after 300 steps and 68.1% after 100 more. Gemma first learns to solve the problems in its reasoning and uses the tool
+as a fallback; only in the extra steps does it come to check every answer with code. At 2B parameters the zero-shot
+recipe starts but stalls. We also describe the one reward exploit we observed, the safeguards built against it, and
+the compute measures that made roughly 130 GPU-hours of experiments feasible on single spot GPUs.
 
 ## 1. Method
 
@@ -82,6 +132,14 @@ and 7 of the 8 rollouts correct). Only such groups have non-zero advantages, so 
 where gradient signal exists. Groups with no variance are refilled with fresh prompts, up to two extra rounds per
 step.
 
+We chose this signal over the policy's entropy, which is the other common basis for a curriculum, because it measures
+directly what GRPO needs: a group contributes a gradient if and only if its outcomes differ. Entropy is only a proxy
+for that. A tier can have high entropy and no correct rollouts at all, which yields no gradient under recipe v2, or
+low entropy with a reliable mix of outcomes. The proxy does carry information that our curriculum ignores, however.
+The Gemma-4-E2B run in Section 2.3 lost its entropy, and with it nearly all its signal, within 50 steps. The
+mixed-outcome fraction registered the loss only after it had happened, whereas a fall in entropy would have flagged
+it earlier.
+
 Every run follows the same four-phase schedule of 40, 90, 90 and 80 steps (300 in total). Each phase starts from the
 final checkpoint of the previous one, so no checkpoint is chosen by hand.
 
@@ -126,8 +184,8 @@ which is the mechanism behind the exploit in Section 4.
 ![Figure 1](docs/figures/fig1_holdout3.png)
 
 *Figure 1. Accuracy on holdout3 (1,000 problems generated after all model decisions) for every final checkpoint, with
-95% Wilson intervals. Each checkpoint was evaluated once, with greedy decoding. Rows marked "pending" are evaluations
-queued at the time of writing.*
+95% Wilson intervals. Each checkpoint was evaluated once, with greedy decoding. The Gemma-4-E2B demo row is the
+checkpoint at which the length guard stopped that run, 82 steps into the schedule (Section 2.3).*
 
 ### 2.1 Recipe v2 improves substantially on recipe v1
 
@@ -142,7 +200,8 @@ through the format and execution terms. That gradient favours short, well-formed
 length regulariser. Without it, v2's rollouts first grew longer: one of the two v2 seeds was stopped in phase b by
 our pre-registered guard on truncation. The other seed recovered as accuracy rose, and its share of capped rollouts
 fell from 32% to 6% by the end of training. Continuing that run for another 45 steps left holdout3 accuracy unchanged
-(68.2%), so the four-phase schedule had already converged.
+(68.2%), so for this run the four-phase schedule had already converged. That is not true of every model: the same
+check on Gemma-4-E4B found a large further gain (Section 2.3).
 
 ### 2.2 A tool description is sufficient
 
@@ -157,9 +216,10 @@ one correct rollout produce a gradient. With the `zero` prompt, base Qwen3-4B so
 only 3 of 256 training problems, and 38% of its answers simply restate the target. With `r1zero_tool`, 58 of 256
 problems have at least one correct sample. That is enough signal for training to begin.
 
-The zero-shot arm starts 11 points behind the demo arm on validation (4.3% vs 15.0%), draws level within roughly
-20 steps, and stays at or above it for the rest of training (Fig. 2a). On holdout3 it scores 69.9%, against 68.1%
-for the demo arm, which meets the registered criterion. The difference of 18 problems (109 vs 91 discordant) is not
+On holdout3 the base model scores 6.7% with `r1zero_tool` and 9.4% with the demo prompt, so neither prompt on its own
+accounts for much of the final accuracy. The zero-shot arm starts 11 points behind the demo arm on validation (4.3% vs
+15.0%), draws level within roughly 20 steps, and stays at or above it for the rest of training (Fig. 2a). On
+holdout3 it scores 69.9%, against 68.1% for the demo arm, which meets the registered criterion. The difference of 18 problems (109 vs 91 discordant) is not
 significant, so we read the result as parity rather than superiority. Almost all of the difference comes from the
 hard tier (181 vs 153). The learned behaviour is closely tied to the prompt it was trained with. Evaluated with the
 demo prompt instead of its own, the zero-shot policy falls to 30.9%.
@@ -167,29 +227,46 @@ demo prompt instead of its own, the zero-shot policy falls to 30.9%.
 ### 2.3 Transfer to Gemma
 
 We ran the same zero-shot configuration on Gemma-4-E4B, using its text decoder extracted from the multimodal
-checkpoint. On holdout3 it reaches 60.5%, compared with 30.9% for Gemma under recipe v1 with the demo prompt. We give
-no p-value for that comparison, because the recipe and the prompt both differ. Its tool use is very different from
-Qwen's. Gemma runs code on only 35% of problems, and no first execution ever prints the target. Instead, it enumerates
-combinations in its reasoning and turns to code only once it is stuck, which mostly happens on problems it goes on to
-fail. A 100-step continuation, intended to test whether tool use appears with more training, is still running
-[*pending*]. The holdout3 score of the Gemma base model under `r1zero_tool` is also *pending*.
+checkpoint. The base model scores 1.9% on holdout3 with `r1zero_tool`. After the 300-step schedule it reaches 60.5%,
+compared with 30.9% for Gemma under recipe v1 with the demo prompt. We give no p-value for that comparison, because
+the recipe and the prompt both differ. At that point its tool use is very different from Qwen's. Gemma runs code on
+only 35% of problems, and no first execution ever prints the target. Instead, it enumerates combinations in its
+reasoning and turns to code only once it is stuck, which mostly happens on problems it goes on to fail.
+
+Validation accuracy was still rising at the end of the schedule, so we registered a 100-step continuation, with a
+gain of at least 2 points on holdout3 as the criterion for "still improving". The continuation reached 68.1%, a gain
+of 7.6 points (117 problems gained and 41 lost, p ≈ 10⁻⁹), spread over all three tiers. Its behaviour changed more
+than its accuracy did. The continued policy runs code on 999 of the 1,000 holdout3 problems, against 345 before, and
+averages 1.1 executions per problem instead of 0.5. Checking with the tool therefore did emerge on Gemma, but only
+after the policy had already learned to solve most problems in its reasoning. Like the Qwen policy, it is tied to its
+training prompt: with the demo prompt the 300-step checkpoint scores 42.7% instead of 60.5%.
 
 At about 2B parameters the starting signal nearly disappears. Gemma-4-E2B solves at least one of eight samples on 1
 of 256 problems, and gemma-2-2b, the model suggested in the task description, on none. We nevertheless ran two
 matched 50-step runs on Gemma-4-E2B, one with each prompt, each gated on a registered criterion of at least 3 points
 of validation gain. The zero-shot run passed its gate. It found almost no signal for the first 20 steps (0–2 of 64
 groups per step), after which signal and accuracy rose together, reaching 6.0% validation accuracy at step 50
-(from 0.3%). Zero-shot RL therefore starts at this scale, but far more slowly. Qwen3-4B went from 4.3% to 49.3% over
-the same 50 steps.
+(from 0.3%). Over the same 50 steps Qwen3-4B went from 4.3% to 49.3%.
+
+The rise came at the cost of diversity. The policy's sampling entropy fell from 0.77 to 0.10 over phase a, and by its
+end 77% of prompts produced eight identical rollouts. A group of identical rollouts has no advantage to learn from,
+so we continued the run through the remaining three phases to see whether it would recover. It did not. Over 260
+further steps validation stayed at exactly 6.0%, with identical per-tier counts, and most steps contained no group
+with a gradient at all. The final checkpoint scores 4.4% on holdout3.
 
 The demo-prompted run behaved quite differently. From step 0, 77% of its answers repeated an expression that its
-own check had just shown to be wrong. This tripped the training guard against reward exploitation (Section 4),
-which stopped the run at step 5. Under recipe v2 those answers earn no gradient, so the trip reflects the base model's
-behaviour under the demo prompt rather than a learned exploit. The run had far more signal than the zero-shot run
-(13–41 groups per step), so the comparison is inconclusive about whether it would have learned. Its outcome mainly
-shows that the demonstration, which a 4B model follows, leads a 2B model to imitate the format of a check without
-using its result. These probes, together with an early comparison in which gemma-2-2b solved about 2% of problems
-with the demo prompt against about 15% for Qwen3-4B, are why the study uses Qwen3-4B as its main model.
+own check had just shown to be wrong, which stopped the run at step 5 on the guard against reward exploitation
+(Section 4). Under recipe v2 such answers earn no gradient, so the guard protects nothing in this recipe, and we
+reran the arm with it disabled. That run passed the same gate comfortably, rising from 1.0% to 11.4% validation
+accuracy in 50 steps with 6–43 signal groups per step throughout, and contradicted answers fell steadily. It then
+continued into phase b, where its responses grew longer as accuracy rose (16.7% at step 30). After 32 steps, 40% of
+its rollouts were hitting the 768-token budget, and the length guard stopped it. This is the same failure that
+stopped one of the two Qwen3-4B v2 seeds. Its holdout3 score at that point is *pending*.
+
+At this scale, then, the demonstration is what keeps learning going. It brings the model to an accuracy at which
+groups still contain both successes and failures before its sampling narrows. Without it, the policy narrows while
+nearly every rollout still fails. These runs, together with an early comparison in which gemma-2-2b solved about 2%
+of problems with the demo prompt against about 15% for Qwen3-4B, are why the study uses Qwen3-4B as its main model.
 
 ![Figure 2](docs/figures/fig2_dynamics.png)
 
@@ -222,8 +299,9 @@ ended at 10%.
 whether the model ran a second check and whether it then solved the problem.*
 
 The two v2 policies use execution feedback differently (Fig. 3). When the first check misses, both retry at almost the
-same rate: 74% for the zero-shot policy and 75% for the demo policy. After a retry, the demo-trained policy recovers
-far more often (59% vs 22%). The zero-shot policy's overall advantage comes from missing much less often in the first
+same rate: 74% for the zero-shot policy and 75% for the demo policy. Of the problems it retries, the demo-trained
+policy goes on to solve far more (59% vs 22%; counted over all first-check misses, retried or not, the rates are 50%
+and 18%). The zero-shot policy's overall advantage comes from missing much less often in the first
 place: 230 first-check misses against 619. It does the arithmetic in its reasoning and runs code mainly to confirm a
 result it has already derived.
 
@@ -285,28 +363,31 @@ basis for comparing models.
 
 *Table 1. Test-set results (1,000 problems, greedy, 768 tokens, two code rounds). "Recovered" counts problems solved
 after a first check that did not find the target, out of all such problems. Token counts use the Qwen3 tokenizer for
-every model. Rows computed with vLLM; pending rows will use the HF backend, whose greedy output differs from vLLM's by
-about one point on this set.*
+every model. Rows marked † were evaluated with the HF backend on the workstation, the others with vLLM; on this set
+the two backends' greedy outputs differ by about one point for the same checkpoint.*
 
 | Model | Training | Prompt | Pass@1 | Easy / Med. / Hard | Format | Tokens | Capped | Recovered |
 |---|---|---|---|---|---|---|---|---|
 | Qwen3-4B | none | `zero` | 0.0% | 0 / 0 / 0 | 63.4% | 293 | 17.9% | 0 / 823 |
-| Qwen3-4B | none | `r1zero_tool` | *pending* | | | | | |
+| Qwen3-4B | none | `r1zero_tool` † | 6.3% | 48 / 10 / 5 | 61.1% | 495 | 38.3% | 25 / 809 |
 | Qwen3-4B | none | demo | 11.3% | 85 / 23 / 5 | 17.6% | 612 | 82.3% | 8 / 722 |
 | Qwen3-4B | v1, seed 1 | demo | 53.0% | 339 / 107 / 84 | 99.5% | 301 | 0.5% | 81 / 540 |
 | Qwen3-4B | v1, seed 2 | demo | 50.9% | 329 / 109 / 71 | 92.5% | 383 | 7.5% | 66 / 536 |
 | Qwen3-4B | v1, hand-tuned | demo | 52.7% | 331 / 116 / 80 | 99.7% | 302 | 0.3% | 67 / 531 |
 | Qwen3-4B | v2, seed 2 | demo | 70.0% | 358 / 174 / 168 | 91.7% | 341 | 8.3% | 320 / 608 |
-| Qwen3-4B | v2, seed 2 | `r1zero_tool` | *pending* | | | | | |
+| Qwen3-4B | v2, seed 2 | `r1zero_tool` † | 70.7% | 357 / 176 / 174 | 97.4% | 312 | 2.6% | 52 / 253 |
 | Qwen3-8B | none | demo | 11.8% | 102 / 11 / 5 | 0.1% | 645 | 74.7% | 13 / 270 |
 | Qwen3-8B | v1 | demo | 58.5% | 348 / 134 / 103 | 98.8% | 314 | 1.2% | 86 / 494 |
 | Gemma-4-E4B | none | demo | 4.6% | 38 / 4 / 4 | 83.3% | 287 | 16.7% | 0 / 899 |
-| Gemma-4-E4B | none | `r1zero_tool` | *pending* | | | | | |
+| Gemma-4-E4B | none | `r1zero_tool` † | 2.0% | 19 / 1 / 0 | 33.7% | 549 | 66.3% | 1 / 142 |
 | Gemma-4-E4B | v1 | demo | 31.7% | 252 / 44 / 21 | 98.4% | 367 | 1.6% | 41 / 711 |
-| Gemma-4-E4B | v2 | `r1zero_tool` | *pending* | | | | | |
+| Gemma-4-E4B | v2 | `r1zero_tool` † | 63.6% | 350 / 148 / 138 | 99.9% | 284 | 0.0% | 9 / 315 |
+| Gemma-4-E4B | v2, +100 steps | `r1zero_tool` † | *pending* | | | | | |
 
 The base models fail in characteristic ways:
 - **Base Qwen3-4B with `zero`** produces well-formed output but answers with the target itself.
+- **The base models with `r1zero_tool`** run code readily (Qwen on 87% of problems) but rarely to any purpose, and
+  often run out of budget: 38% of Qwen's and 66% of Gemma's responses are truncated.
 - **The Qwen base models with the demo prompt** mostly run out of budget: 82% and 75% of their responses are
   truncated, which also explains their very low format compliance.
 
@@ -314,7 +395,8 @@ Reinforcement learning removes both failure modes:
 - **Shorter answers:** the trained policies are shorter than the demo-prompted base models (roughly 300–380 tokens
   against more than 600), and nearly all of them comply with the format.
 - **Recovery after a miss:** under v1, the trained policies solve 12–17% of problems after a failed first check,
-  against at most 5% for the bases. Recipe v2 raises this to 53%.
+  against at most 5% for the bases. Recipe v2 raises this to 53% with the demo prompt. The zero-shot policy recovers
+  less often (21%) but misses far less often in the first place, 253 times against 608.
 
 ## 6. Compute
 
@@ -339,8 +421,11 @@ locally at no cost.
 
 **Statistical power.** The central comparison rests on one seed per arm. The three v1 lineages of Qwen3-4B suggest
 that run-to-run variation on holdout3 is about 2 points. That is small next to the 16–18-point gain from recipe v2,
-but of the same order as the 1.8-point difference between the zero-shot and demo arms. Our claim of parity between
-those two arms is therefore well supported, but any claim that one is better would need several more seeds. The
+but of the same order as the 1.8-point difference between the zero-shot and demo arms. That estimate also comes from
+recipe v1, and v2 may well vary more from run to run. It has no KL penalty, and one of its two seeds was stopped by
+the length guard while the other finished, which already shows a sensitivity to the seed that v1 never displayed. Our
+claim of parity between the two arms is therefore the most the data support, and any claim that one is better would
+need several more seeds. The
 recipe v2 comparison itself was registered for two seeds. One of them was stopped by the length guard, so its
 registered two-seed average could not be computed. Holdout3 has now been used to compare more than a dozen
 checkpoints. Each checkpoint was evaluated only once and none was selected on it, but the individual p-values are not

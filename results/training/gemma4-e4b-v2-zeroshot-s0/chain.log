@@ -1,0 +1,19 @@
+TRAIN g4v2z0-a configs/lineage/g4v2z0-a.yaml 2026-11-08T17:15:57Z
+TRAINED g4v2z0-a 2026-11-08T18:08:33Z
+gate: smoothed val 21.3% vs need 4.3% -> ok; train acc first10 0.333 -> last10 0.388 -> ok; val evals [13.0, 16.0, 19.3, 21.7, 23.0]
+GATE PASS g4v2z0-a 2026-11-08T18:08:34Z
+INIT g4v2z0-b from runs/g4v2z0-a step_40 2026-11-08T18:08:46Z
+TRAIN g4v2z0-b configs/lineage/g4v2z0-b.yaml 2026-11-08T18:08:47Z
+TRAINED g4v2z0-b 2026-11-08T21:07:12Z
+INIT g4v2z0-c from runs/g4v2z0-b step_90 2026-11-08T21:07:25Z
+TRAIN g4v2z0-c configs/lineage/g4v2z0-c.yaml 2026-11-08T21:07:25Z
+TRAINED g4v2z0-c 2026-11-09T00:11:44Z
+INIT g4v2z0-d from runs/g4v2z0-c step_90 2026-11-09T00:11:58Z
+TRAIN g4v2z0-d configs/lineage/g4v2z0-d.yaml 2026-11-09T00:11:58Z
+TRAINED g4v2z0-d 2026-11-09T03:06:04Z
+LATEST g4z_a = runs/g4v2z0-a/ckpt/step_40 2026-11-09T03:06:05Z
+LATEST g4z_b = runs/g4v2z0-b/ckpt/step_90 2026-11-09T03:06:09Z
+LATEST g4z_c = runs/g4v2z0-c/ckpt/step_90 2026-11-09T03:06:11Z
+LATEST g4z_d = runs/g4v2z0-d/ckpt/step_80 2026-11-09T03:06:15Z
+VAL3 g4z_a g4z_b g4z_c g4z_d (model models/gemma-4-E4B-text) 2026-11-09T03:06:17Z
+DONE 2026-11-09T03:12:46Z

@@ -1,0 +1,9 @@
+MODEL models/gemma-4-E2B-text fetched, sha256 ok 2026-11-09T03:32:15Z
+TRAIN e2v2z0-a configs/lineage/e2v2z0-a.yaml 2026-11-09T03:32:22Z
+TRAIN e2v2z0-a configs/lineage/e2v2z0-a.yaml 2026-11-09T03:48:13Z
+TRAINED e2v2z0-a 2026-11-09T04:38:17Z
+gate: smoothed val 5.9% vs need 3.0% -> ok; train acc first10 0.000 -> last10 0.095 -> ok; val evals [0.3, 0.0, 0.3, 1.0, 0.3, 2.0, 3.7, 5.7, 6.0, 6.0]
+GATE PASS e2v2z0-a 2026-11-09T04:38:18Z
+LATEST e2z_a = runs/e2v2z0-a/ckpt/step_50 2026-11-09T04:38:19Z
+VAL3 e2z_a (model models/gemma-4-E2B-text) 2026-11-09T04:38:21Z
+DONE 2026-11-09T04:41:28Z

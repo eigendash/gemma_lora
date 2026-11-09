@@ -1,0 +1,14 @@
+INIT e2v2z0-b from runs/e2v2z0-a step_50 2026-11-09T06:11:55Z
+TRAIN e2v2z0-b configs/lineage/e2v2z0-b.yaml 2026-11-09T06:11:56Z
+TRAINED e2v2z0-b 2026-11-09T06:33:57Z
+INIT e2v2z0-c from runs/e2v2z0-b step_90 2026-11-09T06:34:09Z
+TRAIN e2v2z0-c configs/lineage/e2v2z0-c.yaml 2026-11-09T06:34:10Z
+TRAINED e2v2z0-c 2026-11-09T06:50:03Z
+INIT e2v2z0-d from runs/e2v2z0-c step_90 2026-11-09T06:50:16Z
+TRAIN e2v2z0-d configs/lineage/e2v2z0-d.yaml 2026-11-09T06:50:16Z
+TRAINED e2v2z0-d 2026-11-09T07:04:19Z
+LATEST e2z_b = runs/e2v2z0-b/ckpt/step_90 2026-11-09T07:04:20Z
+LATEST e2z_c = runs/e2v2z0-c/ckpt/step_90 2026-11-09T07:04:22Z
+LATEST e2z_d = runs/e2v2z0-d/ckpt/step_80 2026-11-09T07:04:25Z
+VAL3 e2z_b e2z_c e2z_d (model models/gemma-4-E2B-text) 2026-11-09T07:04:27Z
+DONE 2026-11-09T07:06:54Z
