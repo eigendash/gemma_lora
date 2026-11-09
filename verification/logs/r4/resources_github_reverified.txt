@@ -1,5 +1,0 @@
-Jiayi-Pan/TinyZero commit 95df88f2dc -> HTTP 200 ; license Apache-2.0 Jiayi-Pan/TinyZero
-open-thought/reasoning-gym commit 49b07130b3 -> HTTP 200 ; license Apache-2.0 open-thought/reasoning-gym
-huggingface/trl commit 032f2f7174 -> HTTP 200 ; license Apache-2.0 huggingface/trl
-huggingface/open-r1 commit 5b6ff22b3f -> HTTP 200 ; license Apache-2.0 huggingface/open-r1
-verl-project/verl commit 184687bb3b -> HTTP 200 ; license Apache-2.0 verl-project/verl

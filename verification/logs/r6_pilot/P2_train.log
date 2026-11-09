@@ -1,14 +1,0 @@
-Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 12821.30it/s]
-step 0 reward 0.212 correct 0.047 exec 0.094 format 0.073 kl 0.0000 gen/train dlogp 0.355 zero_var 0.00 gen 680.1s loss 129.9s
-step 1 reward 0.301 correct 0.125 exec 0.100 format 0.078 kl 0.0005 gen/train dlogp 0.356 zero_var 0.00 gen 316.4s loss 168.2s
-/home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/peft/utils/save_and_load.py:313: UserWarning: Could not find a config file in Qwen/Qwen3-4B-Base - will assume that the vocabulary was not modified.
-  warnings.warn(
-step 2 reward 0.276 correct 0.109 exec 0.091 format 0.078 kl 0.0006 gen/train dlogp 0.547 zero_var 0.00 gen 433.7s loss 140.5s
-step 3 reward 0.257 correct 0.078 exec 0.098 format 0.081 kl 0.0007 gen/train dlogp 0.377 zero_var 0.25 gen 331.0s loss 117.1s
-step 4 reward 0.210 correct 0.031 exec 0.094 format 0.086 kl 0.0008 gen/train dlogp 0.353 zero_var 0.00 gen 422.4s loss 182.1s
-step 5 reward 0.218 correct 0.047 exec 0.094 format 0.078 kl 0.0011 gen/train dlogp 0.356 zero_var 0.12 gen 342.2s loss 138.9s
-step 6 reward 0.188 correct 0.000 exec 0.100 format 0.089 kl 0.0016 gen/train dlogp 0.354 zero_var 0.50 gen 411.8s loss 73.3s
-step 7 reward 0.288 correct 0.094 exec 0.095 format 0.098 kl 0.0016 gen/train dlogp 0.575 zero_var 0.38 gen 310.3s loss 67.6s
-step 8 reward 0.305 correct 0.109 exec 0.100 format 0.095 kl 0.0023 gen/train dlogp 0.34 zero_var 0.38 gen 268.5s loss 80.3s
-step 9 reward 0.414 correct 0.234 exec 0.094 format 0.088 kl 0.0023 gen/train dlogp 0.61 zero_var 0.12 gen 729.7s loss 152.3s
-step 10 reward 0.284 correct 0.109 exec 0.094 format 0.084 kl 0.0032 gen/train dlogp 0.636 zero_var 0.00 gen 472.7s loss 147.6s

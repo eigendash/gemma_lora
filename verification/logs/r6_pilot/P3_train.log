@@ -1,4 +1,0 @@
-Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 14387.70it/s]
-step 0 reward 0.206 correct 0.062 exec 0.090 format 0.059 kl 0.0000 gen/train dlogp 0.434 zero_var 0.00 gen 1908.0s loss 602.6s
-/home/eigendash/gemma_lora_run/.venv/lib/python3.14/site-packages/peft/utils/save_and_load.py:313: UserWarning: Could not find a config file in Qwen/Qwen3-4B-Base - will assume that the vocabulary was not modified.
-  warnings.warn(

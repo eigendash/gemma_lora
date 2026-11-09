@@ -1,4 +1,0 @@
-$ /tmp/scratch/cleanroom2/.venv/bin/python -m pytest -q -p no:cacheprovider tests
-....................................................................ss.. [ 55%]
-..........................................................               [100%]
-128 passed, 2 skipped in 8.15s

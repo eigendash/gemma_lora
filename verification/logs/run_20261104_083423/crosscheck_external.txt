@@ -1,7 +1,0 @@
-$ /tmp/scratch/cleanroom2/.venv/bin/python verification/crosscheck_external.py
-Traceback (most recent call last):
-  File "/Users/dash/Documents/dev/gemma_lora/verification/crosscheck_external.py", line 66, in <module>
-    ok1 = rg()
-  File "/Users/dash/Documents/dev/gemma_lora/verification/crosscheck_external.py", line 23, in rg
-    from reasoning_gym.games.countdown import CountdownConfig, CountdownDataset
-ModuleNotFoundError: No module named 'reasoning_gym'

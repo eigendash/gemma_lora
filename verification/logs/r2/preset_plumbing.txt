@@ -1,8 +1,0 @@
-W1104 08:33:50.061000 42768 .venv/lib/python3.14/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
-launch_anywhere grpo stage effective config: {'G': 4, 'prompts_per_step': 4, 'grad_accum': 1, 'total_steps': 30, 'n_problems': 50, 'max_new_tokens': 128, 'backend': 'gcs'}
-with --config preset-80gb.yaml: {'G': 8, 'prompts_per_step': 16, 'total_steps': 2000, 'n_problems': 50, 'max_new_tokens': 512, 'temperature': 1.0}
-configs/preset-24gb.yaml unknown keys: [] sets n_problems: False
-configs/preset-48gb.yaml unknown keys: [] sets n_problems: False
-configs/preset-80gb.yaml unknown keys: [] sets n_problems: False
-configs/smoke_cuda.yaml unknown keys: [] sets n_problems: False
-CLI --total-steps 3 with smoke_cuda.yaml -> total_steps = 10

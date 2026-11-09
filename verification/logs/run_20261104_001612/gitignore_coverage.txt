@@ -1,7 +1,0 @@
-$ bash -c rc=0; for f in data/train.jsonl outputs/x runs/x adapter_model.safetensors checkpoints/x .env; do if git check-ignore -q "$f"; then echo "ignored     $f"; else echo "NOT ignored $f"; rc=1; fi; done; exit $rc
-ignored     data/train.jsonl
-ignored     outputs/x
-ignored     runs/x
-NOT ignored adapter_model.safetensors
-NOT ignored checkpoints/x
-NOT ignored .env

@@ -1,1 +1,0 @@
-$ bash -c ! git log --all --name-only --format= | sort -u | grep -E '^\.mpl-cache/|\.safetensors$|\.bin$|\.pt$'

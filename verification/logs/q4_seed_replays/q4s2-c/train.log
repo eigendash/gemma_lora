@@ -1,826 +1,0 @@
-Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 18404.39it/s]
-W1107 12:49:40.969000 112303 .venv-vllm/lib/python3.14/site-packages/torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
-W1107 12:49:40.969000 112303 .venv-vllm/lib/python3.14/site-packages/torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
-W1107 12:49:40.969000 112303 .venv-vllm/lib/python3.14/site-packages/torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
-(MainProcess pid=112303) INFO 11-07 12:49:42 [startup.py:96] non-default args: {'dtype': 'bfloat16', 'seed': 2, 'max_model_len': 4096, 'enable_prefix_caching': True, 'gpu_memory_utilization': 0.6, 'logprobs_mode': 'processed_logprobs', 'disable_log_stats': True, 'enable_lora': True, 'enable_sleep_mode': True, 'model': 'Qwen/Qwen3-4B-Base'}
-(MainProcess pid=112303) INFO 11-07 12:49:42 [model.py:670] Enabling cumem allocator because sleep mode requires it.
-(MainProcess pid=112303) INFO 11-07 12:49:42 [model.py:744] Resolved architecture: Qwen3ForCausalLM
-(MainProcess pid=112303) INFO 11-07 12:49:42 [model.py:2170] Using max model len 4096
-(MainProcess pid=112303) INFO 11-07 12:49:42 [scheduler.py:310] Chunked prefill is enabled with max_num_batched_tokens=16384.
-Parse safetensors files:   0%|          | 0/3 [00:00<?, ?it/s]Parse safetensors files:  33%|███▎      | 1/3 [00:00<00:00,  3.43it/s]Parse safetensors files: 100%|██████████| 3/3 [00:00<00:00,  8.26it/s]
-(MainProcess pid=112303) INFO 11-07 12:49:42 [kernel.py:480] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
-(MainProcess pid=112303) WARNING 11-07 12:49:42 [flashinfer.py:99] FlashInfer kernels are disabled: flashinfer-cubin is not installed and nvcc (CUDA_HOME, CUDA_PATH, PATH or /usr/local/cuda) or ninja (PATH) is missing. Set CUDA_HOME to a CUDA toolkit and put ninja on PATH, or run `vllm download-kernels`.
-Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 3263.80it/s]
-(MainProcess pid=112303) WARNING 11-07 12:49:44 [system_utils.py:154] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
-W1107 12:49:47.095000 112455 .venv-vllm/lib/python3.14/site-packages/torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
-W1107 12:49:47.095000 112455 .venv-vllm/lib/python3.14/site-packages/torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
-W1107 12:49:47.095000 112455 .venv-vllm/lib/python3.14/site-packages/torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
-(EngineCore pid=112455) INFO 11-07 12:49:48 [core.py:139] Initializing a V1 LLM engine (v0.33.0) with config: model='Qwen/Qwen3-4B-Base', speculative_config=None, tokenizer='Qwen/Qwen3-4B-Base', skip_tokenizer_init=False, tokenizer_mode=auto, revision=main, tokenizer_revision=main, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=4096, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, quantization_config=None, enforce_eager=False, aux_output_config=AuxOutputConfig(enable_return_routed_experts=False, max_bytes=None), kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, custom_histogram_buckets=None, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=2, served_model_name=Qwen/Qwen3-4B-Base, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'ir_enable_torch_wrap': True, 'splitting_ops': ['vllm::unified_attention_with_output', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::qwen4_exp_ple_short_conv', 'vllm::qwen4_exp_qsa_with_output', 'vllm::qwen4_exp_qsa_prepare_with_output', 'vllm::linear_attention', 'vllm::qwen_gdn_attention_core', 'vllm::qwen_gdn_attention_core_fused_norm_packed', 'vllm::gdn_attention_core_xpu', 'vllm::olmo_hybrid_gdn_full_forward', 'vllm::sparse_attn_indexer', 'vllm::rocm_aiter_sparse_attn_indexer', 'vllm::deepseek_v4_attention', 'vllm::hpc_rope_norm_forward', 'vllm::unified_kv_cache_update', 'vllm::unified_mla_kv_cache_update'], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'cudagraph_decoder_replay': True, 'decoder_replay_cudagraph_capture_sizes': [], 'decoder_replay_trim_threshold': 768, 'compile_sizes': [], 'compile_ranges_endpoints': [16384], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=True, enable_rocm_segmented_attn_autotune=False, enable_cutedsl_warmup=True, enable_jit_warmup=True, monokernel=False, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
-(EngineCore pid=112455) WARNING 11-07 12:49:48 [flashinfer.py:99] FlashInfer kernels are disabled: flashinfer-cubin is not installed and nvcc (CUDA_HOME, CUDA_PATH, PATH or /usr/local/cuda) or ninja (PATH) is missing. Set CUDA_HOME to a CUDA toolkit and put ninja on PATH, or run `vllm download-kernels`.
-(EngineCore pid=112455) INFO 11-07 12:49:48 [parallel_state.py:1929] world_size=1 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_3462b92b5a8b403cb0ff309c2331c2a6 backend=nccl
-(EngineCore pid=112455) INFO 11-07 12:49:49 [parallel_state.py:2385] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank N/A, EPLB rank N/A
-(EngineCore pid=112455) INFO 11-07 12:49:49 [gpu_worker.py:513] Using V2 Model Runner
-(EngineCore pid=112455) INFO 11-07 12:49:49 [model_runner.py:399] Loading model from scratch...
-(EngineCore pid=112455) INFO 11-07 12:49:50 [cuda.py:508] Using FLASH_ATTN attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION'].
-(EngineCore pid=112455) INFO 11-07 12:49:50 [flash_attn.py:1122] Using FlashAttention version 2
-(EngineCore pid=112455) INFO 11-07 12:49:50 [base_loader.py:82] Initializing model took 0.508474 seconds
-(EngineCore pid=112455) INFO 11-07 12:49:50 [weight_utils.py:1144] Filesystem type for checkpoints: EXT4. Checkpoint size: 7.49 GiB. Available RAM: 169.32 GiB.
-(EngineCore pid=112455) INFO 11-07 12:49:50 [weight_utils.py:1167] Auto-prefetch is disabled because the filesystem (EXT4) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
-Loading safetensors checkpoint shards:   0% Completed | 0/3 [00:00<?, ?it/s]
-Loading safetensors checkpoint shards:  33% Completed | 1/3 [00:00<00:00,  6.38it/s]
-Loading safetensors checkpoint shards:  67% Completed | 2/3 [00:00<00:00,  6.41it/s]
-Loading safetensors checkpoint shards: 100% Completed | 3/3 [00:00<00:00,  9.47it/s]
-
-(EngineCore pid=112455) INFO 11-07 12:49:50 [default_loader.py:506] Loading weights took 0.32 seconds
-(EngineCore pid=112455) INFO 11-07 12:49:51 [punica_selector.py:20] Using PunicaWrapperGPU.
-(EngineCore pid=112455) INFO 11-07 12:49:52 [model_runner.py:428] Model loading took 7.62 GiB memory and 2.950061 seconds
-(EngineCore pid=112455) INFO 11-07 12:49:52 [topk_topp_sampler.py:121] FlashInfer top-p/top-k sampling disabled via VLLM_USE_FLASHINFER_SAMPLER=0.
-(EngineCore pid=112455) INFO 11-07 12:49:52 [torch_utils.py:281] Reducing Torch threads from 24 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
-(EngineCore pid=112455) INFO 11-07 12:49:52 [utils.py:381] Using LBNHC KV cache layout.
-(EngineCore pid=112455) INFO 11-07 12:49:53 [caching.py:342] reconstructed serializable fn from standalone compile artifacts. num_artifacts=3 num_submods=37
-(EngineCore pid=112455) INFO 11-07 12:49:53 [decorators.py:326] [backbone] Directly load AOT compilation from path /home/dash/.cache/vllm/torch_compile_cache/torch_aot_compile/941d7bfe290f7d812160e3b36fc25750b4c4563673746ebc90e5c0a6ff6afaec/rank_0_0/model
-(EngineCore pid=112455) INFO 11-07 12:49:53 [monitor.py:62] [backbone] torch.compile took 0.12 s in total
-(EngineCore pid=112455) WARNING 11-07 12:49:53 [utils.py:276] Using default LoRA kernel configs
-(EngineCore pid=112455) INFO 11-07 12:49:53 [monitor.py:91] [backbone] Initial profiling/warmup run took 0.06 s
-Capturing CUDA graphs (PIECEWISE):   0%|          | 0/102 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):   2%|▏         | 2/102 [00:00<00:07, 13.58it/s]Capturing CUDA graphs (PIECEWISE):   5%|▍         | 5/102 [00:00<00:05, 18.03it/s]Capturing CUDA graphs (PIECEWISE):   7%|▋         | 7/102 [00:00<00:05, 18.72it/s]Capturing CUDA graphs (PIECEWISE):  10%|▉         | 10/102 [00:00<00:04, 18.93it/s]Capturing CUDA graphs (PIECEWISE):  13%|█▎        | 13/102 [00:00<00:04, 19.92it/s]Capturing CUDA graphs (PIECEWISE):  16%|█▌        | 16/102 [00:00<00:04, 19.67it/s]Capturing CUDA graphs (PIECEWISE):  19%|█▊        | 19/102 [00:00<00:04, 20.55it/s]Capturing CUDA graphs (PIECEWISE):  22%|██▏       | 22/102 [00:01<00:03, 20.32it/s]Capturing CUDA graphs (PIECEWISE):  25%|██▍       | 25/102 [00:01<00:03, 20.64it/s]Capturing CUDA graphs (PIECEWISE):  27%|██▋       | 28/102 [00:01<00:03, 20.34it/s]Capturing CUDA graphs (PIECEWISE):  30%|███       | 31/102 [00:01<00:03, 20.98it/s]Capturing CUDA graphs (PIECEWISE):  33%|███▎      | 34/102 [00:01<00:03, 20.67it/s]Capturing CUDA graphs (PIECEWISE):  36%|███▋      | 37/102 [00:01<00:03, 21.06it/s]Capturing CUDA graphs (PIECEWISE):  39%|███▉      | 40/102 [00:01<00:02, 20.73it/s]Capturing CUDA graphs (PIECEWISE):  42%|████▏     | 43/102 [00:02<00:02, 21.40it/s]Capturing CUDA graphs (PIECEWISE):  45%|████▌     | 46/102 [00:02<00:02, 20.92it/s]Capturing CUDA graphs (PIECEWISE):  48%|████▊     | 49/102 [00:02<00:02, 21.50it/s]Capturing CUDA graphs (PIECEWISE):  51%|█████     | 52/102 [00:02<00:02, 21.00it/s]Capturing CUDA graphs (PIECEWISE):  54%|█████▍    | 55/102 [00:02<00:02, 21.66it/s]Capturing CUDA graphs (PIECEWISE):  57%|█████▋    | 58/102 [00:02<00:02, 21.13it/s]Capturing CUDA graphs (PIECEWISE):  60%|█████▉    | 61/102 [00:02<00:01, 21.73it/s]Capturing CUDA graphs (PIECEWISE):  63%|██████▎   | 64/102 [00:03<00:01, 21.19it/s]Capturing CUDA graphs (PIECEWISE):  66%|██████▌   | 67/102 [00:03<00:01, 21.43it/s]Capturing CUDA graphs (PIECEWISE):  69%|██████▊   | 70/102 [00:03<00:01, 20.62it/s]Capturing CUDA graphs (PIECEWISE):  72%|███████▏  | 73/102 [00:03<00:01, 21.34it/s]Capturing CUDA graphs (PIECEWISE):  75%|███████▍  | 76/102 [00:03<00:01, 20.83it/s]Capturing CUDA graphs (PIECEWISE):  77%|███████▋  | 79/102 [00:03<00:01, 21.49it/s]Capturing CUDA graphs (PIECEWISE):  80%|████████  | 82/102 [00:03<00:00, 20.96it/s]Capturing CUDA graphs (PIECEWISE):  83%|████████▎ | 85/102 [00:04<00:00, 21.68it/s]Capturing CUDA graphs (PIECEWISE):  86%|████████▋ | 88/102 [00:04<00:00, 21.10it/s]Capturing CUDA graphs (PIECEWISE):  89%|████████▉ | 91/102 [00:04<00:00, 21.66it/s]Capturing CUDA graphs (PIECEWISE):  92%|█████████▏| 94/102 [00:04<00:00, 20.94it/s]Capturing CUDA graphs (PIECEWISE):  95%|█████████▌| 97/102 [00:04<00:00, 21.58it/s]Capturing CUDA graphs (PIECEWISE):  98%|█████████▊| 100/102 [00:04<00:00, 21.00it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 102/102 [00:04<00:00, 20.77it/s]
-Capturing CUDA graphs (FULL):   0%|          | 0/2 [00:00<?, ?it/s]Capturing CUDA graphs (FULL): 100%|██████████| 2/2 [00:00<00:00, 28.20it/s]
-(EngineCore pid=112455) INFO 11-07 12:50:00 [model_runner.py:1163] Graph capturing finished in 6 secs, took 0.67 GiB
-(EngineCore pid=112455) INFO 11-07 12:50:01 [gpu_worker.py:772] Available KV cache memory: 46.65 GiB
-(EngineCore pid=112455) INFO 11-07 12:50:01 [gpu_worker.py:787] CUDA graph memory profiling is enabled (default since v0.21.0). The current --gpu-memory-utilization=0.6000 is equivalent to --gpu-memory-utilization=0.5915 without CUDA graph memory profiling. To maintain the same effective KV cache size as before, increase --gpu-memory-utilization to 0.6085. To disable, set VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=0.
-(EngineCore pid=112455) INFO 11-07 12:50:01 [kv_cache_utils.py:1147] GPU KV cache size: 339,648 tokens, Maximum concurrency for 4,096 tokens per request: 82.92x
-(EngineCore pid=112455) INFO 11-07 12:50:01 [kernel_warmup.py:179] JIT kernel warmup starting.
-(EngineCore pid=112455) INFO 11-07 12:50:01 [kernel_warmup.py:192] JIT kernel warmup finished in 0.00s.
-Capturing CUDA graphs (PIECEWISE):   0%|          | 0/102 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):   2%|▏         | 2/102 [00:00<00:06, 16.12it/s]Capturing CUDA graphs (PIECEWISE):   5%|▍         | 5/102 [00:00<00:04, 19.42it/s]Capturing CUDA graphs (PIECEWISE):   8%|▊         | 8/102 [00:00<00:04, 19.36it/s]Capturing CUDA graphs (PIECEWISE):  11%|█         | 11/102 [00:00<00:04, 20.37it/s]Capturing CUDA graphs (PIECEWISE):  14%|█▎        | 14/102 [00:00<00:04, 20.11it/s]Capturing CUDA graphs (PIECEWISE):  17%|█▋        | 17/102 [00:00<00:04, 20.83it/s]Capturing CUDA graphs (PIECEWISE):  20%|█▉        | 20/102 [00:00<00:03, 20.63it/s]Capturing CUDA graphs (PIECEWISE):  23%|██▎       | 23/102 [00:01<00:03, 21.32it/s]Capturing CUDA graphs (PIECEWISE):  25%|██▌       | 26/102 [00:01<00:03, 21.01it/s]Capturing CUDA graphs (PIECEWISE):  28%|██▊       | 29/102 [00:01<00:03, 21.58it/s]Capturing CUDA graphs (PIECEWISE):  31%|███▏      | 32/102 [00:01<00:03, 21.14it/s]Capturing CUDA graphs (PIECEWISE):  34%|███▍      | 35/102 [00:01<00:03, 21.82it/s]Capturing CUDA graphs (PIECEWISE):  37%|███▋      | 38/102 [00:01<00:02, 21.34it/s]Capturing CUDA graphs (PIECEWISE):  40%|████      | 41/102 [00:01<00:02, 21.92it/s]Capturing CUDA graphs (PIECEWISE):  43%|████▎     | 44/102 [00:02<00:02, 21.41it/s]Capturing CUDA graphs (PIECEWISE):  46%|████▌     | 47/102 [00:02<00:02, 21.96it/s]Capturing CUDA graphs (PIECEWISE):  49%|████▉     | 50/102 [00:02<00:02, 21.40it/s]Capturing CUDA graphs (PIECEWISE):  52%|█████▏    | 53/102 [00:02<00:02, 22.03it/s]Capturing CUDA graphs (PIECEWISE):  55%|█████▍    | 56/102 [00:02<00:02, 21.51it/s]Capturing CUDA graphs (PIECEWISE):  58%|█████▊    | 59/102 [00:02<00:01, 22.10it/s]Capturing CUDA graphs (PIECEWISE):  61%|██████    | 62/102 [00:02<00:01, 21.54it/s]Capturing CUDA graphs (PIECEWISE):  64%|██████▎   | 65/102 [00:03<00:01, 21.96it/s]Capturing CUDA graphs (PIECEWISE):  67%|██████▋   | 68/102 [00:03<00:01, 21.22it/s]Capturing CUDA graphs (PIECEWISE):  70%|██████▉   | 71/102 [00:03<00:01, 21.85it/s]Capturing CUDA graphs (PIECEWISE):  73%|███████▎  | 74/102 [00:03<00:01, 21.30it/s]Capturing CUDA graphs (PIECEWISE):  75%|███████▌  | 77/102 [00:03<00:01, 21.93it/s]Capturing CUDA graphs (PIECEWISE):  78%|███████▊  | 80/102 [00:03<00:01, 21.32it/s]Capturing CUDA graphs (PIECEWISE):  81%|████████▏ | 83/102 [00:03<00:00, 21.94it/s]Capturing CUDA graphs (PIECEWISE):  84%|████████▍ | 86/102 [00:04<00:00, 21.37it/s]Capturing CUDA graphs (PIECEWISE):  87%|████████▋ | 89/102 [00:04<00:00, 21.93it/s]Capturing CUDA graphs (PIECEWISE):  90%|█████████ | 92/102 [00:04<00:00, 21.30it/s]Capturing CUDA graphs (PIECEWISE):  93%|█████████▎| 95/102 [00:04<00:00, 21.89it/s]Capturing CUDA graphs (PIECEWISE):  96%|█████████▌| 98/102 [00:04<00:00, 21.32it/s]Capturing CUDA graphs (PIECEWISE):  99%|█████████▉| 101/102 [00:04<00:00, 21.91it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 102/102 [00:04<00:00, 21.35it/s]
-Capturing CUDA graphs (FULL):   0%|          | 0/102 [00:00<?, ?it/s]Capturing CUDA graphs (FULL):   4%|▍         | 4/102 [00:00<00:03, 29.39it/s]Capturing CUDA graphs (FULL):   8%|▊         | 8/102 [00:00<00:03, 29.44it/s]Capturing CUDA graphs (FULL):  12%|█▏        | 12/102 [00:00<00:03, 29.68it/s]Capturing CUDA graphs (FULL):  16%|█▌        | 16/102 [00:00<00:02, 29.89it/s]Capturing CUDA graphs (FULL):  20%|█▉        | 20/102 [00:00<00:02, 30.38it/s]Capturing CUDA graphs (FULL):  24%|██▎       | 24/102 [00:00<00:02, 30.80it/s]Capturing CUDA graphs (FULL):  27%|██▋       | 28/102 [00:00<00:02, 31.17it/s]Capturing CUDA graphs (FULL):  31%|███▏      | 32/102 [00:01<00:02, 31.44it/s]Capturing CUDA graphs (FULL):  35%|███▌      | 36/102 [00:01<00:02, 31.93it/s]Capturing CUDA graphs (FULL):  39%|███▉      | 40/102 [00:01<00:01, 32.29it/s]Capturing CUDA graphs (FULL):  43%|████▎     | 44/102 [00:01<00:01, 32.63it/s]Capturing CUDA graphs (FULL):  47%|████▋     | 48/102 [00:01<00:01, 32.87it/s]Capturing CUDA graphs (FULL):  51%|█████     | 52/102 [00:01<00:01, 33.14it/s]Capturing CUDA graphs (FULL):  55%|█████▍    | 56/102 [00:01<00:01, 33.36it/s]Capturing CUDA graphs (FULL):  59%|█████▉    | 60/102 [00:01<00:01, 33.50it/s]Capturing CUDA graphs (FULL):  63%|██████▎   | 64/102 [00:01<00:01, 33.72it/s]Capturing CUDA graphs (FULL):  67%|██████▋   | 68/102 [00:02<00:01, 33.75it/s]Capturing CUDA graphs (FULL):  71%|███████   | 72/102 [00:02<00:00, 33.83it/s]Capturing CUDA graphs (FULL):  75%|███████▍  | 76/102 [00:02<00:00, 33.96it/s]Capturing CUDA graphs (FULL):  78%|███████▊  | 80/102 [00:02<00:00, 34.08it/s]Capturing CUDA graphs (FULL):  82%|████████▏ | 84/102 [00:02<00:00, 34.39it/s]Capturing CUDA graphs (FULL):  86%|████████▋ | 88/102 [00:02<00:00, 34.58it/s]Capturing CUDA graphs (FULL):  90%|█████████ | 92/102 [00:02<00:00, 29.64it/s]Capturing CUDA graphs (FULL):  94%|█████████▍| 96/102 [00:02<00:00, 31.15it/s]Capturing CUDA graphs (FULL):  98%|█████████▊| 100/102 [00:03<00:00, 32.30it/s]Capturing CUDA graphs (FULL): 100%|██████████| 102/102 [00:03<00:00, 32.35it/s]
-(EngineCore pid=112455) INFO 11-07 12:50:10 [model_runner.py:1163] Graph capturing finished in 9 secs, took 0.36 GiB
-(EngineCore pid=112455) INFO 11-07 12:50:10 [gpu_worker.py:1003] CUDA graph pool memory: 0.36 GiB (actual), 0.81 GiB (estimated), difference: 0.45 GiB (124.2%).
-(EngineCore pid=112455) INFO 11-07 12:50:10 [gpu_worker.py:1066] Free memory on device (86.08/94.97 GiB) on startup. Desired GPU memory utilization is (0.6, 56.98 GiB). Actual usage is 8.48 GiB for consumed memory (weights + non-torch), 1.85 GiB for peak activation, and 0.36 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=49541933364` (46.14 GiB) to fit into requested memory, or `--kv-cache-memory=80789943808` (75.24 GiB) to fully utilize gpu memory. Current kv cache memory in use is 46.65 GiB.
-(EngineCore pid=112455) INFO 11-07 12:50:11 [jit_monitor.py:84] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
-(EngineCore pid=112455) INFO 11-07 12:50:11 [core.py:405] init engine (profile, create kv cache, warmup model) took 19.10 s (compilation: 0.12 s)
-Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 3377.87it/s]
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-Parse safetensors files:   0%|          | 0/3 [00:00<?, ?it/s]Parse safetensors files:  33%|███▎      | 1/3 [00:00<00:00,  3.77it/s]Parse safetensors files: 100%|██████████| 3/3 [00:00<00:00,  8.98it/s]
-(EngineCore pid=112455) INFO 11-07 12:50:12 [kernel.py:480] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
-(MainProcess pid=112303) INFO 11-07 12:50:12 [hf.py:736] Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
-(MainProcess pid=112303) WARNING 11-07 12:50:12 [input_processor.py:289] vLLM has deprecated support for supporting different tokenizers for different LoRAs. By default, vLLM uses base model's tokenizer. If you are using a LoRA with its own tokenizer, consider specifying `--tokenizer [lora_path]` to use the LoRA tokenizer.
-(EngineCore pid=112455) WARNING 11-07 12:50:12 [jit_monitor.py:140] Triton kernel JIT compilation during inference: _topk_log_softmax_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
-val step 0: correct 0.463 {'easy': 0.87, 'hard': 0.19, 'medium': 0.33} (19s)
-(EngineCore pid=112455) INFO 11-07 12:51:14 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 12:51:14 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 12:51:14 [sleep_mode_backend.py:202] Using sleep-mode backend: cumem
-(EngineCore pid=112455) INFO 11-07 12:51:16 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 12:51:16 [gpu_worker.py:335] Sleep mode freed 57.01 GiB memory, 10.02 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 12:51:16 [abstract.py:408] It took 2.035731 seconds to fall asleep.
-step 0 reward 0.564 correct 0.375 exec 0.095 format 0.095 kl 0.0929 gen/train dlogp 2.1 zero_var 0.45 gen 43.4s loss 99.9s
-(EngineCore pid=112455) INFO 11-07 12:52:57 [abstract.py:426] It took 0.326156 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 12:52:57 [scheduler.py:3074] setting pause state to UNPAUSED
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-(EngineCore pid=112455) INFO 11-07 12:53:39 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 12:53:39 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 12:53:39 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 12:53:39 [gpu_worker.py:335] Sleep mode freed 57.45 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 12:53:39 [abstract.py:408] It took 0.209645 seconds to fall asleep.
-step 1 reward 0.653 correct 0.463 exec 0.095 format 0.095 kl 0.0819 gen/train dlogp 0.903 zero_var 0.48 gen 42.1s loss 105.3s
-(EngineCore pid=112455) INFO 11-07 12:55:31 [abstract.py:426] It took 0.326427 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 12:55:31 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 12:56:12 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 12:56:12 [core.py:1027] Waiting for in-flight requests to complete before sleeping...
-(EngineCore pid=112455) INFO 11-07 12:56:12 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 12:56:12 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 12:56:12 [gpu_worker.py:335] Sleep mode freed 57.45 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 12:56:12 [abstract.py:408] It took 0.211695 seconds to fall asleep.
-step 2 reward 0.678 correct 0.492 exec 0.093 format 0.093 kl 0.0941 gen/train dlogp 0.77 zero_var 0.42 gen 41.0s loss 103.9s
-(EngineCore pid=112455) INFO 11-07 12:57:57 [abstract.py:426] It took 0.326394 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 12:57:57 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 12:58:45 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 12:58:45 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 12:58:45 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 12:58:45 [gpu_worker.py:335] Sleep mode freed 57.07 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 12:58:45 [abstract.py:408] It took 0.208055 seconds to fall asleep.
-step 3 reward 0.559 correct 0.375 exec 0.093 format 0.092 kl 0.0777 gen/train dlogp 0.687 zero_var 0.39 gen 47.7s loss 105.5s
-(EngineCore pid=112455) INFO 11-07 13:00:36 [abstract.py:426] It took 0.325774 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:00:36 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:01:19 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:01:19 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:01:19 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:01:19 [gpu_worker.py:335] Sleep mode freed 57.27 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:01:19 [abstract.py:408] It took 0.208160 seconds to fall asleep.
-step 4 reward 0.595 correct 0.406 exec 0.095 format 0.094 kl 0.0757 gen/train dlogp 0.967 zero_var 0.53 gen 42.8s loss 109.5s
-(EngineCore pid=112455) INFO 11-07 13:03:09 [abstract.py:426] It took 0.325941 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:03:09 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 5: correct 0.427 {'easy': 0.81, 'hard': 0.18, 'medium': 0.29} (18s)
-(EngineCore pid=112455) INFO 11-07 13:04:13 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:04:13 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:04:13 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:04:13 [gpu_worker.py:335] Sleep mode freed 57.12 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:04:13 [abstract.py:408] It took 0.211057 seconds to fall asleep.
-step 5 reward 0.570 correct 0.381 exec 0.095 format 0.095 kl 0.0761 gen/train dlogp 1.51 zero_var 0.41 gen 45.5s loss 111.0s
-(EngineCore pid=112455) INFO 11-07 13:06:10 [abstract.py:426] It took 0.325976 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:06:10 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:06:54 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:06:54 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:06:54 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:06:54 [gpu_worker.py:335] Sleep mode freed 57.07 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:06:54 [abstract.py:408] It took 0.208193 seconds to fall asleep.
-step 6 reward 0.543 correct 0.354 exec 0.095 format 0.095 kl 0.0784 gen/train dlogp 0.816 zero_var 0.42 gen 43.4s loss 106.6s
-(EngineCore pid=112455) INFO 11-07 13:08:41 [abstract.py:426] It took 0.326145 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:08:41 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:09:26 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:09:26 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:09:27 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:09:27 [gpu_worker.py:335] Sleep mode freed 57.36 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:09:27 [abstract.py:408] It took 0.212136 seconds to fall asleep.
-step 7 reward 0.527 correct 0.338 exec 0.095 format 0.095 kl 0.0754 gen/train dlogp 0.574 zero_var 0.44 gen 44.8s loss 105.9s
-(EngineCore pid=112455) INFO 11-07 13:11:19 [abstract.py:426] It took 0.326013 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:11:19 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:12:01 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:12:01 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:12:01 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:12:01 [gpu_worker.py:335] Sleep mode freed 57.35 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:12:01 [abstract.py:408] It took 0.214830 seconds to fall asleep.
-step 8 reward 0.638 correct 0.445 exec 0.097 format 0.096 kl 0.0747 gen/train dlogp 0.676 zero_var 0.50 gen 41.6s loss 102.4s
-(EngineCore pid=112455) INFO 11-07 13:13:44 [abstract.py:426] It took 0.326362 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:13:44 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:14:26 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:14:26 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:14:26 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:14:26 [gpu_worker.py:335] Sleep mode freed 57.4 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:14:26 [abstract.py:408] It took 0.210805 seconds to fall asleep.
-step 9 reward 0.643 correct 0.451 exec 0.096 format 0.096 kl 0.0748 gen/train dlogp 1.02 zero_var 0.53 gen 41.4s loss 107.2s
-(EngineCore pid=112455) INFO 11-07 13:16:19 [abstract.py:426] It took 0.326450 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:16:19 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 10: correct 0.433 {'easy': 0.81, 'hard': 0.18, 'medium': 0.31} (17s)
-(EngineCore pid=112455) INFO 11-07 13:17:20 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:17:20 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:17:20 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:17:20 [gpu_worker.py:335] Sleep mode freed 57.15 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:17:20 [abstract.py:408] It took 0.212313 seconds to fall asleep.
-step 10 reward 0.533 correct 0.344 exec 0.095 format 0.095 kl 0.0749 gen/train dlogp 0.682 zero_var 0.42 gen 43.5s loss 106.4s
-(EngineCore pid=112455) INFO 11-07 13:19:07 [abstract.py:426] It took 0.325464 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:19:07 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:19:49 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:19:49 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:19:49 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:19:49 [gpu_worker.py:335] Sleep mode freed 57.15 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:19:49 [abstract.py:408] It took 0.212101 seconds to fall asleep.
-step 11 reward 0.526 correct 0.342 exec 0.092 format 0.093 kl 0.0829 gen/train dlogp 0.601 zero_var 0.41 gen 41.5s loss 106.5s
-(EngineCore pid=112455) INFO 11-07 13:21:42 [abstract.py:426] It took 0.326083 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:21:42 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:22:26 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:22:26 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:22:26 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:22:26 [gpu_worker.py:335] Sleep mode freed 57.06 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:22:26 [abstract.py:408] It took 0.208193 seconds to fall asleep.
-step 12 reward 0.567 correct 0.381 exec 0.094 format 0.093 kl 0.0798 gen/train dlogp 0.682 zero_var 0.39 gen 43.7s loss 95.0s
-(EngineCore pid=112455) INFO 11-07 13:24:02 [abstract.py:426] It took 0.325853 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:24:02 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:24:42 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:24:42 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:24:42 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:24:42 [gpu_worker.py:335] Sleep mode freed 56.91 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:24:42 [abstract.py:408] It took 0.206003 seconds to fall asleep.
-step 13 reward 0.546 correct 0.361 exec 0.092 format 0.092 kl 0.0744 gen/train dlogp 0.79 zero_var 0.38 gen 39.7s loss 103.8s
-(EngineCore pid=112455) INFO 11-07 13:26:32 [abstract.py:426] It took 0.325481 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:26:32 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:27:13 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:27:13 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:27:14 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:27:14 [gpu_worker.py:335] Sleep mode freed 57.15 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:27:14 [abstract.py:408] It took 0.212058 seconds to fall asleep.
-step 14 reward 0.613 correct 0.428 exec 0.092 format 0.092 kl 0.0734 gen/train dlogp 1.09 zero_var 0.41 gen 40.7s loss 99.4s
-(EngineCore pid=112455) INFO 11-07 13:28:54 [abstract.py:426] It took 0.326155 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:28:54 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 15: correct 0.420 {'easy': 0.81, 'hard': 0.18, 'medium': 0.27} (16s)
-(EngineCore pid=112455) INFO 11-07 13:29:52 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:29:52 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:29:52 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:29:52 [gpu_worker.py:335] Sleep mode freed 57.18 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:29:52 [abstract.py:408] It took 0.212173 seconds to fall asleep.
-step 15 reward 0.444 correct 0.258 exec 0.093 format 0.093 kl 0.0740 gen/train dlogp 0.55 zero_var 0.34 gen 41.5s loss 106.3s
-(EngineCore pid=112455) INFO 11-07 13:31:44 [abstract.py:426] It took 0.326073 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:31:44 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:32:24 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:32:24 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:32:25 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:32:25 [gpu_worker.py:335] Sleep mode freed 57.17 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:32:25 [abstract.py:408] It took 0.211063 seconds to fall asleep.
-step 16 reward 0.598 correct 0.408 exec 0.095 format 0.095 kl 0.0827 gen/train dlogp 1.39 zero_var 0.47 gen 39.8s loss 103.7s
-(EngineCore pid=112455) INFO 11-07 13:34:09 [abstract.py:426] It took 0.326023 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:34:09 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:34:48 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:34:48 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:34:48 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:34:48 [gpu_worker.py:335] Sleep mode freed 57.09 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:34:48 [abstract.py:408] It took 0.208090 seconds to fall asleep.
-step 17 reward 0.616 correct 0.430 exec 0.093 format 0.093 kl 0.0745 gen/train dlogp 0.799 zero_var 0.42 gen 38.8s loss 101.1s
-(EngineCore pid=112455) INFO 11-07 13:36:35 [abstract.py:426] It took 0.325261 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:36:35 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:37:12 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:37:12 [core.py:1027] Waiting for in-flight requests to complete before sleeping...
-(EngineCore pid=112455) INFO 11-07 13:37:12 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:37:12 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:37:12 [gpu_worker.py:335] Sleep mode freed 57.14 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:37:12 [abstract.py:408] It took 0.212051 seconds to fall asleep.
-step 18 reward 0.554 correct 0.375 exec 0.090 format 0.090 kl 0.0705 gen/train dlogp 0.832 zero_var 0.31 gen 36.3s loss 101.2s
-(EngineCore pid=112455) INFO 11-07 13:38:54 [abstract.py:426] It took 0.325135 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:38:54 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:39:36 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:39:36 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:39:36 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:39:36 [gpu_worker.py:335] Sleep mode freed 57.08 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:39:36 [abstract.py:408] It took 0.208068 seconds to fall asleep.
-step 19 reward 0.506 correct 0.318 exec 0.094 format 0.094 kl 0.0692 gen/train dlogp 2.15 zero_var 0.38 gen 41.9s loss 101.3s
-(EngineCore pid=112455) INFO 11-07 13:41:24 [abstract.py:426] It took 0.325804 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:41:24 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 20: correct 0.420 {'easy': 0.77, 'hard': 0.21, 'medium': 0.28} (17s)
-(EngineCore pid=112455) INFO 11-07 13:42:22 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:42:22 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:42:22 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:42:22 [gpu_worker.py:335] Sleep mode freed 57.12 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:42:22 [abstract.py:408] It took 0.209073 seconds to fall asleep.
-step 20 reward 0.580 correct 0.398 exec 0.091 format 0.091 kl 0.0647 gen/train dlogp 0.543 zero_var 0.38 gen 40.3s loss 103.5s
-(EngineCore pid=112455) INFO 11-07 13:44:07 [abstract.py:426] It took 0.325543 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:44:07 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:44:47 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:44:47 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:44:47 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:44:47 [gpu_worker.py:335] Sleep mode freed 57.13 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:44:47 [abstract.py:408] It took 0.211069 seconds to fall asleep.
-step 21 reward 0.507 correct 0.324 exec 0.091 format 0.092 kl 0.0651 gen/train dlogp 0.674 zero_var 0.41 gen 40.3s loss 103.6s
-(EngineCore pid=112455) INFO 11-07 13:46:37 [abstract.py:426] It took 0.325848 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:46:37 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:47:19 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:47:19 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:47:19 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:47:19 [gpu_worker.py:335] Sleep mode freed 57.06 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:47:19 [abstract.py:408] It took 0.208030 seconds to fall asleep.
-step 22 reward 0.557 correct 0.369 exec 0.094 format 0.094 kl 0.0684 gen/train dlogp 0.797 zero_var 0.45 gen 41.9s loss 105.9s
-(EngineCore pid=112455) INFO 11-07 13:49:06 [abstract.py:426] It took 0.325612 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:49:06 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:49:45 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:49:45 [core.py:1027] Waiting for in-flight requests to complete before sleeping...
-(EngineCore pid=112455) INFO 11-07 13:49:45 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:49:46 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:49:46 [gpu_worker.py:335] Sleep mode freed 57.37 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:49:46 [abstract.py:408] It took 0.212020 seconds to fall asleep.
-step 23 reward 0.540 correct 0.352 exec 0.094 format 0.094 kl 0.0647 gen/train dlogp 0.686 zero_var 0.34 gen 39.2s loss 109.6s
-(EngineCore pid=112455) INFO 11-07 13:51:41 [abstract.py:426] It took 0.326025 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:51:41 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:52:26 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:52:26 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:52:26 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:52:26 [gpu_worker.py:335] Sleep mode freed 57.13 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:52:26 [abstract.py:408] It took 0.210978 seconds to fall asleep.
-step 24 reward 0.580 correct 0.393 exec 0.094 format 0.094 kl 0.0632 gen/train dlogp 1.17 zero_var 0.30 gen 44.7s loss 104.2s
-(EngineCore pid=112455) INFO 11-07 13:54:11 [abstract.py:426] It took 0.325880 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:54:11 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 25: correct 0.437 {'easy': 0.78, 'hard': 0.18, 'medium': 0.35} (17s)
-(EngineCore pid=112455) INFO 11-07 13:55:08 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:55:08 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:55:08 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:55:08 [gpu_worker.py:335] Sleep mode freed 57.18 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:55:08 [abstract.py:408] It took 0.210997 seconds to fall asleep.
-step 25 reward 0.564 correct 0.377 exec 0.093 format 0.093 kl 0.0669 gen/train dlogp 0.689 zero_var 0.27 gen 39.8s loss 107.2s
-(EngineCore pid=112455) INFO 11-07 13:57:01 [abstract.py:426] It took 0.327277 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:57:01 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 13:57:42 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 13:57:42 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 13:57:43 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 13:57:43 [gpu_worker.py:335] Sleep mode freed 57.28 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 13:57:43 [abstract.py:408] It took 0.212214 seconds to fall asleep.
-step 26 reward 0.595 correct 0.406 exec 0.095 format 0.094 kl 0.0698 gen/train dlogp 0.553 zero_var 0.33 gen 41.2s loss 107.3s
-(EngineCore pid=112455) INFO 11-07 13:59:31 [abstract.py:426] It took 0.326245 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 13:59:31 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:00:13 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:00:13 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:00:13 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:00:13 [gpu_worker.py:335] Sleep mode freed 57.35 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:00:13 [abstract.py:408] It took 0.210980 seconds to fall asleep.
-step 27 reward 0.584 correct 0.396 exec 0.094 format 0.094 kl 0.0683 gen/train dlogp 0.694 zero_var 0.36 gen 42.3s loss 103.6s
-(EngineCore pid=112455) INFO 11-07 14:02:04 [abstract.py:426] It took 0.326078 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:02:04 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:02:47 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:02:47 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:02:47 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:02:47 [gpu_worker.py:335] Sleep mode freed 57.45 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:02:47 [abstract.py:408] It took 0.213484 seconds to fall asleep.
-step 28 reward 0.696 correct 0.510 exec 0.094 format 0.093 kl 0.0759 gen/train dlogp 0.823 zero_var 0.45 gen 42.5s loss 106.4s
-(EngineCore pid=112455) INFO 11-07 14:04:34 [abstract.py:426] It took 0.325987 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:04:34 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:05:18 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:05:18 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:05:18 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:05:18 [gpu_worker.py:335] Sleep mode freed 57.13 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:05:18 [abstract.py:408] It took 0.212178 seconds to fall asleep.
-step 29 reward 0.615 correct 0.430 exec 0.093 format 0.093 kl 0.0710 gen/train dlogp 1.32 zero_var 0.36 gen 43.6s loss 109.2s
-(EngineCore pid=112455) INFO 11-07 14:07:13 [abstract.py:426] It took 0.325360 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:07:13 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 30: correct 0.427 {'easy': 0.81, 'hard': 0.18, 'medium': 0.29} (21s)
-(EngineCore pid=112455) INFO 11-07 14:08:19 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:08:19 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:08:19 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:08:19 [gpu_worker.py:335] Sleep mode freed 57.15 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:08:19 [abstract.py:408] It took 0.212206 seconds to fall asleep.
-step 30 reward 0.538 correct 0.357 exec 0.091 format 0.091 kl 0.0706 gen/train dlogp 0.553 zero_var 0.30 gen 44.0s loss 109.7s
-(EngineCore pid=112455) INFO 11-07 14:10:09 [abstract.py:426] It took 0.325933 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:10:09 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:10:55 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:10:55 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:10:55 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:10:55 [gpu_worker.py:335] Sleep mode freed 57.15 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:10:55 [abstract.py:408] It took 0.211983 seconds to fall asleep.
-step 31 reward 0.611 correct 0.428 exec 0.092 format 0.092 kl 0.0725 gen/train dlogp 0.856 zero_var 0.41 gen 45.2s loss 107.2s
-(EngineCore pid=112455) INFO 11-07 14:12:54 [abstract.py:426] It took 0.326151 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:12:54 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:13:37 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:13:37 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:13:37 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:13:37 [gpu_worker.py:335] Sleep mode freed 57.05 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:13:37 [abstract.py:408] It took 0.208196 seconds to fall asleep.
-step 32 reward 0.728 correct 0.543 exec 0.093 format 0.093 kl 0.0713 gen/train dlogp 0.69 zero_var 0.36 gen 43.0s loss 102.5s
-(EngineCore pid=112455) INFO 11-07 14:15:20 [abstract.py:426] It took 0.325795 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:15:20 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:16:04 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:16:04 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:16:04 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:16:04 [gpu_worker.py:335] Sleep mode freed 57.08 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:16:04 [abstract.py:408] It took 0.208022 seconds to fall asleep.
-step 33 reward 0.486 correct 0.307 exec 0.090 format 0.090 kl 0.0699 gen/train dlogp 0.693 zero_var 0.31 gen 43.9s loss 112.5s
-(EngineCore pid=112455) INFO 11-07 14:18:03 [abstract.py:426] It took 0.325401 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:18:03 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:18:48 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:18:48 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:18:49 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:18:49 [gpu_worker.py:335] Sleep mode freed 57.37 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:18:49 [abstract.py:408] It took 0.212226 seconds to fall asleep.
-step 34 reward 0.602 correct 0.418 exec 0.093 format 0.092 kl 0.0735 gen/train dlogp 0.906 zero_var 0.44 gen 45.4s loss 105.7s
-(EngineCore pid=112455) INFO 11-07 14:20:35 [abstract.py:426] It took 0.326477 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:20:35 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 35: correct 0.430 {'easy': 0.81, 'hard': 0.19, 'medium': 0.29} (22s)
-(EngineCore pid=112455) INFO 11-07 14:21:40 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:21:40 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:21:40 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:21:40 [gpu_worker.py:335] Sleep mode freed 57.15 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:21:40 [abstract.py:408] It took 0.212295 seconds to fall asleep.
-step 35 reward 0.655 correct 0.465 exec 0.095 format 0.095 kl 0.0802 gen/train dlogp 0.592 zero_var 0.44 gen 42.8s loss 109.7s
-(EngineCore pid=112455) INFO 11-07 14:23:36 [abstract.py:426] It took 0.326085 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:23:36 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:24:21 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:24:21 [core.py:1027] Waiting for in-flight requests to complete before sleeping...
-(EngineCore pid=112455) INFO 11-07 14:24:21 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:24:21 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:24:21 [gpu_worker.py:335] Sleep mode freed 57.28 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:24:21 [abstract.py:408] It took 0.208134 seconds to fall asleep.
-step 36 reward 0.549 correct 0.363 exec 0.093 format 0.093 kl 0.0755 gen/train dlogp 0.888 zero_var 0.33 gen 44.9s loss 109.8s
-(EngineCore pid=112455) INFO 11-07 14:26:12 [abstract.py:426] It took 0.325888 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:26:12 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:27:00 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:27:00 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:27:00 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:27:00 [gpu_worker.py:335] Sleep mode freed 57.33 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:27:00 [abstract.py:408] It took 0.212114 seconds to fall asleep.
-step 37 reward 0.599 correct 0.414 exec 0.093 format 0.092 kl 0.0813 gen/train dlogp 3.67 zero_var 0.55 gen 47.9s loss 105.2s
-(EngineCore pid=112455) INFO 11-07 14:28:51 [abstract.py:426] It took 0.326116 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:28:51 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:29:38 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:29:38 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:29:39 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:29:39 [gpu_worker.py:335] Sleep mode freed 57.38 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:29:39 [abstract.py:408] It took 0.212027 seconds to fall asleep.
-step 38 reward 0.667 correct 0.480 exec 0.094 format 0.094 kl 0.0818 gen/train dlogp 0.929 zero_var 0.36 gen 46.7s loss 109.0s
-(EngineCore pid=112455) INFO 11-07 14:31:28 [abstract.py:426] It took 0.325588 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:31:28 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:32:14 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:32:14 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:32:14 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:32:14 [gpu_worker.py:335] Sleep mode freed 57.38 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:32:14 [abstract.py:408] It took 0.212035 seconds to fall asleep.
-step 39 reward 0.651 correct 0.463 exec 0.094 format 0.094 kl 0.0831 gen/train dlogp 0.725 zero_var 0.47 gen 45.5s loss 107.8s
-(EngineCore pid=112455) INFO 11-07 14:34:09 [abstract.py:426] It took 0.326348 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:34:09 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 40: correct 0.443 {'easy': 0.79, 'hard': 0.24, 'medium': 0.3} (17s)
-(EngineCore pid=112455) INFO 11-07 14:35:08 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:35:08 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:35:09 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:35:09 [gpu_worker.py:335] Sleep mode freed 57.19 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:35:09 [abstract.py:408] It took 0.212047 seconds to fall asleep.
-step 40 reward 0.556 correct 0.377 exec 0.090 format 0.090 kl 0.0890 gen/train dlogp 0.776 zero_var 0.33 gen 41.6s loss 106.6s
-(EngineCore pid=112455) INFO 11-07 14:36:56 [abstract.py:426] It took 0.326336 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:36:56 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:37:40 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:37:40 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:37:41 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:37:41 [gpu_worker.py:335] Sleep mode freed 57.08 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:37:41 [abstract.py:408] It took 0.208042 seconds to fall asleep.
-step 41 reward 0.672 correct 0.482 exec 0.095 format 0.095 kl 0.0856 gen/train dlogp 1.04 zero_var 0.45 gen 44.3s loss 111.0s
-(EngineCore pid=112455) INFO 11-07 14:39:38 [abstract.py:426] It took 0.325157 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:39:38 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:40:21 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:40:21 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:40:22 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:40:22 [gpu_worker.py:335] Sleep mode freed 57.14 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:40:22 [abstract.py:408] It took 0.208077 seconds to fall asleep.
-step 42 reward 0.594 correct 0.406 exec 0.095 format 0.094 kl 0.0870 gen/train dlogp 1.05 zero_var 0.44 gen 43.4s loss 106.3s
-(EngineCore pid=112455) INFO 11-07 14:42:08 [abstract.py:426] It took 0.326387 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:42:08 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:42:52 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:42:52 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:42:52 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:42:52 [gpu_worker.py:335] Sleep mode freed 57.36 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:42:52 [abstract.py:408] It took 0.212343 seconds to fall asleep.
-step 43 reward 0.552 correct 0.365 exec 0.093 format 0.094 kl 0.0873 gen/train dlogp 0.745 zero_var 0.38 gen 43.5s loss 105.1s
-(EngineCore pid=112455) INFO 11-07 14:44:43 [abstract.py:426] It took 0.326078 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:44:43 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:45:25 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:45:25 [core.py:1027] Waiting for in-flight requests to complete before sleeping...
-(EngineCore pid=112455) INFO 11-07 14:45:25 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:45:25 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:45:26 [gpu_worker.py:335] Sleep mode freed 57.37 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:45:26 [abstract.py:408] It took 0.212246 seconds to fall asleep.
-step 44 reward 0.528 correct 0.342 exec 0.093 format 0.093 kl 0.0880 gen/train dlogp 0.998 zero_var 0.31 gen 41.6s loss 118.3s
-(EngineCore pid=112455) INFO 11-07 14:47:24 [abstract.py:426] It took 0.325592 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:47:24 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 45: correct 0.440 {'easy': 0.78, 'hard': 0.22, 'medium': 0.32} (22s)
-(EngineCore pid=112455) INFO 11-07 14:48:29 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:48:29 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:48:29 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:48:29 [gpu_worker.py:335] Sleep mode freed 57.12 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:48:29 [abstract.py:408] It took 0.211211 seconds to fall asleep.
-step 45 reward 0.543 correct 0.361 exec 0.092 format 0.091 kl 0.1089 gen/train dlogp 0.554 zero_var 0.30 gen 41.6s loss 113.6s
-(EngineCore pid=112455) INFO 11-07 14:50:29 [abstract.py:426] It took 0.325984 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:50:29 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:51:13 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:51:13 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:51:13 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:51:13 [gpu_worker.py:335] Sleep mode freed 57.34 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:51:13 [abstract.py:408] It took 0.212123 seconds to fall asleep.
-step 46 reward 0.650 correct 0.459 exec 0.096 format 0.095 kl 0.0939 gen/train dlogp 1.04 zero_var 0.48 gen 43.4s loss 107.8s
-(EngineCore pid=112455) INFO 11-07 14:53:02 [abstract.py:426] It took 0.326712 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:53:02 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:53:45 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:53:45 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:53:45 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:53:45 [gpu_worker.py:335] Sleep mode freed 57.16 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:53:45 [abstract.py:408] It took 0.211108 seconds to fall asleep.
-step 47 reward 0.604 correct 0.414 exec 0.095 format 0.095 kl 0.0974 gen/train dlogp 1.57 zero_var 0.38 gen 43.1s loss 100.8s
-(EngineCore pid=112455) INFO 11-07 14:55:33 [abstract.py:426] It took 0.326430 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:55:33 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:56:15 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:56:15 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:56:15 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:56:15 [gpu_worker.py:335] Sleep mode freed 57.38 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:56:15 [abstract.py:408] It took 0.212102 seconds to fall asleep.
-step 48 reward 0.537 correct 0.355 exec 0.091 format 0.091 kl 0.0944 gen/train dlogp 0.788 zero_var 0.30 gen 41.2s loss 109.1s
-(EngineCore pid=112455) INFO 11-07 14:58:05 [abstract.py:426] It took 0.326212 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 14:58:05 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 14:58:47 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 14:58:47 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 14:58:47 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 14:58:47 [gpu_worker.py:335] Sleep mode freed 57.13 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 14:58:47 [abstract.py:408] It took 0.208214 seconds to fall asleep.
-step 49 reward 0.619 correct 0.434 exec 0.093 format 0.093 kl 0.0963 gen/train dlogp 3.48 zero_var 0.34 gen 41.8s loss 112.2s
-(EngineCore pid=112455) INFO 11-07 15:00:46 [abstract.py:426] It took 0.325446 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:00:46 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 50: correct 0.450 {'easy': 0.76, 'hard': 0.22, 'medium': 0.37} (20s)
-(EngineCore pid=112455) INFO 11-07 15:01:49 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:01:49 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:01:50 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:01:50 [gpu_worker.py:335] Sleep mode freed 57.21 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:01:50 [abstract.py:408] It took 0.212214 seconds to fall asleep.
-step 50 reward 0.648 correct 0.461 exec 0.094 format 0.094 kl 0.0941 gen/train dlogp 0.833 zero_var 0.41 gen 42.7s loss 108.5s
-(EngineCore pid=112455) INFO 11-07 15:03:39 [abstract.py:426] It took 0.326581 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:03:39 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:04:22 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:04:22 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:04:22 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:04:22 [gpu_worker.py:335] Sleep mode freed 57.33 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:04:22 [abstract.py:408] It took 0.208391 seconds to fall asleep.
-step 51 reward 0.602 correct 0.416 exec 0.094 format 0.093 kl 0.0860 gen/train dlogp 0.861 zero_var 0.44 gen 42.6s loss 111.3s
-(EngineCore pid=112455) INFO 11-07 15:06:19 [abstract.py:426] It took 0.326302 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:06:19 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:07:02 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:07:02 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:07:02 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:07:02 [gpu_worker.py:335] Sleep mode freed 57.11 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:07:02 [abstract.py:408] It took 0.212159 seconds to fall asleep.
-step 52 reward 0.598 correct 0.412 exec 0.093 format 0.093 kl 0.0851 gen/train dlogp 0.771 zero_var 0.47 gen 42.5s loss 111.0s
-(EngineCore pid=112455) INFO 11-07 15:08:54 [abstract.py:426] It took 0.326865 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:08:54 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:09:37 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:09:37 [core.py:1027] Waiting for in-flight requests to complete before sleeping...
-(EngineCore pid=112455) INFO 11-07 15:09:37 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:09:37 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:09:37 [gpu_worker.py:335] Sleep mode freed 57.33 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:09:37 [abstract.py:408] It took 0.208145 seconds to fall asleep.
-step 53 reward 0.537 correct 0.348 exec 0.095 format 0.095 kl 0.0952 gen/train dlogp 1.13 zero_var 0.39 gen 43.0s loss 120.0s
-(EngineCore pid=112455) INFO 11-07 15:11:43 [abstract.py:426] It took 0.325546 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:11:43 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:12:27 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:12:27 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:12:27 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:12:27 [gpu_worker.py:335] Sleep mode freed 57.41 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:12:27 [abstract.py:408] It took 0.208152 seconds to fall asleep.
-step 54 reward 0.536 correct 0.350 exec 0.094 format 0.093 kl 0.0926 gen/train dlogp 0.949 zero_var 0.33 gen 43.2s loss 110.7s
-(EngineCore pid=112455) INFO 11-07 15:14:18 [abstract.py:426] It took 0.325915 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:14:18 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 55: correct 0.447 {'easy': 0.79, 'hard': 0.21, 'medium': 0.34} (21s)
-(EngineCore pid=112455) INFO 11-07 15:15:22 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:15:22 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:15:22 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:15:22 [gpu_worker.py:335] Sleep mode freed 57.18 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:15:22 [abstract.py:408] It took 0.212164 seconds to fall asleep.
-step 55 reward 0.600 correct 0.414 exec 0.093 format 0.093 kl 0.1002 gen/train dlogp 0.929 zero_var 0.41 gen 42.9s loss 100.8s
-(EngineCore pid=112455) INFO 11-07 15:17:09 [abstract.py:426] It took 0.326034 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:17:09 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:17:54 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:17:54 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:17:54 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:17:54 [gpu_worker.py:335] Sleep mode freed 57.32 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:17:54 [abstract.py:408] It took 0.208134 seconds to fall asleep.
-step 56 reward 0.516 correct 0.326 exec 0.095 format 0.095 kl 0.0969 gen/train dlogp 1.03 zero_var 0.36 gen 44.2s loss 111.9s
-(EngineCore pid=112455) INFO 11-07 15:19:46 [abstract.py:426] It took 0.325617 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:19:46 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:20:26 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:20:26 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:20:26 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:20:27 [gpu_worker.py:335] Sleep mode freed 57.06 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:20:27 [abstract.py:408] It took 0.208227 seconds to fall asleep.
-step 57 reward 0.706 correct 0.516 exec 0.096 format 0.095 kl 0.1077 gen/train dlogp 1.38 zero_var 0.34 gen 39.7s loss 110.0s
-(EngineCore pid=112455) INFO 11-07 15:22:23 [abstract.py:426] It took 0.324783 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:22:23 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:23:02 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:23:02 [core.py:1027] Waiting for in-flight requests to complete before sleeping...
-(EngineCore pid=112455) INFO 11-07 15:23:02 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:23:03 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:23:03 [gpu_worker.py:335] Sleep mode freed 57.08 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:23:03 [abstract.py:408] It took 0.208202 seconds to fall asleep.
-step 58 reward 0.560 correct 0.371 exec 0.095 format 0.094 kl 0.0944 gen/train dlogp 0.552 zero_var 0.39 gen 39.3s loss 113.4s
-(EngineCore pid=112455) INFO 11-07 15:24:57 [abstract.py:426] It took 0.326508 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:24:57 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:25:43 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:25:43 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:25:43 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:25:43 [gpu_worker.py:335] Sleep mode freed 57.23 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:25:43 [abstract.py:408] It took 0.208312 seconds to fall asleep.
-step 59 reward 0.634 correct 0.443 exec 0.095 format 0.095 kl 0.0921 gen/train dlogp 0.973 zero_var 0.52 gen 46.1s loss 108.1s
-(EngineCore pid=112455) INFO 11-07 15:27:37 [abstract.py:426] It took 0.326266 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:27:37 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 60: correct 0.467 {'easy': 0.83, 'hard': 0.23, 'medium': 0.34} (20s)
-(EngineCore pid=112455) INFO 11-07 15:28:32 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:28:32 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:28:32 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:28:32 [gpu_worker.py:335] Sleep mode freed 57.12 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:28:32 [abstract.py:408] It took 0.211154 seconds to fall asleep.
-step 60 reward 0.617 correct 0.434 exec 0.093 format 0.093 kl 0.1037 gen/train dlogp 0.987 zero_var 0.41 gen 34.6s loss 105.4s
-(EngineCore pid=112455) INFO 11-07 15:30:18 [abstract.py:426] It took 0.326359 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:30:18 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:30:55 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:30:55 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:30:55 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:30:55 [gpu_worker.py:335] Sleep mode freed 57.3 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:30:55 [abstract.py:408] It took 0.211144 seconds to fall asleep.
-step 61 reward 0.484 correct 0.301 exec 0.092 format 0.092 kl 0.1042 gen/train dlogp 0.705 zero_var 0.44 gen 36.6s loss 117.2s
-(EngineCore pid=112455) INFO 11-07 15:32:59 [abstract.py:426] It took 0.326301 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:32:59 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:33:32 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:33:32 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:33:33 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:33:33 [gpu_worker.py:335] Sleep mode freed 57.34 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:33:33 [abstract.py:408] It took 0.212263 seconds to fall asleep.
-step 62 reward 0.496 correct 0.314 exec 0.091 format 0.091 kl 0.1065 gen/train dlogp 0.833 zero_var 0.45 gen 33.2s loss 109.7s
-(EngineCore pid=112455) INFO 11-07 15:35:23 [abstract.py:426] It took 0.325714 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:35:23 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:35:58 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:35:58 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:35:58 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:35:58 [gpu_worker.py:335] Sleep mode freed 57.16 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:35:58 [abstract.py:408] It took 0.211127 seconds to fall asleep.
-step 63 reward 0.704 correct 0.514 exec 0.096 format 0.095 kl 0.1005 gen/train dlogp 0.682 zero_var 0.52 gen 34.8s loss 95.0s
-(EngineCore pid=112455) INFO 11-07 15:37:40 [abstract.py:426] It took 0.325991 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:37:40 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:38:15 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:38:15 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:38:15 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:38:15 [gpu_worker.py:335] Sleep mode freed 57.13 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:38:15 [abstract.py:408] It took 0.212138 seconds to fall asleep.
-step 64 reward 0.593 correct 0.406 exec 0.094 format 0.094 kl 0.0992 gen/train dlogp 1.33 zero_var 0.38 gen 34.8s loss 113.4s
-(EngineCore pid=112455) INFO 11-07 15:40:09 [abstract.py:426] It took 0.326162 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:40:09 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 65: correct 0.463 {'easy': 0.86, 'hard': 0.2, 'medium': 0.33} (19s)
-(EngineCore pid=112455) INFO 11-07 15:41:01 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:41:01 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:41:01 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:41:01 [gpu_worker.py:335] Sleep mode freed 57.12 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:41:01 [abstract.py:408] It took 0.211339 seconds to fall asleep.
-step 65 reward 0.483 correct 0.295 exec 0.094 format 0.094 kl 0.1113 gen/train dlogp 0.597 zero_var 0.31 gen 32.8s loss 110.4s
-(EngineCore pid=112455) INFO 11-07 15:43:06 [abstract.py:426] It took 0.326019 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:43:06 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:43:41 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:43:41 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:43:41 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:43:41 [gpu_worker.py:335] Sleep mode freed 57.05 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:43:41 [abstract.py:408] It took 0.208015 seconds to fall asleep.
-step 66 reward 0.574 correct 0.383 exec 0.096 format 0.096 kl 0.0998 gen/train dlogp 1.35 zero_var 0.47 gen 35.2s loss 109.1s
-(EngineCore pid=112455) INFO 11-07 15:45:31 [abstract.py:426] It took 0.326344 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:45:31 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:46:06 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:46:06 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:46:06 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:46:06 [gpu_worker.py:335] Sleep mode freed 57.31 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:46:06 [abstract.py:408] It took 0.212103 seconds to fall asleep.
-step 67 reward 0.444 correct 0.256 exec 0.094 format 0.094 kl 0.1012 gen/train dlogp 0.689 zero_var 0.44 gen 34.3s loss 105.8s
-(EngineCore pid=112455) INFO 11-07 15:47:57 [abstract.py:426] It took 0.326156 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:47:57 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:48:33 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:48:33 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:48:33 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:48:33 [gpu_worker.py:335] Sleep mode freed 57.06 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:48:33 [abstract.py:408] It took 0.208276 seconds to fall asleep.
-step 68 reward 0.586 correct 0.395 exec 0.096 format 0.096 kl 0.1107 gen/train dlogp 0.96 zero_var 0.48 gen 36.0s loss 99.2s
-(EngineCore pid=112455) INFO 11-07 15:50:13 [abstract.py:426] It took 0.326146 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:50:13 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:50:47 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:50:47 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:50:47 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:50:47 [gpu_worker.py:335] Sleep mode freed 57.37 GiB memory, 10.62 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:50:47 [abstract.py:408] It took 0.212205 seconds to fall asleep.
-step 69 reward 0.721 correct 0.531 exec 0.095 format 0.095 kl 0.1052 gen/train dlogp 1.07 zero_var 0.50 gen 33.9s loss 102.9s
-(EngineCore pid=112455) INFO 11-07 15:52:36 [abstract.py:426] It took 0.326036 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:52:36 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 70: correct 0.510 {'easy': 0.85, 'hard': 0.31, 'medium': 0.37} (19s)
-(EngineCore pid=112455) INFO 11-07 15:53:26 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:53:26 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:53:27 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:53:27 [gpu_worker.py:335] Sleep mode freed 57.15 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:53:27 [abstract.py:408] It took 0.212267 seconds to fall asleep.
-step 70 reward 0.629 correct 0.441 exec 0.094 format 0.094 kl 0.0974 gen/train dlogp 0.817 zero_var 0.41 gen 31.0s loss 104.2s
-(EngineCore pid=112455) INFO 11-07 15:55:11 [abstract.py:426] It took 0.325545 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:55:11 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:55:44 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:55:44 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:55:44 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:55:44 [gpu_worker.py:335] Sleep mode freed 57.14 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:55:44 [abstract.py:408] It took 0.208094 seconds to fall asleep.
-step 71 reward 0.598 correct 0.410 exec 0.094 format 0.094 kl 0.1002 gen/train dlogp 1.07 zero_var 0.41 gen 32.2s loss 99.0s
-(EngineCore pid=112455) INFO 11-07 15:57:29 [abstract.py:426] It took 0.326271 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:57:29 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 15:58:02 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 15:58:02 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 15:58:03 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 15:58:03 [gpu_worker.py:335] Sleep mode freed 57.41 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 15:58:03 [abstract.py:408] It took 0.208137 seconds to fall asleep.
-step 72 reward 0.541 correct 0.354 exec 0.094 format 0.094 kl 0.1440 gen/train dlogp 1.31 zero_var 0.39 gen 32.8s loss 101.7s
-(EngineCore pid=112455) INFO 11-07 15:59:45 [abstract.py:426] It took 0.326332 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 15:59:45 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:00:18 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:00:18 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:00:19 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:00:19 [gpu_worker.py:335] Sleep mode freed 57.3 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:00:19 [abstract.py:408] It took 0.212149 seconds to fall asleep.
-step 73 reward 0.613 correct 0.424 exec 0.095 format 0.094 kl 0.1147 gen/train dlogp 0.831 zero_var 0.44 gen 33.3s loss 104.5s
-(EngineCore pid=112455) INFO 11-07 16:02:09 [abstract.py:426] It took 0.326419 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:02:09 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:02:42 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:02:42 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:02:42 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:02:42 [gpu_worker.py:335] Sleep mode freed 57.08 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:02:42 [abstract.py:408] It took 0.208329 seconds to fall asleep.
-step 74 reward 0.598 correct 0.408 exec 0.095 format 0.095 kl 0.1039 gen/train dlogp 1.2 zero_var 0.44 gen 32.4s loss 98.5s
-(EngineCore pid=112455) INFO 11-07 16:04:21 [abstract.py:426] It took 0.325153 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:04:21 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 75: correct 0.490 {'easy': 0.85, 'hard': 0.27, 'medium': 0.35} (16s)
-(EngineCore pid=112455) INFO 11-07 16:05:08 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:05:08 [core.py:1027] Waiting for in-flight requests to complete before sleeping...
-(EngineCore pid=112455) INFO 11-07 16:05:08 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:05:08 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:05:09 [gpu_worker.py:335] Sleep mode freed 57.03 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:05:09 [abstract.py:408] It took 0.206114 seconds to fall asleep.
-step 75 reward 0.568 correct 0.381 exec 0.094 format 0.093 kl 0.1073 gen/train dlogp 0.797 zero_var 0.39 gen 31.1s loss 112.4s
-(EngineCore pid=112455) INFO 11-07 16:07:07 [abstract.py:426] It took 0.326097 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:07:07 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:07:38 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:07:38 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:07:39 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:07:39 [gpu_worker.py:335] Sleep mode freed 57.15 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:07:39 [abstract.py:408] It took 0.212127 seconds to fall asleep.
-step 76 reward 0.630 correct 0.441 exec 0.095 format 0.094 kl 0.1503 gen/train dlogp 4.21 zero_var 0.44 gen 31.3s loss 101.5s
-(EngineCore pid=112455) INFO 11-07 16:09:21 [abstract.py:426] It took 0.326588 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:09:21 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:09:55 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:09:55 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:09:55 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:09:55 [gpu_worker.py:335] Sleep mode freed 57.13 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:09:55 [abstract.py:408] It took 0.208290 seconds to fall asleep.
-step 77 reward 0.604 correct 0.414 exec 0.095 format 0.095 kl 0.1080 gen/train dlogp 2.93 zero_var 0.45 gen 34.4s loss 105.3s
-(EngineCore pid=112455) INFO 11-07 16:11:47 [abstract.py:426] It took 0.325693 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:11:47 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:12:22 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:12:22 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:12:22 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:12:22 [gpu_worker.py:335] Sleep mode freed 57.41 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:12:22 [abstract.py:408] It took 0.208347 seconds to fall asleep.
-step 78 reward 0.612 correct 0.424 exec 0.094 format 0.094 kl 0.1017 gen/train dlogp 0.918 zero_var 0.44 gen 34.7s loss 102.9s
-(EngineCore pid=112455) INFO 11-07 16:14:06 [abstract.py:426] It took 0.326296 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:14:06 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:14:39 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:14:39 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:14:40 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:14:40 [gpu_worker.py:335] Sleep mode freed 57.19 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:14:40 [abstract.py:408] It took 0.212233 seconds to fall asleep.
-step 79 reward 0.712 correct 0.518 exec 0.097 format 0.097 kl 0.1031 gen/train dlogp 0.767 zero_var 0.48 gen 33.4s loss 101.8s
-(EngineCore pid=112455) INFO 11-07 16:16:28 [abstract.py:426] It took 0.326602 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:16:28 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 80: correct 0.483 {'easy': 0.82, 'hard': 0.27, 'medium': 0.36} (17s)
-(EngineCore pid=112455) INFO 11-07 16:17:17 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:17:17 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:17:17 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:17:17 [gpu_worker.py:335] Sleep mode freed 57.21 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:17:17 [abstract.py:408] It took 0.212144 seconds to fall asleep.
-step 80 reward 0.547 correct 0.357 exec 0.095 format 0.095 kl 0.1141 gen/train dlogp 1.88 zero_var 0.31 gen 32.4s loss 112.7s
-(EngineCore pid=112455) INFO 11-07 16:19:11 [abstract.py:426] It took 0.325670 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:19:11 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:19:46 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:19:46 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:19:46 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:19:46 [gpu_worker.py:335] Sleep mode freed 57.33 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:19:46 [abstract.py:408] It took 0.212151 seconds to fall asleep.
-step 81 reward 0.639 correct 0.451 exec 0.094 format 0.094 kl 0.1056 gen/train dlogp 1.3 zero_var 0.42 gen 35.1s loss 107.4s
-(EngineCore pid=112455) INFO 11-07 16:21:43 [abstract.py:426] It took 0.326166 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:21:43 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:22:16 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:22:16 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:22:16 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:22:16 [gpu_worker.py:335] Sleep mode freed 57.4 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:22:16 [abstract.py:408] It took 0.208443 seconds to fall asleep.
-step 82 reward 0.685 correct 0.492 exec 0.096 format 0.096 kl 0.1121 gen/train dlogp 1.09 zero_var 0.44 gen 33.2s loss 107.3s
-(EngineCore pid=112455) INFO 11-07 16:24:04 [abstract.py:426] It took 0.325643 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:24:04 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:24:40 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:24:40 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:24:40 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:24:40 [gpu_worker.py:335] Sleep mode freed 57.08 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:24:40 [abstract.py:408] It took 0.208354 seconds to fall asleep.
-step 83 reward 0.650 correct 0.457 exec 0.096 format 0.096 kl 0.1140 gen/train dlogp 0.76 zero_var 0.52 gen 35.5s loss 104.3s
-(EngineCore pid=112455) INFO 11-07 16:26:30 [abstract.py:426] It took 0.326060 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:26:30 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:27:05 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:27:05 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:27:05 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:27:05 [gpu_worker.py:335] Sleep mode freed 57.07 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:27:05 [abstract.py:408] It took 0.208167 seconds to fall asleep.
-step 84 reward 0.641 correct 0.455 exec 0.093 format 0.093 kl 0.1229 gen/train dlogp 1.39 zero_var 0.36 gen 34.2s loss 111.4s
-(EngineCore pid=112455) INFO 11-07 16:28:57 [abstract.py:426] It took 0.325648 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:28:57 [scheduler.py:3074] setting pause state to UNPAUSED
-val step 85: correct 0.510 {'easy': 0.86, 'hard': 0.26, 'medium': 0.41} (17s)
-(EngineCore pid=112455) INFO 11-07 16:29:48 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:29:48 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:29:48 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:29:48 [gpu_worker.py:335] Sleep mode freed 57.03 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:29:48 [abstract.py:408] It took 0.206117 seconds to fall asleep.
-step 85 reward 0.575 correct 0.387 exec 0.095 format 0.095 kl 0.1062 gen/train dlogp 3.04 zero_var 0.27 gen 33.2s loss 115.9s
-(EngineCore pid=112455) INFO 11-07 16:31:50 [abstract.py:426] It took 0.326659 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:31:50 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:32:25 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:32:25 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:32:25 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:32:25 [gpu_worker.py:335] Sleep mode freed 57.08 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:32:25 [abstract.py:408] It took 0.208143 seconds to fall asleep.
-step 86 reward 0.575 correct 0.387 exec 0.094 format 0.094 kl 0.1092 gen/train dlogp 1.99 zero_var 0.36 gen 35.2s loss 113.1s
-(EngineCore pid=112455) INFO 11-07 16:34:19 [abstract.py:426] It took 0.325809 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:34:19 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:34:53 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:34:53 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:34:53 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:34:53 [gpu_worker.py:335] Sleep mode freed 57.39 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:34:53 [abstract.py:408] It took 0.212221 seconds to fall asleep.
-step 87 reward 0.663 correct 0.473 exec 0.095 format 0.095 kl 0.1009 gen/train dlogp 0.939 zero_var 0.39 gen 33.7s loss 102.7s
-(EngineCore pid=112455) INFO 11-07 16:36:42 [abstract.py:426] It took 0.326031 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:36:42 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:37:19 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:37:19 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:37:19 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:37:19 [gpu_worker.py:335] Sleep mode freed 57.29 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:37:19 [abstract.py:408] It took 0.207253 seconds to fall asleep.
-step 88 reward 0.496 correct 0.305 exec 0.096 format 0.096 kl 0.1202 gen/train dlogp 1.03 zero_var 0.45 gen 36.0s loss 113.8s
-(EngineCore pid=112455) INFO 11-07 16:39:13 [abstract.py:426] It took 0.326350 seconds to wake up tags {'weights', 'kv_cache'}.
-(EngineCore pid=112455) INFO 11-07 16:39:13 [scheduler.py:3074] setting pause state to UNPAUSED
-(EngineCore pid=112455) INFO 11-07 16:39:46 [scheduler.py:3074] setting pause state to PAUSED_NEW
-(EngineCore pid=112455) INFO 11-07 16:39:46 [block_pool.py:905] Successfully reset prefix cache
-(EngineCore pid=112455) INFO 11-07 16:39:46 [cumem.py:282] CuMemAllocator: sleep freed 54.94 GiB memory in total, of which 8.29 GiB is backed up in CPU and the rest 46.64 GiB is discarded directly.
-(EngineCore pid=112455) INFO 11-07 16:39:46 [gpu_worker.py:335] Sleep mode freed 57.39 GiB memory, 10.61 GiB memory is still in use.
-(EngineCore pid=112455) INFO 11-07 16:39:46 [abstract.py:408] It took 0.212323 seconds to fall asleep.
-step 89 reward 0.537 correct 0.354 exec 0.092 format 0.092 kl 0.1143 gen/train dlogp 0.84 zero_var 0.38 gen 32.6s loss 108.1s
-run q4s2-c done; 90 steps -> outputs/q4s2-c/run/train_log.jsonl
-(MainProcess pid=112303) INFO 11-07 16:41:40 [utils.py:628] [shutdown] Process manager: send sigterm to process EngineCore
-(EngineCore pid=112455) INFO 11-07 16:41:40 [core.py:1525] [shutdown] EngineCore: trigger received signal=SIGTERM
-(EngineCore pid=112455) INFO 11-07 16:41:40 [core.py:1712] [shutdown] EngineCore: start mode=abort timeout=0s
-(EngineCore pid=112455) INFO 11-07 16:41:40 [core.py:1743] [shutdown] EngineCore: request processing complete; starting resource teardown
-(EngineCore pid=112455) INFO 11-07 16:41:40 [core.py:1573] [shutdown] EngineCore: exiting busy loop
-CUDA Error: invalid argument at /workspace/csrc/cumem_allocator.cpp:249
-(MainProcess pid=112303) WARNING 11-07 16:41:44 [core_client.py:839] [shutdown] MPClient: engine core exited unexpectedly; starting cleanup
-(MainProcess pid=112303) INFO 11-07 16:41:44 [core_client.py:792] [shutdown] MPClient: start timeout=default
-(MainProcess pid=112303) INFO 11-07 16:41:44 [core_client.py:794] [shutdown] MPClient: stopping engine manager
-(MainProcess pid=112303) INFO 11-07 16:41:44 [core_client.py:796] [shutdown] MPClient: engine manager stopped
-(MainProcess pid=112303) INFO 11-07 16:41:44 [core_client.py:797] [shutdown] MPClient: cleaning up background resources
-(MainProcess pid=112303) INFO 11-07 16:41:44 [core_client.py:799] [shutdown] MPClient: complete
-ATTEMPT 1 exit 0 at 2026-11-07T16:41:47Z

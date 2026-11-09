@@ -1,16 +1,0 @@
-$ /tmp/scratch/cleanroom2/.venv/bin/python verification/check_logprob_consistency.py --model google/gemma-2-2b --attn eager
-W1104 10:28:15.454000 47753 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
-Loading weights:   0%|          | 0/288 [00:00<?, ?it/s]Loading weights: 100%|██████████| 288/288 [00:00<00:00, 6992.98it/s]
-model=google/gemma-2-2b dtype=float32 attn=eager device=mps final_logit_softcapping=30.0
-rollout: code_rounds=1 has_answer=True n_completion=77 n_env=14
---- BEFORE first <output>
-    ground-truth HF log_softmax: n= 46 max|new-old|=2.432e-05 ratio min=1.0000 max=1.0000
-    train_rl chunked_logprobs  : n= 46 max|new-old|=2.432e-05 ratio min=1.0000 max=1.0000
-    forward_logprobs_chunked   : n= 46 max|new-old|=2.432e-05 ratio min=1.0000 max=1.0000
---- AFTER  first <output>
-    ground-truth HF log_softmax: n= 17 max|new-old|=2.432e-05 ratio min=1.0000 max=1.0000
-    train_rl chunked_logprobs  : n= 17 max|new-old|=2.575e-05 ratio min=1.0000 max=1.0000
-    forward_logprobs_chunked   : n= 17 max|new-old|=2.575e-05 ratio min=1.0000 max=1.0000
-RATIO≈1 CHECK chunked_logprobs: max|Δlogp|=2.575e-05 (tol 0.001) -> PASS
-RATIO≈1 CHECK forward_logprobs_chunked: max|Δlogp|=2.575e-05 (tol 0.001) -> PASS
-forward_logprobs_chunked vs HF ground truth (same ids, same context): max|Δ|=1.609e-06

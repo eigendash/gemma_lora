@@ -1,5 +1,0 @@
-base: correct 0.046 (46/1000) {'easy': 0.095, 'hard': 0.013, 'medium': 0.013} 44s
-g4_a: correct 0.139 (139/1000) {'easy': 0.302, 'hard': 0.017, 'medium': 0.043} 28s
-g4_b: correct 0.218 (218/1000) {'easy': 0.458, 'hard': 0.033, 'medium': 0.083} 38s
-g4_c: correct 0.341 (341/1000) {'easy': 0.703, 'hard': 0.05, 'medium': 0.15} 44s
-g4_d: correct 0.317 (317/1000) {'easy': 0.63, 'hard': 0.07, 'medium': 0.147} 57s

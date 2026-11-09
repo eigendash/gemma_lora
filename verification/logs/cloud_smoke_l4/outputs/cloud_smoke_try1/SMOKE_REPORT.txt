@@ -1,7 +1,0 @@
-gpu: NVIDIA L4, 23034 MiB
-unit tests: 19 passed, 4 skipped in 16.64s
-phase1 steps: 2  last: step 1 reward 0.181 correct 0.094 exec 0.069 format 0.033 kl 0.0005 gen/train dlogp 0.376 zero_var 0.00 gen 80.9s loss 55.2s
-phase2 FAILED (exit 1)
-phase2 restore: restored remote checkpoint smoke-1793846649 step 2
-phase2 steps: 0  done: 0
-cost guard: DID NOT TRIP

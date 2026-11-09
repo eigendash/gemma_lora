@@ -1,2 +1,0 @@
-$ bash -c grep -q "git archive" scripts/publish_code.sh && ! grep -qE "tar c[a-z]*f .*\.$" scripts/publish_code.sh && git archive --format=tar --prefix=repo/ HEAD | tar t > "$0/ls.txt" && ! grep -qE "(^|/)\.env$" "$0/ls.txt" && ! grep -qv "^repo/" "$0/ls.txt" && echo "git archive: $(wc -l < "$0/ls.txt") entries, all under repo/, no .env" /var/folders/_c/kvvj9dgx05v58jrjg411zk0h0000gn/T/tmp.TEw8A3esnG
-git archive:      237 entries, all under repo/, no .env

@@ -1,9 +1,0 @@
-gpu: NVIDIA RTX PRO 6000 Blackwell Server Edition, 97887 MiB
-config: configs/throughput_rtx6000_ckpt.yaml
-wall: 184s
-peak mem: 0 MiB (at end)
-step 0: gen 21.8s loss 26.4s tokens 22462 sampled 16 logp_dev mean 0.0103 p99 0.1822 tis_w 1.0001 correct 0.109
-step 1: gen 21.7s loss 24.5s tokens 23113 sampled 16 logp_dev mean 0.0106 p99 0.1873 tis_w 1.0003 correct 0.094
-step 2: gen 19.3s loss 29.5s tokens 26641 sampled 16 logp_dev mean 0.01 p99 0.1783 tis_w 1.0 correct 0.055
-steady step time 48s -> 75.8 steps/hour (16 prompts x 8)
-report: outputs/cloud_throughput/THROUGHPUT_REPORT.txt

@@ -1,1 +1,0 @@
-$ bash -c grep -q -- "--config" scripts/launch_anywhere.sh

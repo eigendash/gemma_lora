@@ -1,7 +1,0 @@
-W1104 08:53:46.452000 44327 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 4402.77it/s]
-step 2 reward 0.088 correct 0.000 exec 0.088 format 0.000 kl 0.0001 gen/train dlogp 2.7e-05 zero_var 0.50
-step 3 reward 0.088 correct 0.000 exec 0.088 format 0.000 kl 0.0009 gen/train dlogp 5.08e-05 zero_var 0.50
-/tmp/scratch/cleanroom2/.venv/lib/python3.14/site-packages/peft/utils/save_and_load.py:313: UserWarning: Could not find a config file in Qwen/Qwen2.5-0.5B - will assume that the vocabulary was not modified.
-  warnings.warn(
-run smoke done; 2 steps -> /tmp/scratch/rlB/train_log.jsonl

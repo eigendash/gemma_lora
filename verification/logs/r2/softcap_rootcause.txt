@@ -1,3 +1,0 @@
-max |raw logit| = 98.48479461669922
-chunked (no softcap) vs truth  max|Δ| = 30.974695205688477
-manual softcap        vs truth max|Δ| = 0.0

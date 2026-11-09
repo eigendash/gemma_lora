@@ -1,3 +1,0 @@
-$ uv pip compile requirements-cuda.txt --python-platform x86_64-manylinux_2_28 --python-version 3.14 -o /dev/null
-error: No solution found when resolving dependencies
-  cause: Because there is no version of torch==2.15.0 and you require torch==2.15.0, we can conclude that your requirements are unsatisfiable.

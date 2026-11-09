@@ -1,5 +1,0 @@
-$ bash -c d=$(mktemp -d); mkdir -p "$d/r"; cp scripts/publish_code.sh "$d/r/"; cd "$d/r" && echo X=1 > .env && echo x > a.py && tar czf "$d/t.tgz" $(grep -o -- "--exclude=[^ ]*" publish_code.sh) . && tar tzf "$d/t.tgz" && ! tar tzf "$d/t.tgz" | grep -qx "./.env"
-./
-./a.py
-./publish_code.sh
-./.env

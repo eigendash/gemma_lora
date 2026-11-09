@@ -1,4 +1,0 @@
-..                                                                       [100%]
-2 passed in 4.29s
-RUN_MODEL_TESTS=1 HF_HOME=/Users/dash/Documents/dev/gemma_lora/.hf-cache =1    2.38s user 1.21s system 73% cpu 4.906 total
-tail -4  0.00s user 0.00s system 0% cpu 4.906 total

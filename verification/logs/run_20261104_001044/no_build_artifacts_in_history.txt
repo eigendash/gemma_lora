@@ -1,2 +1,0 @@
-$ bash -c ! git log --all --name-only --format= | sort -u | grep -E '^\.mpl-cache/|\.safetensors$|\.bin$|\.pt$'
-.mpl-cache/fontlist-v3.11.0.json
