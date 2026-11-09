@@ -79,8 +79,10 @@ def fig_holdout3(out):
         ("Gemma-4-E4B", "v1", f"gemma4-e4b-v1-s0__{D}", V1),
         ("Gemma-4-E4B", "v2, zero-shot prompt", f"gemma4-e4b-v2-zeroshot-s0__{Z}", ZERO),
         ("Gemma-4-E4B", "v2, zero-shot prompt, +100 steps", f"gemma4-e4b-v2-zeroshot-s0-cont__{Z}", ZERO),
+        ("Gemma-4-E2B", "v2, zero-shot prompt", f"gemma4-e2b-v2-zeroshot-s0__{Z}", ZERO),
+        ("Gemma-4-E2B", "v2, demo prompt (stopped, step 82)", f"gemma4-e2b-v2-demo-s0-noguard__{D}", DEMO),
     ]
-    fig, ax = plt.subplots(figsize=(6.75, 4.0))
+    fig, ax = plt.subplots(figsize=(6.75, 4.5))
     y, ticks, labels, groups = 0, [], [], []
     prev = None
     for group, label, exp, col in rows:

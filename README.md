@@ -5,11 +5,14 @@ GRPO with LoRA on base language models for the Countdown numbers game. The model
 are masked out of the loss. The task description is in [SPEC.md](SPEC.md); the write-up is [REPORT.md](REPORT.md);
 the run-by-run record, including pre-registered predictions, is [EXPERIMENTS.md](EXPERIMENTS.md).
 
-Main result: Qwen3-4B-Base trained from a zero-shot prompt that only describes the tool goes from 0% to 69.9%
+Main result: Qwen3-4B-Base trained from a zero-shot prompt that only describes the tool goes from 6.7% to 69.9%
 pass@1 on a fresh 1,000-problem holdout, matching a policy trained with a worked demonstration (68.1%, McNemar
-p = 0.23). The same recipe takes Gemma-4-E4B to 60.5%.
+p = 0.23). The same recipe takes Gemma-4-E4B from 1.9% to 60.5%, and to 68.1% with 100 more steps.
 
 ## Layout
+
+The four files named in the task are thin entry points at the top level: `data_generator.py`, `sandbox.py`,
+`train_rl.py` and `eval.py`. The code they call lives in the package:
 
 ```
 src/countdown_rl/
@@ -63,6 +66,10 @@ model exactly with eager attention). On ROCm, Gemma-4 must run with `--attn eage
 
 ## Reproducing
 
+`bash scripts/reproduce.sh` does all of the following on a Linux machine with an NVIDIA or AMD GPU: it builds the
+environment, regenerates the data and the three holdouts, runs the tests, redraws the figures, and prints the commands
+for training and evaluation (`--smoke` adds a 30-problem evaluation of the main adapter). The steps one by one:
+
 Data (deterministic; the hashes are checked in `tests/unit/test_holdout.py`):
 
 ```bash
@@ -96,7 +103,7 @@ Evaluation, as run for every holdout number in the report (greedy, 768 tokens, t
 
 ```bash
 uv run countdown-eval --model Qwen/Qwen3-4B-Base --adapter <adapter dir> --eval-file data/holdout3.jsonl \
-    --prompt-style r1zero_tool --max-new-tokens 768 --max-rounds 2 --merge-adapter \
+    --prompt-style r1zero_tool --max-new-tokens 768 --max-rounds 2 \
     --attn sdpa_gqa --batch-size 128 --out h3.json --dump h3.jsonl      # Gemma: --attn eager
 uv run python -m countdown_rl.evaluation.paired a.jsonl.gz b.jsonl.gz     # McNemar
 uv run python scripts/figures.py                                        # docs/figures/
@@ -118,8 +125,10 @@ was evaluated, and its model card has a usage example. Download with
 | `qwen3-4b-v1-s1` | 51.2% | [prada5023/countdown-rl-qwen3-4b-v1-s1](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v1-s1) |
 | `qwen3-4b-v1-s2` | 49.8% | [prada5023/countdown-rl-qwen3-4b-v1-s2](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v1-s2) |
 | `qwen3-8b-v1-s0` | 55.7% | [prada5023/countdown-rl-qwen3-8b-v1-s0](https://huggingface.co/prada5023/countdown-rl-qwen3-8b-v1-s0) |
+| `gemma4-e4b-v2-zeroshot-s0-cont` | 68.1% | [prada5023/countdown-rl-gemma4-e4b-v2-zeroshot-s0-cont](https://huggingface.co/prada5023/countdown-rl-gemma4-e4b-v2-zeroshot-s0-cont) |
 | `gemma4-e4b-v2-zeroshot-s0` | 60.5% | [prada5023/countdown-rl-gemma4-e4b-v2-zeroshot-s0](https://huggingface.co/prada5023/countdown-rl-gemma4-e4b-v2-zeroshot-s0) |
 | `gemma4-e4b-v1-s0` | 30.9% | [prada5023/countdown-rl-gemma4-e4b-v1-s0](https://huggingface.co/prada5023/countdown-rl-gemma4-e4b-v1-s0) |
+| `gemma4-e2b-v2-zeroshot-s0` | 4.4% | [prada5023/countdown-rl-gemma4-e2b-v2-zeroshot-s0](https://huggingface.co/prada5023/countdown-rl-gemma4-e2b-v2-zeroshot-s0) |
 
 The Gemma adapters target the text decoder extracted by `scripts/prepare_gemma4_text.py`, not the multimodal
 checkpoint.

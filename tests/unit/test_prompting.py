@@ -118,12 +118,31 @@ def test_r1zero_tool_prompt_has_no_demo_or_strategy(sandbox):
         prompting.problem_prompt([25, 3, 7, 50], 182, "r1zero_tool", solution_hint="25 * 7")
 
 
+def test_r1zero_paraphrases_keep_the_information_and_the_user_line(sandbox):
+    """The evaluation-only rewordings carry the same facts as r1zero_tool and leave the User line untouched."""
+    base = prompting.problem_prompt([25, 3, 7, 50], 182, "r1zero_tool")
+    user = base[base.index("User: Using"):]
+    for style in ("r1zero_tool_p1", "r1zero_tool_p2"):
+        assert prompting.fewshot_prefix(sandbox, style) == ""
+        p = prompting.problem_prompt([25, 3, 7, 50], 182, style)
+        assert p != base and p.endswith(user)
+        for s in ("<think> </think>", "<python> </python>", "<output> </output>", "<answer> </answer>",
+                  "<answer> (1 + 2) / 3 </answer>", "2", "print, range and len"):
+            assert s in p, (style, s)
+        for s in ("several", "retry", "try a different", "Hint:", "True"):
+            assert s not in p
+        with pytest.raises(ValueError):
+            prompting.problem_prompt([25, 3, 7, 50], 182, style, solution_hint="25 * 7")
+
+
 def test_prompts_are_frozen(sandbox):
     """Every reported run used these exact prompts; any change to the text or the worked examples breaks this hash."""
     import hashlib
 
     h = hashlib.sha256()
-    for style in sorted(prompting.PROMPT_STYLES):
+    trained = ("fewshot", "fewshot_direct", "fewshot_direct_retry", "fewshot_multi_retry", "fewshot_wide_retry",
+               "r1zero_tool", "zero")  # the styles that existed when the runs were made, in sorted order
+    for style in trained:
         for nums, target in [([25, 3, 1, 7], 76), ([100, 6, 8, 2, 9], 391)]:
             prefix = prompting.fewshot_prefix(sandbox, style)
             h.update(prompting.with_prefix(prefix, prompting.problem_prompt(nums, target, style)).encode())

@@ -1,0 +1,7 @@
+TRAIN e2v2s0n-a configs/lineage/e2v2s0n-a.yaml 2026-11-09T05:04:27Z
+TRAINED e2v2s0n-a 2026-11-09T06:09:15Z
+gate: smoothed val 11.4% vs need 4.0% -> ok; train acc first10 0.045 -> last10 0.263 -> ok; val evals [1.0, 4.7, 6.0, 6.0, 6.0, 10.0, 10.7, 11.0, 11.7, 11.7]
+GATE PASS e2v2s0n-a 2026-11-09T06:09:16Z
+LATEST e2sn_a = runs/e2v2s0n-a/ckpt/step_50 2026-11-09T06:09:17Z
+VAL3 e2sn_a (model models/gemma-4-E2B-text) 2026-11-09T06:09:19Z
+DONE 2026-11-09T06:11:43Z

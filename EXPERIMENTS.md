@@ -27,9 +27,11 @@ The bucket and the chain logs use the short ids from the time of the runs.
 | `qwen3-4b-v2-demo-s1` | `q4v2s1-{a,b}` | Qwen3-4B-Base | v2 | demo | 1 |
 | `qwen3-4b-v2-demo-s2` (+ `-cont`) | `q4v2s2-{a..d}`, `q4v2s2long` | Qwen3-4B-Base | v2 | demo | 2 |
 | `qwen3-4b-v2-zeroshot-s2` | `q4v2z2-{a..d}` | Qwen3-4B-Base | v2 | zero-shot | 2 |
+| `qwen3-4b-v2-zeroshot-s2-cont`, `qwen3-4b-v2-zeroshot-s1` | same as the experiment name | Qwen3-4B-Base | v2 | zero-shot | 2, 1 |
 | `gemma4-e4b-v2-zeroshot-s0` (+ `-cont`) | `g4v2z0-{a..d}`, `g4v2z0long` | Gemma-4-E4B (text) | v2 | zero-shot | 0 |
-| `gemma4-e2b-v2-zeroshot-s0` | `e2v2z0-a` | Gemma-4-E2B (text) | v2 | zero-shot | 0 |
+| `gemma4-e2b-v2-zeroshot-s0` | `e2v2z0-{a..d}` | Gemma-4-E2B (text) | v2 | zero-shot | 0 |
 | `gemma4-e2b-v2-demo-s0` | `e2v2s0-a` | Gemma-4-E2B (text) | v2 | demo | 0 |
+| `gemma4-e2b-v2-demo-s0-noguard` | `e2v2s0n-{a..d}` | Gemma-4-E2B (text) | v2, contradicted guard off | demo | 0 |
 
 **Prompts** (`countdown_rl/rl/prompting.py`, frozen by a hash test):
 - `fewshot_direct_retry` (demo phase a): one worked example and the instruction to retry after a failed check.
@@ -155,6 +157,19 @@ p = 1.00). Plateau.**
   failed. The zero-shot policy prints values rather than booleans, so the counter is not comparable across prompts.
   The figures above use a check against the target instead (`evaluation/metrics.py`).
 
+**Follow-up runs (registered 2026-11-09, after all results above and before either run started).** Both answer
+review-style objections to the comparison above; neither can change the primary verdict, which stands as recorded.
+- **`qwen3-4b-v2-zeroshot-s2-cont`:** 45 steps from d80, otherwise identical to phase d. The demo arm's continuation
+  ran 45 steps (it was stopped there by hand), so this gives both arms the same total of 345 steps. Measure: holdout3
+  of step 45 with `r1zero_tool`, paired against d80 (699) and against `qwen3-4b-v2-demo-s2-cont` (682). A gain of
+  ≥ 2 pp over d80 reads "still improving"; less reads "plateau", as for the Gemma continuation.
+- **`qwen3-4b-v2-zeroshot-s1`, phases a and b only** (130 steps): the zero-shot arm with seed 1, the seed on which
+  the v2 demo arm stopped on the length guard at phase-b step 49. Primary: whether it completes phase b without a
+  guard stop. Secondary: holdout3 of the phase-b final step, read beside the phase-b final steps of
+  `qwen3-4b-v2-zeroshot-s2` and `qwen3-4b-v2-demo-s2` (evaluated alongside on the workstation), and 3-pass
+  validation at both phase ends. Phases c and d run only on a separate decision, if budget remains.
+- **Budget:** one spot RTX PRO 6000, continuation first, $16 cap per phase; about 7 GPU-hours expected.
+
 ## 6. Gemma-4-E4B zero-shot `gemma4-e4b-v2-zeroshot-s0` (registered 2026-11-09, before any training result)
 
 **Question.** Does the zero-shot finding transfer to another model family? Whether the demo helps Gemma is not asked;
@@ -174,14 +189,18 @@ prompt, evaluated once alongside.
 - **3-pass validation at phase ends:** 26.6% / 49.4% / 61.6% / 62.1%.
 - **holdout3: 605** (345 / 128 / 132). The v1 run with the demo scored 309 (35 / 331 discordant, p = 1e-61;
   descriptive only, since the recipes differ).
-- **Base model with `r1zero_tool` on holdout3:** *pending*.
-- **Secondary, the same checkpoint with `fewshot_multi_retry`:** *pending*.
+- **Base model with `r1zero_tool` on holdout3: 19** (18 / 1 / 0). Paired against it, the trained policy is
+  605 vs 19.
+- **Secondary, the same checkpoint with `fewshot_multi_retry`: 427** (239 / 94 / 94). The drop from its own prompt
+  (605) is smaller than Qwen's (699 → 309), but the policy is still best under the prompt it was trained with.
 - **Behaviour:** code on 35% of problems, and its first printed value never equals the target. It enumerates in
   `<think>` and calls code only when stuck.
 
 **Continuation `gemma4-e4b-v2-zeroshot-s0-cont`** (registered 2026-11-09 while phase d was at step 22). 100 steps
 from d80. A gain of ≥ 2 pp on holdout3 means "still improving"; less means "plateau". The share of rollouts that run
-code is also reported. **Result:** *pending* (at step 26, validation 63–67%).
+code is also reported. All 100 steps ran. 3-pass validation of step 100: 69.8% (211, 207 and 210 of 300), against
+62.1% for d80. **Result: 681 vs 605 on holdout3 (117 / 41 discordant, p ≈ 1e-9; 358 / 158 / 165 by tier). Still
+improving.** Code now runs on 999 of 1,000 problems, against 345 at d80 (1.12 vs 0.52 executions per problem).
 
 ## 7. Gemma-4-E2B, phase a only (registered 2026-11-09, before any training result)
 
@@ -226,7 +245,60 @@ after seeing the phase-a outcomes, at the user's request, and are reported as su
 - **Order and budget:** both run on `tp-rtx6000`, the demo arm first, under a $16 cap per phase and a 9-hour VM
   lifetime. A failed gate on the demo arm does not stop the zero-shot phases.
 
-## 8. Known gaps
+**Follow-up results.**
+- **`gemma4-e2b-v2-demo-s0-noguard`, phase a: gate passed.** Smoothed validation 11.4% against 4.0% needed (step 0:
+  1.0%), and first-round training accuracy rose from 0.045 to 0.263. In-run validation by step: 1.0, 4.7, 6.0, 6.0,
+  6.0, 10.0, 10.7, 11.0, 11.7 and 11.7%. 3-pass validation of step 50: 13.1% (39, 40 and 39 of 300). Contradicted answers fell from 0.75
+  at step 0. Signal groups stayed at 6–43 per step through step 50, while the zero-shot arm ended phase a with 3.
+- **`gemma4-e2b-v2-zeroshot-s0`, phases b–d: no further learning.** All 260 steps ran. In-run validation stayed at
+  exactly 6.0% (identical per-tier counts) throughout, and 3-pass validation at the end of b, c and d was 18/300 every
+  time, the same as the end of phase a. holdout3 of d80: 44 (36 / 5 / 3). Sampling entropy had fallen from 0.77 to 0.10 by
+  the end of phase a, and 94% of prompts now give eight identical rollouts, so most steps have no signal group and no
+  update. This was first recorded at phase-b step 25, before the phase finished.
+
+**Further follow-up (registered 2026-11-09, after the results above and before the run started), at the user's
+request: `gemma4-e2b-v2-demo-s0-noguard`, phases b–d** (bucket `e2v2s0n-b`, `-c`, `-d`). The standard schedule from
+phase a's final step, with `fewshot_multi_retry` in every phase as in all demo lineages, and the contradicted guard
+still off. The configs are the E2B zero-shot phase-b–d configs with only the prompt and that guard changed, so the
+two E2B arms differ in the prompt alone. It runs on `tp-rtx6000` after the zero-shot lineage, under a $16 cap per
+phase.
+- **Primary:** holdout3 of phase d's final step, evaluated once on the workstation with `fewshot_multi_retry` and
+  eager attention, paired against the zero-shot arm's final step. This is descriptive, with no decision threshold:
+  one seed per arm, and the arms were extended after their phase-a results were seen.
+- **Secondary:** 3-pass validation at each phase end, signal groups per step, sampling entropy, and the cap share.
+  A length-guard stop is an outcome.
+
+**Result: `gemma4-e2b-v2-demo-s0-noguard` phase b stopped at step 32 on the length guard** (cap share above 40%
+over 5 steps). It is a registered outcome; phases c and d did not run, and the run was not resumed.
+- In-run validation with `fewshot_multi_retry` went from 6.0% at step 0 (phase a ended at 13.1% under
+  `fewshot_direct_retry`, so the prompt change costs about half) to 16.7% at step 30.
+- The cap share rose steadily from 0.02 at step 0 to 0.42–0.49 over steps 28–31, and the length penalty from 0.004 to
+  0.12. Contradicted answers fell from 0.88 to 0.24. This is the failure that stopped `qwen3-4b-v2-demo-s1` in its
+  phase b: with no gradient on all-fail groups, nothing pushes failed rollouts to stay short.
+- The registered primary (holdout3 of d80) does not exist. As a post hoc, descriptive number, the step-32 checkpoint
+  is evaluated once on holdout3 with `fewshot_multi_retry`: *pending*.
+
+## 8. Post hoc analyses of the v2 policies (listed 2026-11-09, before any of them ran)
+
+None of these was planned before the v2 results; all are descriptive and none changes a recorded verdict. They answer
+three objections a reader is likely to raise: that RL only sharpens what the base model already samples, that the
+policies do not really use the tool, and that the zero-shot result depends on the exact wording of the prompt.
+Evaluations run on the workstation and on a second local GPU (RTX A4000, CUDA, same code and lock file).
+- **pass@k on the test set:** T = 0.9, seeds 1–8, for base Qwen3-4B with `r1zero_tool`, `qwen3-4b-v2-zeroshot-s2`
+  and `qwen3-4b-v2-demo-s2`, with the settings of the v1 runs in `results/evals/test_time/`. Reported as unbiased
+  pass@k for k = 1, 2, 4, 8.
+- **Tool dependence on the test set (greedy):** the 0/1/2-round sweep and the blanked and shuffled `<output>`
+  controls for `qwen3-4b-v2-zeroshot-s2`, `qwen3-4b-v2-demo-s2` and `gemma4-e4b-v2-zeroshot-s0-cont`, as was done
+  for v1.
+- **Prompt wording (holdout3):** `qwen3-4b-v2-zeroshot-s2` under two rewordings of `r1zero_tool`
+  (`r1zero_tool_p1`, `_p2` in `rl/rollout.py`) that carry the same information.
+- **Token budget (holdout3):** both Qwen v2 policies with 1,536 new tokens instead of 768.
+- **Seed comparison points (holdout3):** the phase-b final steps of `qwen3-4b-v2-zeroshot-s2` and
+  `qwen3-4b-v2-demo-s2`, to set beside the seed-1 zero-shot run of section 5.
+- **Uncertainty:** paired bootstrap intervals (10,000 resamples) for every holdout3 difference in REPORT, alongside
+  the McNemar tests.
+
+## 9. Known gaps
 
 - **Lost log steps:** resuming on a fresh VM used to overwrite the start of `train_log.jsonl` (fixed in `rl/grpo.py`
   and `scripts/cloud/train.sh`). Lost steps:
