@@ -152,7 +152,7 @@ Run with `eval.py` (HF backend, soos, merged adapter); logs in `verification/log
 - **Verdict, from the pre-registered rule (≥ 661): the demo is not needed.** The tool-use behaviour emerges from a tool description alone.
   - The +18 is not significant (paired McNemar p = 0.23; 109 vs 91 discordant problems), so the claim is parity, not superiority.
   - The gain is concentrated on hard problems.
-- **The zero-shot policy finds a different strategy.** It runs code on nearly every problem and almost never invents outputs. But after a check where every candidate is false, it retries in about 25% of cases, against about 70% for the demo-trained policy. The demo's "retry" instruction is what produces that explicit self-correction loop. Without it, RL settles on getting the first check right.
+- **The zero-shot policy uses the tool differently.** It runs code on nearly every problem and almost never invents outputs, but mostly as a calculator that confirms an answer already worked out in `<think>` (it prints values, not True/False checks). When the first printed result misses the target it retries as often as the demo-trained policy (170/230 = 74% vs 464/619 = 75% on holdout3), but recovers less often (41/230 = 18% vs 311/619 = 50%). It misses far less often in the first place (230 vs 619), which is where its accuracy comes from. So self-correction emerges without the demo, but hypothesis-testing with the tool is weaker.
 - **Transfer to Gemma (in progress):**
   - Gemma-4-E4B zero-shot climbs from 1% to about 65% in-run, but almost never runs code: it solves the problem by hand in `<think>`.
   - A Gemma-4-E2B arm is being probed.

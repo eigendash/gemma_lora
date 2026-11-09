@@ -828,8 +828,10 @@ Under v2, groups without a correct answer are not trained, so `zero` would give 
 - **3-pass validation at phase ends** (of 300): 130.7 / 181.7 / 210.3 / 225.7, against v2 seed 2's 123.7 / 177.3 / 203.7 / 213.3. Ahead at every phase end after starting 11 pp behind.
 - **Behaviour difference:**
   - The zero-shot policy runs code on almost every rollout (holdout mean 1.15 code rounds; hallucinated outputs 0).
-  - It retries much less after an all-False check: in-run, about 0.25 of such rollouts retry in phase d, against about 0.70 for v2 seed 2.
-  - The demo's explicit "retry" instruction is what produces the self-correction loop. Without it, RL finds first-try accuracy instead.
+  - **Retry rate (corrected 2026-11-09):** a first draft compared in-run `retry_after_allfalse` (about 0.25 vs 0.70) and concluded the zero-shot policy rarely retries. That is a metric artifact.
+    - The counter defines a failed check as "no `True` printed" (`train_rl.py` near line 1102). The zero-shot policy prints values, not booleans, so 982/1000 of its holdout3 first checks count as "all-False", correct first tries included.
+    - With "no printed number equals the target and no True" as the failure test (holdout3, first `<output>`): the first check misses in 230 (zero-shot) vs 619 (demo); retried 170 (74%) vs 464 (75%); recovered 41 (18%) vs 311 (50%).
+    - **Reading:** retrying is as frequent without the demo, but recovery is weaker. The zero-shot policy mostly uses code to confirm an answer already found in `<think>`. In-run `retry_after_allfalse` is not comparable across prompt styles.
 - **Length guard:** cap share fell from 0.37 at the end of a to 0.01 in d (never tripped).
 - **Logs:** `verification/logs/q4v2z2/`, `verification/logs/holdout/h3_q4v2z2_d80.*`.
 
