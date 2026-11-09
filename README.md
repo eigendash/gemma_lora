@@ -102,8 +102,27 @@ uv run python -m countdown_rl.evaluation.paired a.jsonl.gz b.jsonl.gz     # McNe
 uv run python scripts/figures.py                                        # docs/figures/
 ```
 
-Adapters are not in the repository (each is about 130 MB); they live in the GCS bucket under
-`baselines/<run id>_final`.
+## Trained adapters
+
+The final adapter of every reported run is on the Hugging Face Hub. Each repository contains exactly the file that
+was evaluated, and its model card has a usage example. Download with
+`hf download prada5023/countdown-rl-<experiment> --local-dir adapters/<experiment>`.
+
+| Experiment | holdout3 | Adapter |
+|---|---|---|
+| `qwen3-4b-v2-zeroshot-s2` | 69.9% | [prada5023/countdown-rl-qwen3-4b-v2-zeroshot-s2](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v2-zeroshot-s2) |
+| `qwen3-4b-v2-demo-s2` | 68.1% | [prada5023/countdown-rl-qwen3-4b-v2-demo-s2](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v2-demo-s2) |
+| `qwen3-4b-v2-demo-s2-cont` | 68.2% | [prada5023/countdown-rl-qwen3-4b-v2-demo-s2-cont](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v2-demo-s2-cont) |
+| `qwen3-4b-v1-handtuned` | 52.1% | [prada5023/countdown-rl-qwen3-4b-v1-handtuned](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v1-handtuned) |
+| `qwen3-4b-v1-handtuned-nohint` | – | [prada5023/countdown-rl-qwen3-4b-v1-handtuned-nohint](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v1-handtuned-nohint) |
+| `qwen3-4b-v1-s1` | 51.2% | [prada5023/countdown-rl-qwen3-4b-v1-s1](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v1-s1) |
+| `qwen3-4b-v1-s2` | 49.8% | [prada5023/countdown-rl-qwen3-4b-v1-s2](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v1-s2) |
+| `qwen3-8b-v1-s0` | 55.7% | [prada5023/countdown-rl-qwen3-8b-v1-s0](https://huggingface.co/prada5023/countdown-rl-qwen3-8b-v1-s0) |
+| `gemma4-e4b-v2-zeroshot-s0` | 60.5% | [prada5023/countdown-rl-gemma4-e4b-v2-zeroshot-s0](https://huggingface.co/prada5023/countdown-rl-gemma4-e4b-v2-zeroshot-s0) |
+| `gemma4-e4b-v1-s0` | 30.9% | [prada5023/countdown-rl-gemma4-e4b-v1-s0](https://huggingface.co/prada5023/countdown-rl-gemma4-e4b-v1-s0) |
+
+The Gemma adapters target the text decoder extracted by `scripts/prepare_gemma4_text.py`, not the multimodal
+checkpoint.
 
 ## Tests
 

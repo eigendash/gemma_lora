@@ -1,0 +1,17 @@
+{
+  "config": {
+    "engine": "vllm",
+    "prompt_style": "fewshot_multi_retry",
+    "eval_file": "data/eval.jsonl"
+  },
+  "metrics": {
+    "val_correct": 0.585,
+    "val_n": 1000,
+    "val_tier": {
+      "easy": 0.87,
+      "hard": 0.343,
+      "medium": 0.447
+    },
+    "val_s": 51.9
+  }
+}
