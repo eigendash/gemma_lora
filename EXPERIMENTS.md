@@ -27,6 +27,7 @@ The bucket and the chain logs use the short ids from the time of the runs.
 | `qwen3-4b-v2-demo-s1` | `q4v2s1-{a,b}` | Qwen3-4B-Base | v2 | demo | 1 |
 | `qwen3-4b-v2-demo-s2` (+ `-cont`) | `q4v2s2-{a..d}`, `q4v2s2long` | Qwen3-4B-Base | v2 | demo | 2 |
 | `qwen3-4b-v2-zeroshot-s2` | `q4v2z2-{a..d}` | Qwen3-4B-Base | v2 | zero-shot | 2 |
+| `qwen3-4b-v2-zeroshot-s2-cont`, `qwen3-4b-v2-zeroshot-s1` | same as the experiment name | Qwen3-4B-Base | v2 | zero-shot | 2, 1 |
 | `gemma4-e4b-v2-zeroshot-s0` (+ `-cont`) | `g4v2z0-{a..d}`, `g4v2z0long` | Gemma-4-E4B (text) | v2 | zero-shot | 0 |
 | `gemma4-e2b-v2-zeroshot-s0` | `e2v2z0-{a..d}` | Gemma-4-E2B (text) | v2 | zero-shot | 0 |
 | `gemma4-e2b-v2-demo-s0` | `e2v2s0-a` | Gemma-4-E2B (text) | v2 | demo | 0 |
@@ -155,6 +156,19 @@ p = 1.00). Plateau.**
 - **Correction:** an in-run counter, `retry_after_allfalse`, treats any first check without a printed `True` as
   failed. The zero-shot policy prints values rather than booleans, so the counter is not comparable across prompts.
   The figures above use a check against the target instead (`evaluation/metrics.py`).
+
+**Follow-up runs (registered 2026-11-09, after all results above and before either run started).** Both answer
+review-style objections to the comparison above; neither can change the primary verdict, which stands as recorded.
+- **`qwen3-4b-v2-zeroshot-s2-cont`:** 45 steps from d80, otherwise identical to phase d. The demo arm's continuation
+  ran 45 steps (it was stopped there by hand), so this gives both arms the same total of 345 steps. Measure: holdout3
+  of step 45 with `r1zero_tool`, paired against d80 (699) and against `qwen3-4b-v2-demo-s2-cont` (682). A gain of
+  ≥ 2 pp over d80 reads "still improving"; less reads "plateau", as for the Gemma continuation.
+- **`qwen3-4b-v2-zeroshot-s1`, phases a and b only** (130 steps): the zero-shot arm with seed 1, the seed on which
+  the v2 demo arm stopped on the length guard at phase-b step 49. Primary: whether it completes phase b without a
+  guard stop. Secondary: holdout3 of the phase-b final step, read beside the phase-b final steps of
+  `qwen3-4b-v2-zeroshot-s2` and `qwen3-4b-v2-demo-s2` (evaluated alongside on the workstation), and 3-pass
+  validation at both phase ends. Phases c and d run only on a separate decision, if budget remains.
+- **Budget:** one spot RTX PRO 6000, continuation first, $16 cap per phase; about 7 GPU-hours expected.
 
 ## 6. Gemma-4-E4B zero-shot `gemma4-e4b-v2-zeroshot-s0` (registered 2026-11-09, before any training result)
 
