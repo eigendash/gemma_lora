@@ -1,7 +1,6 @@
 """Fresh 1,000-problem holdout sets, each generated after the model selection it is meant to check
-(scripts/make_holdout.py): data/holdout.jsonl (2026-11-05, for P10b) and data/holdout2.jsonl (2026-11-06, for
-P10b-nohint / P10c) and data/holdout3.jsonl (2026-11-06, for the from-scratch replays: Qwen3-8B, Gemma-4-E4B,
-Qwen3-4B seeds). They must stay disjoint from train/val/test and from each other, and must never be read by
+(countdown_rl.data.holdout): data/holdout.jsonl (seed 20261105), data/holdout2.jsonl (20261106) and
+data/holdout3.jsonl (20261107, the set every reported model is compared on). They must stay disjoint from train/val/test and from each other, and must never be read by
 training or selection code."""
 import hashlib
 import json
@@ -42,19 +41,22 @@ def test_holdout_is_frozen_disjoint_and_solvable(name):
     assert all(verify_answer(r["nums"], r["target"], r["solution"])[0] for r in rows)
 
 
-def test_make_holdout_reproduces_the_frozen_file(tmp_path):
+@pytest.mark.parametrize("name,seed", [("holdout.jsonl", 20261105), ("holdout2.jsonl", 20261106),
+                                       ("holdout3.jsonl", 20261107)])
+def test_holdout_is_reproduced_from_its_seed(tmp_path, name, seed):
     from countdown_rl.data.holdout import main
 
-    if not os.path.exists(os.path.join(ROOT, "data", "holdout.jsonl")):
-        pytest.skip("holdout not present")
+    if not os.path.exists(os.path.join(ROOT, "data", name)):
+        pytest.skip(f"{name} not present")
     out = tmp_path / "h.jsonl"
     cwd = os.getcwd()
     try:
         os.chdir(ROOT)
-        main(["--seed", "20261105", "--out", str(out)])
+        main(["--seed", str(seed), "--out", str(out), "--exclude", "data/train.jsonl", "data/eval.jsonl",
+              *(f"data/{x}" for x in SETS[name][1] if x.startswith("holdout"))])
     finally:
         os.chdir(cwd)
-    assert hashlib.sha256(out.read_bytes()).hexdigest() == SETS["holdout.jsonl"][0]
+    assert hashlib.sha256(out.read_bytes()).hexdigest() == SETS[name][0]
 
 
 def test_no_training_or_selection_code_reads_the_holdout():

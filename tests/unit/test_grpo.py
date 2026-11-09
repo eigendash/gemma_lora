@@ -235,7 +235,7 @@ def test_build_config_rejects_bad_val_and_curriculum():
 
 
 def test_run_validation_end_to_end_with_stub_engine(monkeypatch, tmp_path):
-    """Runs the real run_validation (prompt building, reward, per-tier stats, eval_compare-style
+    """Runs the real run_validation (prompt building, reward, per-tier stats, paired-comparison-style
     dump) with the vLLM call stubbed: catches import/name errors before a GPU run."""
     import json
     from countdown_rl.rl import rollout_vllm

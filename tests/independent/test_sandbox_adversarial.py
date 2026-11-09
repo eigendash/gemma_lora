@@ -1,8 +1,8 @@
 """Independent adversarial battery for sandbox.Sandbox (fast part).
 
-Run: python -m pytest -q -s verification/test_sandbox_adversarial.py
+Run: uv run pytest -q -s tests/independent/test_sandbox_adversarial.py
 Heavier checks (latency, 10k leak, concurrency, torch isolation, memory bombs)
-live in verification/stress_sandbox_independent.py.
+live in scripts/checks/sandbox_stress.py.
 """
 
 from __future__ import annotations

@@ -1,3 +1,6 @@
+> Internal audit log, kept on `dev` only. File paths and run names predate the package layout and the experiment
+> renames; see the run-name table in EXPERIMENTS.md and git tag `pre-refactor`.
+
 # VERIFICATION.md — Independent audit of PART 1 (Round 2)
 
 Auditor session 2026-11-04. Audited HEAD `3be1406` (branch `main`, no remote). Round 1 audited `7260338`, which

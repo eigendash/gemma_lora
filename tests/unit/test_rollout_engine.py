@@ -1,5 +1,5 @@
 """Rollout-engine behaviour tests with a FAKE language model (promoted from
-verification/test_rollout_independent.py, audit round 2).
+tests/independent/test_rollout_independent.py).
 
 The fake LM records exactly which token ids it was fed (prompt seed, incremental
 KV steps, and full rebuilds), so we can check — without trusting any project

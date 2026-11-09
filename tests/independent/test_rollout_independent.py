@@ -12,7 +12,7 @@ helper — that:
 Sampling is scripted by monkeypatching ``rollout._sample`` (except the greedy
 infinite-loop test, which uses the real ``_sample`` at temperature 0).
 
-Run (needs cached tokenizers): HF_HUB_OFFLINE=1 python -m pytest -q verification/test_rollout_independent.py
+Run (needs cached tokenizers): HF_HUB_OFFLINE=1 uv run pytest -q tests/independent/test_rollout_independent.py
 """
 
 from __future__ import annotations

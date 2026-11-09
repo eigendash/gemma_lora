@@ -38,11 +38,3 @@ wandb/
 
 # bucket mirror written by scripts/pull_checkpoints.sh
 mirror/
-
-# Experiment logs under verification/logs/ are committed (they back the numbers in EXPERIMENTS.md and
-# VERIFICATION.md), including eval dumps that were pulled into an outputs/ subfolder. Per-step in-run validation
-# dumps and rollout dumps are left out: they are large, and complete copies live in the GCS bucket
-# (runs/<run_id>/logs/val/, runs/<run_id>/...).
-!verification/logs/**/outputs/
-verification/logs/*/run/val/
-verification/logs/**/rollouts.jsonl

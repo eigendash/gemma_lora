@@ -1,7 +1,7 @@
 """Fuzz the project's verifier.verify_answer against the independent
 ref_countdown.ref_verify (hand-written parser, no ast).
 
-Run from the project root:  python -m pytest -q verification/test_verifier_fuzz.py
+Run from the project root:  uv run pytest -q tests/independent/test_verifier_fuzz.py
 
 Disagreements are bucketed. Some are KNOWN BENIGN (Python literal syntax the
 reference intentionally rejects, e.g. "0x0A", "1_0"); everything else fails.

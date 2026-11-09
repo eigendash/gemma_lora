@@ -11,8 +11,8 @@ At step 0 the policy equals the behaviour policy, so ratio = exp(new - old)
 must be ~1 everywhere the loss is applied. Reported separately for tokens
 before and after the first injected <output>.
 
-Usage: python verification/check_logprob_consistency.py --model Qwen/Qwen2.5-0.5B
-       python verification/check_logprob_consistency.py --model google/gemma-2-2b --attn eager
+Usage: python scripts/dev/check_logprob_consistency.py --model Qwen/Qwen2.5-0.5B
+       python scripts/dev/check_logprob_consistency.py --model google/gemma-2-2b --attn eager
 """
 
 from __future__ import annotations

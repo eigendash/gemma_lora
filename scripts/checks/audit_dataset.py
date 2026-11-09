@@ -1,8 +1,8 @@
 """Independent audit of data/train.jsonl and data/eval.jsonl.
 
-Usage: python verification/audit_dataset.py <train.jsonl> <eval.jsonl> [--per-tier N]
+Usage: python scripts/checks/audit_dataset.py <train.jsonl> <eval.jsonl> [--per-tier N]
 
-Uses only verification/ref_countdown.py (independent verifier + DFS solver).
+Uses only tests/independent/ref_countdown.py (independent verifier + DFS solver).
 The project's solver is called ONLY for a cross-agreement count, never as the
 source of truth. Exits non-zero on any hard failure.
 """

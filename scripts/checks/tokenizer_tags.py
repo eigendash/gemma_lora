@@ -1,6 +1,6 @@
 """Tag tokenization + segment-boundary probe (default: Qwen2.5-0.5B, gemma-2-2b; or the models given as arguments).
 
-Run: zsh -c "source ~/.zshrc; python verification/check_tokenizer_tags.py [model ...]"  (HF_TOKEN needed for gated gemma; never printed)
+Run: python scripts/checks/tokenizer_tags.py [model ...]  (HF_TOKEN needed for gated gemma; never printed)
 """
 import os
 import sys

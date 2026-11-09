@@ -1,6 +1,6 @@
 """Independent checks of train_rl's GRPO math (no project helper used as oracle).
 
-Run: python -m pytest -q verification/test_grpo_math.py
+Run: uv run pytest -q tests/independent/test_grpo_math.py
 """
 
 from __future__ import annotations

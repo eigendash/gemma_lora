@@ -5,7 +5,7 @@ is tested in isolation. Baselines:
   HONEST_CORRECT   think -> relevant python check -> correct answer
   HONEST_INCORRECT think -> relevant python check -> wrong but well-formed answer
 
-Run: python -m pytest -q -s verification/test_reward_hacks.py
+Run: uv run pytest -q -s tests/independent/test_reward_hacks.py
 """
 
 from __future__ import annotations

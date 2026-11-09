@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Run a GRPO config on a cloud GPU box with bucket checkpoints, auto-resuming after a crash.
 # Each attempt runs in its own process group and is killed as a group (vLLM's EngineCore child
-# would otherwise survive and hold GPU memory; see VERIFICATION.md §15). Spot preemption deletes
+# would otherwise survive and hold GPU memory). Spot preemption deletes
 # the VM; relaunch on a new VM with the same RUN_ID and it resumes from the bucket.
 # usage: RUN_ID=p7-... GCS_BUCKET=gs://... COST_PER_HOUR=2.0 CONFIG=configs/p7_rtx6000.yaml \
 #        [MAX_TOTAL_USD=40] bash scripts/cloud/train.sh

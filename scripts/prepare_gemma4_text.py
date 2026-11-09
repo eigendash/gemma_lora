@@ -7,8 +7,8 @@ AutoModelForCausalLM maps model_type gemma4 to that multimodal class. Our LoRA t
   2. counts LoRA-target modules in the multimodal vs the text-only model (text-only must have none in towers);
   3. saves the text-only model + tokenizer to --out (what training and vLLM then both load);
   4. loads --out in vLLM with LoRA enabled and checks greedy completions agree with HF on a few-shot val prompt;
-The few-shot base accuracy (the go/no-go read) then comes from verification/eval_vllm.py --base --model-name <out>.
-usage: python verification/check_gemma4_text.py --model google/gemma-4-E4B --out /path/gemma-4-E4B-text
+The few-shot base accuracy (the go/no-go read) then comes from python -m countdown_rl.evaluation.evaluate_vllm --base --model-name <out>.
+usage: python scripts/prepare_gemma4_text.py --model google/gemma-4-E4B --out /path/gemma-4-E4B-text
 """
 import argparse
 import os

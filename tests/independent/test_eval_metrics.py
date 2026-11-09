@@ -1,6 +1,6 @@
 """Hand-computed eval metrics on a tiny synthetic set vs eval.compute_metrics.
 
-Run: python -m pytest -q -s verification/test_eval_metrics.py
+Run: uv run pytest -q -s tests/independent/test_eval_metrics.py
 """
 
 from __future__ import annotations

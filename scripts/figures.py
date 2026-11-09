@@ -8,7 +8,6 @@ usage: uv run python scripts/figures.py [--out docs/figures]
 Pending runs (no eval file yet) are drawn as labelled empty rows, so the layout does not change when they land.
 """
 import argparse
-import glob
 import json
 import math
 import os
@@ -47,11 +46,11 @@ def wilson(k, n, z=1.96):
     return c - h, c + h
 
 
-def holdout3(name):
-    hits = glob.glob(os.path.join(RES, "evals", "holdout3", f"{name}__*.json"))
-    if not hits:
+def holdout3(stem):
+    path = os.path.join(RES, "evals", "holdout3", f"{stem}.json")
+    if not os.path.exists(path):
         return None
-    m = json.load(open(hits[0]))["metrics"]
+    m = json.load(open(path))["metrics"]
     n = m["n"]
     return round(m["pass@1"] * n), n
 
@@ -63,22 +62,25 @@ def save(fig, out, stem):
 
 
 def fig_holdout3(out):
-    rows = [  # (group, label, experiment, colour)
-        ("Qwen3-4B", "Base model, demo prompt", "qwen3-4b-base", BASE),
-        ("Qwen3-4B", "v1, seed 1", "qwen3-4b-v1-s1", V1),
-        ("Qwen3-4B", "v1, seed 2", "qwen3-4b-v1-s2", V1),
-        ("Qwen3-4B", "v1, hand-tuned lineage", "qwen3-4b-v1-handtuned", V1),
-        ("Qwen3-4B", "v2, demo prompt", "qwen3-4b-v2-demo-s2", DEMO),
-        ("Qwen3-4B", "v2, demo prompt, +45 steps", "qwen3-4b-v2-demo-s2-cont", DEMO),
-        ("Qwen3-4B", "v2, zero-shot prompt", "qwen3-4b-v2-zeroshot-s2", ZERO),
-        ("Qwen3-8B", "Base model, demo prompt", "qwen3-8b-base", BASE),
-        ("Qwen3-8B", "v1", "qwen3-8b-v1-s0", V1),
-        ("Gemma-4-E4B", "Base model, demo prompt", "gemma4-e4b-base", BASE),
-        ("Gemma-4-E4B", "v1", "gemma4-e4b-v1-s0", V1),
-        ("Gemma-4-E4B", "v2, zero-shot prompt", "gemma4-e4b-v2-zeroshot-s0", ZERO),
-        ("Gemma-4-E4B", "v2, zero-shot prompt, +100 steps", "gemma4-e4b-v2-zeroshot-s0-cont", ZERO),
+    D, Z = "fewshot_multi_retry", "r1zero_tool"
+    rows = [  # (group, label, eval file stem, colour)
+        ("Qwen3-4B", "Base model, demo prompt", f"qwen3-4b-base__{D}", BASE),
+        ("Qwen3-4B", "Base model, zero-shot prompt", f"qwen3-4b-base__{Z}", BASE),
+        ("Qwen3-4B", "v1, seed 1", f"qwen3-4b-v1-s1__{D}", V1),
+        ("Qwen3-4B", "v1, seed 2", f"qwen3-4b-v1-s2__{D}", V1),
+        ("Qwen3-4B", "v1, hand-tuned lineage", f"qwen3-4b-v1-handtuned__{D}", V1),
+        ("Qwen3-4B", "v2, demo prompt", f"qwen3-4b-v2-demo-s2__{D}", DEMO),
+        ("Qwen3-4B", "v2, demo prompt, +45 steps", f"qwen3-4b-v2-demo-s2-cont__{D}", DEMO),
+        ("Qwen3-4B", "v2, zero-shot prompt", f"qwen3-4b-v2-zeroshot-s2__{Z}", ZERO),
+        ("Qwen3-8B", "Base model, demo prompt", f"qwen3-8b-base__{D}", BASE),
+        ("Qwen3-8B", "v1", f"qwen3-8b-v1-s0__{D}", V1),
+        ("Gemma-4-E4B", "Base model, demo prompt", f"gemma4-e4b-base__{D}", BASE),
+        ("Gemma-4-E4B", "Base model, zero-shot prompt", f"gemma4-e4b-base__{Z}", BASE),
+        ("Gemma-4-E4B", "v1", f"gemma4-e4b-v1-s0__{D}", V1),
+        ("Gemma-4-E4B", "v2, zero-shot prompt", f"gemma4-e4b-v2-zeroshot-s0__{Z}", ZERO),
+        ("Gemma-4-E4B", "v2, zero-shot prompt, +100 steps", f"gemma4-e4b-v2-zeroshot-s0-cont__{Z}", ZERO),
     ]
-    fig, ax = plt.subplots(figsize=(6.75, 3.6))
+    fig, ax = plt.subplots(figsize=(6.75, 4.0))
     y, ticks, labels, groups = 0, [], [], []
     prev = None
     for group, label, exp, col in rows:
@@ -113,7 +115,8 @@ def fig_holdout3(out):
     handles = [plt.Line2D([], [], marker="o", ls="", color=c, markersize=5, label=l) for c, l in
                [(BASE, "base model"), (V1, "recipe v1 (demo prompt)"), (DEMO, "recipe v2, demo prompt"),
                 (ZERO, "recipe v2, zero-shot prompt")]]
-    ax.legend(handles=handles, loc="lower right", ncol=1, handletextpad=0.3, borderaxespad=0.2)
+    ax.legend(handles=handles, loc="lower left", bbox_to_anchor=(0, 1.0), ncol=4, handletextpad=0.3, columnspacing=1.4,
+              borderaxespad=0.3)
     save(fig, out, "fig1_holdout3")
 
 

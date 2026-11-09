@@ -1,7 +1,7 @@
 """Independent sandbox stress: latency, concurrency, 10k leak, memory bombs,
 and torch-in-worker isolation under macOS spawn.
 
-Usage: python verification/stress_sandbox_independent.py [--n 10000]
+Usage: python scripts/checks/sandbox_stress.py [--n 10000]
 Exit code = number of failed checks.
 """
 
@@ -127,7 +127,7 @@ def torch_isolation():
         f.write(textwrap.dedent(f"""
             import sys, time
             sys.path.insert(0, {os.getcwd()!r})
-            import torch, transformers, peft  # like train_rl.py
+            import torch, transformers, peft  # like the trainer
             from countdown_rl.sandbox import Sandbox
             if __name__ == "__main__":
                 import psutil, subprocess

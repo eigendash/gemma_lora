@@ -3,10 +3,10 @@
 Same generator, tier weights and value pool as data/train.jsonl and data/eval.jsonl, a new seed, and every
 (number multiset, target) already used in an --exclude file is skipped. Every solution is re-verified.
 Deterministic: these commands reproduce the frozen files byte for byte (hashes in tests/test_holdout.py):
-  python scripts/make_holdout.py --seed 20261105 --out data/holdout.jsonl
-  python scripts/make_holdout.py --seed 20261106 --out data/holdout2.jsonl \
+  python -m countdown_rl.data.holdout --seed 20261105 --out data/holdout.jsonl
+  python -m countdown_rl.data.holdout --seed 20261106 --out data/holdout2.jsonl \
       --exclude data/train.jsonl data/eval.jsonl data/holdout.jsonl
-  python scripts/make_holdout.py --seed 20261107 --out data/holdout3.jsonl \
+  python -m countdown_rl.data.holdout --seed 20261107 --out data/holdout3.jsonl \
       --exclude data/train.jsonl data/eval.jsonl data/holdout.jsonl data/holdout2.jsonl
 """
 import argparse

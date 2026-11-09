@@ -6,8 +6,8 @@ e2e:   one real GRPO generation batch (prompts_per_step x G rollouts, training p
        reports wall time, useful tokens/s and the length distribution.
 
 usage:
-  python verification/bench_generation.py micro
-  python verification/bench_generation.py e2e --impl lockstep|compact|continuous|vllm --max-new-tokens 768
+  python scripts/dev/bench_generation.py micro
+  python scripts/dev/bench_generation.py e2e --impl lockstep|compact|continuous|vllm --max-new-tokens 768
 """
 
 from __future__ import annotations
