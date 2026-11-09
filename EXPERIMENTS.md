@@ -170,6 +170,18 @@ review-style objections to the comparison above; neither can change the primary 
   validation at both phase ends. Phases c and d run only on a separate decision, if budget remains.
 - **Budget:** one spot RTX PRO 6000, continuation first, $16 cap per phase; about 7 GPU-hours expected.
 
+**Follow-up results.**
+- **`qwen3-4b-v2-zeroshot-s2-cont`:** all 45 steps ran. holdout3 of step 45: 705 against 699 for d80. Under the
+  registered rule (≥ 2 pp) this reads **plateau**, as for the demo arm's continuation (682 vs 681).
+- **`qwen3-4b-v2-zeroshot-s1`: stopped at phase-b step 13 by the length guard** (cap share above 40% over 5 steps).
+  Phase a passed the zero-shot gate easily (validation 5.3% at step 0, 41.0% at step 30), but its cap share rose
+  with accuracy, from 0.14 at step 0 to 0.37–0.40 by the end of the phase, and reached 0.40–0.41 early in phase b.
+  Seed 2 ran close to the same line (0.40 at the end of phase a, 0.33–0.39 early in phase b) and stayed under it. The
+  registered primary question therefore has the answer no: with seed 1, the zero-shot arm trips the length guard as
+  the demo arm did, and earlier in phase b (step 13 against 49). The guard threshold sits inside the seed-to-seed
+  range of this quantity under v2. Secondary: holdout3 of the last checkpoint (b13) *pending*. Phases c and d were
+  not run.
+
 ## 6. Gemma-4-E4B zero-shot `gemma4-e4b-v2-zeroshot-s0` (registered 2026-11-09, before any training result)
 
 **Question.** Does the zero-shot finding transfer to another model family? Whether the demo helps Gemma is not asked;
