@@ -848,6 +848,20 @@ Under v2, groups without a correct answer are not trained, so `zero` would give 
 - **Fix:** `micro_batch=2` for all phases (generator override). `micro_batch` only sets how many rollouts share one forward/backward pass, and it is excluded from the resume hash. The one side effect is that mini-batch boundaries round to whole micro-batches.
 - Resumed from the committed `step_14` on the same (restarted) VM. No other setting changed.
 
+### 2.7u Pre-registration (2026-11-09 ~01:20 UTC, while g4v2z0-d was at step ~22 of 80): Gemma zero-shot long continuation `g4v2z0long`
+**Why:** in-run validation was still rising phase over phase (end of a 23.0% → b 50.7% → c 58.7% → d step 20 64.7%). Meanwhile exec reward stayed about 0, and about 1 in 15 recent rollouts ran code: Gemma solves by hand in `<think>`. Asked by the user ("keep it training for longer").
+- **Questions:** does Gemma keep improving, or plateau like both Qwen continuations (§2.7q, §2.7r)? And does tool use ever appear?
+
+**Config:** `configs/g4v2z0_long.yaml`, identical to `g4v2z0-d` except a warm start from its final step and `total_steps: 100`.
+- **Where:** the same VM `tp-rtx6000-g4`, restarted after chain `g4v2z0` is DONE, with max run duration 5 h. Chain `scripts/gcp/chain_g4v2z0_long.sh`; $16 cap.
+
+**Not extended: Qwen `q4v2z2`.** Its phase-d in-run validation was flat at 70–75% for 70 steps, and both earlier Qwen continuations plateaued, so a third continuation is not a good use of the remaining credits.
+
+**Outcomes:**
+- The **primary outcome of §2.7t is unchanged**: holdout3 of `g4v2z0-d`'s final step.
+- **Secondary:** holdout3 of `g4v2z0long`'s final step, evaluated once on soos, with the same settings, paired McNemar vs `g4v2z0-d`, plus the share of rollouts that run code.
+- **Reading:** a gain of ≥ 2 pp on holdout3 means "still improving at 330 steps". Less than that means "plateau".
+
 ### 2.7q Qwen3-8B long continuation (`configs/q8b_long.yaml`, 2026-11-08): plateau
 **Question:** does the best model at the time (q8b-d s80: holdout3 557, test 585) keep improving with more training?
 

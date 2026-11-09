@@ -1,0 +1,56 @@
+# Gemma-4-E4B zero-shot, long continuation (2026-11-09; pre-registered in EXPERIMENTS.md section 2.7u before g4v2z0-d finished).
+# Question: Gemma's in-run validation was still rising through phases b-d; does it keep improving, and does it ever take up the tool?
+# Identical to configs/lineage/g4v2z0-d.yaml (5-step LR warmup with a fresh AdamW, as at every phase boundary), except:
+# warm start from g4v2z0-d's final step and 100 steps. Budget: max_total_usd 16 at cost_per_hour 2.0 (expected ~3.5 h).
+model: models/gemma-4-E4B-text
+prompt_style: r1zero_tool
+n_problems: 0
+G: 8
+prompts_per_step: 64
+grad_accum: 1
+max_new_tokens: 768
+lr: 2.0e-05
+lr_warmup_steps: 5
+kl_coef: 0
+target_kl: 0.1
+min_kl_coef: 0
+max_kl_coef: 0
+lora_r: 16
+lora_alpha: 32
+dtype: bfloat16
+attn: sdpa
+chunked_vocab: true
+micro_batch: 2
+grad_ckpt: false
+generation: vllm
+vllm_gpu_util: 0.6
+vllm_sleep: true
+vllm_max_model_len: 4096
+dynamic_sampling: true
+max_refill_rounds: 2
+curriculum_mode: signal
+curriculum_group_window: 64
+zero_shaping_invalid_literals: true
+val_n: 300
+val_every: 5
+checkpoint_every: 2
+checkpoint_timer: 300
+rollout_dump_every: 5
+temperature: 0.9
+on_round_cap: notice
+updates_per_batch: 2
+clip_eps_high: 0.28
+tis_cap: 2.0
+length_threshold: 512
+guard_window: 5
+guard_contradicted: 0.6
+guard_max_length: 0.4
+hint_schedule: ''
+hint_max_groups: 16
+seed: 0
+train_nocorrect_groups: false
+max_grad_norm: 1.0
+shuffle_minibatches: true
+max_total_usd: 16.0
+total_steps: 100
+init_lora: baselines/g4v2z0-d_final
