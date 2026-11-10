@@ -1,6 +1,6 @@
 # Experiment record
 
-This file is the record behind REPORT.md. It lists every run that produced a reported number, the decision rule each
+This file is the record behind REPORT.md (the two-page memo) and REPORT_FULL.md (the full paper). It lists every run that produced a reported number, the decision rule each
 one was registered under before its result was known, and the outcome. The day-by-day log, including the pilots
 and dead ends that preceded these runs, is at git tag `pre-refactor` (EXPERIMENTS.md there, about 1,100 lines).
 
@@ -318,7 +318,7 @@ Evaluations run on the workstation and on a second local GPU (RTX A4000, CUDA, s
 - **Token budget (holdout3):** both Qwen v2 policies with 1,536 new tokens instead of 768.
 - **Seed comparison points (holdout3):** the phase-b final steps of `qwen3-4b-v2-zeroshot-s2` and
   `qwen3-4b-v2-demo-s2`, to set beside the seed-1 zero-shot run of section 5.
-- **Uncertainty:** paired bootstrap intervals (10,000 resamples) for every holdout3 difference in REPORT, alongside
+- **Uncertainty:** paired bootstrap intervals (10,000 resamples) for every holdout3 difference in REPORT_FULL, alongside
   the McNemar tests.
 
 **Results.** All evaluations ran once, with the HF backend; files are under `results/evals/`.
@@ -330,6 +330,11 @@ Evaluations run on the workstation and on a second local GPU (RTX A4000, CUDA, s
 | Qwen3-4B base, `r1zero_tool` | 3.6 | 6.8 | 12.1 | 20.0 |
 | `qwen3-4b-v2-zeroshot-s2` | 67.2 | 75.8 | 82.4 | 87.6 |
 | `qwen3-4b-v2-demo-s2` | 68.2 | 78.0 | 85.3 | 90.1 |
+
+*Sample and verify on the test set* (added 2026-11-10 from the same dumps, no new generation;
+`scripts/sample_and_verify.py`). Samples are drawn in seed order and the first one the exact verifier accepts is
+returned. With up to 8 samples: `qwen3-4b-v2-zeroshot-s2` 87.6% at 2.40 samples drawn per problem,
+`qwen3-4b-v2-demo-s2` 90.1% at 2.25, base Qwen3-4B with `r1zero_tool` 20.0% at 7.12.
 
 *Tool dependence on the test set* (greedy; `test_time/<experiment>__{rounds,blank,shuffle}`), pass@1 in %:
 
@@ -368,7 +373,7 @@ the tool prints, so falsified output costs them more than a blank one.
 | Gemma-4-E4B +100 (681) − Gemma-4-E4B (605) | +7.6 | +5.2 to +10.0 | 1e-9 |
 | Gemma-4-E2B demo b32 (163) − Gemma-4-E2B zero-shot (44) | +11.9 | +9.9 to +14.0 | 1e-33 |
 
-None of these changes a recorded verdict. The second rewording is the one result that qualifies a claim in REPORT:
+None of these changes a recorded verdict. The second rewording is the one result that qualifies a claim in REPORT_FULL:
 the zero-shot policy is robust to rephrasing, but not perfectly.
 
 ## 9. Known gaps
