@@ -118,6 +118,7 @@ was evaluated, and its model card has a usage example. Download with
 | Experiment | holdout3 | Adapter |
 |---|---|---|
 | `qwen3-4b-v2-zeroshot-s2` | 69.9% | [prada5023/countdown-rl-qwen3-4b-v2-zeroshot-s2](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v2-zeroshot-s2) |
+| `qwen3-4b-v2-zeroshot-s2-cont` | 70.5% | [prada5023/countdown-rl-qwen3-4b-v2-zeroshot-s2-cont](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v2-zeroshot-s2-cont) |
 | `qwen3-4b-v2-demo-s2` | 68.1% | [prada5023/countdown-rl-qwen3-4b-v2-demo-s2](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v2-demo-s2) |
 | `qwen3-4b-v2-demo-s2-cont` | 68.2% | [prada5023/countdown-rl-qwen3-4b-v2-demo-s2-cont](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v2-demo-s2-cont) |
 | `qwen3-4b-v1-handtuned` | 52.1% | [prada5023/countdown-rl-qwen3-4b-v1-handtuned](https://huggingface.co/prada5023/countdown-rl-qwen3-4b-v1-handtuned) |
