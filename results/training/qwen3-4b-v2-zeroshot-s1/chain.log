@@ -1,0 +1,5 @@
+TRAIN qwen3-4b-v2-zeroshot-s1-a configs/experiments/qwen3-4b-v2-zeroshot-s1/phase_a.yaml 2026-11-09T14:52:38Z
+TRAINED qwen3-4b-v2-zeroshot-s1-a 2026-11-09T16:47:36Z
+INIT qwen3-4b-v2-zeroshot-s1-b from runs/qwen3-4b-v2-zeroshot-s1-a step_40 2026-11-09T16:47:48Z
+TRAIN qwen3-4b-v2-zeroshot-s1-b configs/experiments/qwen3-4b-v2-zeroshot-s1/phase_b.yaml 2026-11-09T16:47:49Z
+FAILED qwen3-4b-v2-zeroshot-s1-b 2026-11-09T17:24:01Z
