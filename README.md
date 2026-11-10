@@ -2,8 +2,8 @@
 
 GRPO with LoRA on base language models for the Countdown numbers game. The model writes `<think>`, may run
 `<python>` code, receives the real sandbox stdout inside `<output>`, and commits to an `<answer>`. Environment tokens
-are masked out of the loss. The task description is in [SPEC.md](SPEC.md); the write-up is [REPORT.md](REPORT.md);
-the run-by-run record, including pre-registered predictions, is [EXPERIMENTS.md](EXPERIMENTS.md).
+are masked out of the loss. The task description is in [SPEC.md](SPEC.md); the two-page memo is
+[REPORT.md](REPORT.md) and the full paper [REPORT_FULL.md](REPORT_FULL.md); the run-by-run record, including pre-registered predictions, is [EXPERIMENTS.md](EXPERIMENTS.md).
 
 Main result: Qwen3-4B-Base trained from a zero-shot prompt that only describes the tool goes from 6.7% to 69.9%
 pass@1 on a fresh 1,000-problem holdout, matching a policy trained with a worked demonstration (68.1%, McNemar
@@ -34,7 +34,7 @@ src/countdown_rl/
                 metrics.py     metrics recomputed from per-problem dumps
                 paired.py      paired McNemar test between two dumps
 configs/experiments/<name>/    one YAML per training phase; the run id is <name>-<phase>
-results/                       every eval and training log behind a number in REPORT.md
+results/                       every eval and training log behind a number in the reports
 scripts/                       figures, config generation, cloud launchers, data checks
 tests/unit/, tests/independent/
 ```
@@ -107,6 +107,7 @@ uv run countdown-eval --model Qwen/Qwen3-4B-Base --adapter <adapter dir> --eval-
     --attn sdpa_gqa --batch-size 128 --out h3.json --dump h3.jsonl      # Gemma: --attn eager
 uv run python -m countdown_rl.evaluation.paired a.jsonl.gz b.jsonl.gz     # McNemar
 uv run python scripts/figures.py                                        # docs/figures/
+uv run python scripts/sample_and_verify.py                              # pass@k and sample-and-verify
 ```
 
 ## Trained adapters
