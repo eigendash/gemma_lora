@@ -1,0 +1,6 @@
+INIT qwen3-4b-v2-zeroshot-s2-cont-cont from runs/qwen3-4b-v2-zeroshot-s2-d step_80 2026-11-09T13:14:42Z
+TRAIN qwen3-4b-v2-zeroshot-s2-cont-cont configs/experiments/qwen3-4b-v2-zeroshot-s2-cont/cont.yaml 2026-11-09T13:14:43Z
+TRAINED qwen3-4b-v2-zeroshot-s2-cont-cont 2026-11-09T14:49:16Z
+LATEST cont = runs/qwen3-4b-v2-zeroshot-s2-cont-cont/ckpt/step_45 2026-11-09T14:49:17Z
+VAL3 cont (model Qwen/Qwen3-4B-Base) 2026-11-09T14:49:19Z
+DONE 2026-11-09T14:52:28Z

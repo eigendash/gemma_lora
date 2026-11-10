@@ -72,6 +72,8 @@ def fig_holdout3(out):
         ("Qwen3-4B", "v2, demo prompt", f"qwen3-4b-v2-demo-s2__{D}", DEMO),
         ("Qwen3-4B", "v2, demo prompt, +45 steps", f"qwen3-4b-v2-demo-s2-cont__{D}", DEMO),
         ("Qwen3-4B", "v2, zero-shot prompt", f"qwen3-4b-v2-zeroshot-s2__{Z}", ZERO),
+        ("Qwen3-4B", "v2, zero-shot prompt, +45 steps", f"qwen3-4b-v2-zeroshot-s2-cont__{Z}", ZERO),
+        ("Qwen3-4B", "v2, zero-shot, seed 1 (stopped, step 53)", f"qwen3-4b-v2-zeroshot-s1-b13__{Z}", ZERO),
         ("Qwen3-8B", "Base model, demo prompt", f"qwen3-8b-base__{D}", BASE),
         ("Qwen3-8B", "v1", f"qwen3-8b-v1-s0__{D}", V1),
         ("Gemma-4-E4B", "Base model, demo prompt", f"gemma4-e4b-base__{D}", BASE),
@@ -82,7 +84,7 @@ def fig_holdout3(out):
         ("Gemma-4-E2B", "v2, zero-shot prompt", f"gemma4-e2b-v2-zeroshot-s0__{Z}", ZERO),
         ("Gemma-4-E2B", "v2, demo prompt (stopped, step 82)", f"gemma4-e2b-v2-demo-s0-noguard__{D}", DEMO),
     ]
-    fig, ax = plt.subplots(figsize=(6.75, 4.5))
+    fig, ax = plt.subplots(figsize=(6.75, 4.9))
     y, ticks, labels, groups = 0, [], [], []
     prev = None
     for group, label, exp, col in rows:

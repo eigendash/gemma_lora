@@ -27,7 +27,7 @@ The bucket and the chain logs use the short ids from the time of the runs.
 | `qwen3-4b-v2-demo-s1` | `q4v2s1-{a,b}` | Qwen3-4B-Base | v2 | demo | 1 |
 | `qwen3-4b-v2-demo-s2` (+ `-cont`) | `q4v2s2-{a..d}`, `q4v2s2long` | Qwen3-4B-Base | v2 | demo | 2 |
 | `qwen3-4b-v2-zeroshot-s2` | `q4v2z2-{a..d}` | Qwen3-4B-Base | v2 | zero-shot | 2 |
-| `qwen3-4b-v2-zeroshot-s2-cont`, `qwen3-4b-v2-zeroshot-s1` | same as the experiment name | Qwen3-4B-Base | v2 | zero-shot | 2, 1 |
+| `qwen3-4b-v2-zeroshot-s2-cont`, `qwen3-4b-v2-zeroshot-s1` | `qwen3-4b-v2-zeroshot-s2-cont-cont`, `qwen3-4b-v2-zeroshot-s1-{a,b}` | Qwen3-4B-Base | v2 | zero-shot | 2, 1 |
 | `gemma4-e4b-v2-zeroshot-s0` (+ `-cont`) | `g4v2z0-{a..d}`, `g4v2z0long` | Gemma-4-E4B (text) | v2 | zero-shot | 0 |
 | `gemma4-e2b-v2-zeroshot-s0` | `e2v2z0-{a..d}` | Gemma-4-E2B (text) | v2 | zero-shot | 0 |
 | `gemma4-e2b-v2-demo-s0` | `e2v2s0-a` | Gemma-4-E2B (text) | v2 | demo | 0 |
@@ -170,6 +170,25 @@ review-style objections to the comparison above; neither can change the primary 
   validation at both phase ends. Phases c and d run only on a separate decision, if budget remains.
 - **Budget:** one spot RTX PRO 6000, continuation first, $16 cap per phase; about 7 GPU-hours expected.
 
+**Follow-up results.**
+- **`qwen3-4b-v2-zeroshot-s2-cont`:** all 45 steps ran. 3-pass validation of step 45: 225.3 (227, 225, 224), against
+  225.7 for d80. holdout3 of step 45: **705** (356 / 173 / 176), against 699 for d80 (73 / 79 discordant, p = 0.69;
+  paired bootstrap interval −1.9 to +3.0 pp). Under the registered rule (≥ 2 pp) this reads **plateau**, as for the
+  demo arm's continuation (682 vs 681). At 345 steps each, zero-shot 705 against demo 682 (92 / 115 discordant,
+  p = 0.13; −0.6 to +5.1 pp).
+- **`qwen3-4b-v2-zeroshot-s1`: stopped at phase-b step 13 by the length guard** (cap share above 40% over 5 steps).
+  Phase a passed the zero-shot gate easily (validation 5.3% at step 0, 41.0% at step 30), but its cap share rose
+  with accuracy, from 0.14 at step 0 to 0.37–0.40 by the end of the phase, and reached 0.40–0.41 early in phase b.
+  Seed 2 ran close to the same line (0.40 at the end of phase a, 0.33–0.39 early in phase b) and stayed under it. The
+  registered primary question therefore has the answer no: with seed 1, the zero-shot arm trips the length guard as
+  the demo arm did, and earlier in phase b (step 13 against 49). The guard threshold sits inside the seed-to-seed
+  range of this quantity under v2. Phases c and d were not run.
+- **Secondary, holdout3 of the last checkpoint (b13, 53 steps): 497** (322 / 93 / 82), with 33% of responses
+  truncated and 67% format compliance. Comparison points from seed 2 at the end of phase b (130 steps): zero-shot
+  **582** (339 / 126 / 117), demo **571** (345 / 121 / 105); zero-shot vs demo at b90, 95 / 106 discordant, p = 0.48.
+  The seed-1 checkpoint is 77 steps short of those, so the gap to them (−8.5 pp) is not a seed effect at equal
+  training.
+
 ## 6. Gemma-4-E4B zero-shot `gemma4-e4b-v2-zeroshot-s0` (registered 2026-11-09, before any training result)
 
 **Question.** Does the zero-shot finding transfer to another model family? Whether the demo helps Gemma is not asked;
@@ -200,7 +219,9 @@ prompt, evaluated once alongside.
 from d80. A gain of ≥ 2 pp on holdout3 means "still improving"; less means "plateau". The share of rollouts that run
 code is also reported. All 100 steps ran. 3-pass validation of step 100: 69.8% (211, 207 and 210 of 300), against
 62.1% for d80. **Result: 681 vs 605 on holdout3 (117 / 41 discordant, p ≈ 1e-9; 358 / 158 / 165 by tier). Still
-improving.** Code now runs on 999 of 1,000 problems, against 345 at d80 (1.12 vs 0.52 executions per problem).
+improving.** Code now runs on 999 of 1,000 problems, against 345 at d80 (1.12 vs 0.52 executions per problem). The
+first check prints the target on 677 of the 999; after a first-check miss, 5 of 322 are solved. Test set: 702
+(368 / 176 / 158). Section 8 has its tool-dependence controls.
 
 ## 7. Gemma-4-E2B, phase a only (registered 2026-11-09, before any training result)
 
@@ -248,13 +269,14 @@ after seeing the phase-a outcomes, at the user's request, and are reported as su
 **Follow-up results.**
 - **`gemma4-e2b-v2-demo-s0-noguard`, phase a: gate passed.** Smoothed validation 11.4% against 4.0% needed (step 0:
   1.0%), and first-round training accuracy rose from 0.045 to 0.263. In-run validation by step: 1.0, 4.7, 6.0, 6.0,
-  6.0, 10.0, 10.7, 11.0, 11.7 and 11.7%. 3-pass validation of step 50: 13.1% (39, 40 and 39 of 300). Contradicted answers fell from 0.75
-  at step 0. Signal groups stayed at 6–43 per step through step 50, while the zero-shot arm ended phase a with 3.
+  6.0, 10.0, 10.7, 11.0, 11.7 and 11.7%. 3-pass validation of step 50: 13.1% (39, 40 and 39 of 300). Contradicted
+  answers fell from 0.75 at step 0. Signal groups stayed at 6–43 per step through step 50, while the zero-shot arm
+  ended phase a with 3.
 - **`gemma4-e2b-v2-zeroshot-s0`, phases b–d: no further learning.** All 260 steps ran. In-run validation stayed at
   exactly 6.0% (identical per-tier counts) throughout, and 3-pass validation at the end of b, c and d was 18/300 every
-  time, the same as the end of phase a. holdout3 of d80: 44 (36 / 5 / 3). Sampling entropy had fallen from 0.77 to 0.10 by
-  the end of phase a, and 94% of prompts now give eight identical rollouts, so most steps have no signal group and no
-  update. This was first recorded at phase-b step 25, before the phase finished.
+  time, the same as the end of phase a. holdout3 of d80: 44 (36 / 5 / 3). Sampling entropy had fallen from 0.77 to
+  0.10 by the end of phase a, and 94% of prompts now give eight identical rollouts, so most steps have no signal group
+  and no update. This was first recorded at phase-b step 25, before the phase finished.
 
 **Further follow-up (registered 2026-11-09, after the results above and before the run started), at the user's
 request: `gemma4-e2b-v2-demo-s0-noguard`, phases b–d** (bucket `e2v2s0n-b`, `-c`, `-d`). The standard schedule from
@@ -276,7 +298,8 @@ over 5 steps). It is a registered outcome; phases c and d did not run, and the r
   0.12. Contradicted answers fell from 0.88 to 0.24. This is the failure that stopped `qwen3-4b-v2-demo-s1` in its
   phase b: with no gradient on all-fail groups, nothing pushes failed rollouts to stay short.
 - The registered primary (holdout3 of d80) does not exist. As a post hoc, descriptive number, the step-32 checkpoint
-  is evaluated once on holdout3 with `fewshot_multi_retry`: *pending*.
+  was evaluated once on holdout3 with `fewshot_multi_retry`: **163** (138 / 16 / 9), against 44 for the zero-shot
+  arm's d80 (2 / 121 discordant, p ≈ 1e-33). 54% of its responses hit the token budget and format compliance is 46%.
 
 ## 8. Post hoc analyses of the v2 policies (listed 2026-11-09, before any of them ran)
 
@@ -298,6 +321,56 @@ Evaluations run on the workstation and on a second local GPU (RTX A4000, CUDA, s
 - **Uncertainty:** paired bootstrap intervals (10,000 resamples) for every holdout3 difference in REPORT, alongside
   the McNemar tests.
 
+**Results.** All evaluations ran once, with the HF backend; files are under `results/evals/`.
+
+*pass@k on the test set* (`test_time/<experiment>__t09_s{1..8}`):
+
+| | pass@1 | pass@2 | pass@4 | pass@8 |
+|---|---|---|---|---|
+| Qwen3-4B base, `r1zero_tool` | 3.6 | 6.8 | 12.1 | 20.0 |
+| `qwen3-4b-v2-zeroshot-s2` | 67.2 | 75.8 | 82.4 | 87.6 |
+| `qwen3-4b-v2-demo-s2` | 68.2 | 78.0 | 85.3 | 90.1 |
+
+*Tool dependence on the test set* (greedy; `test_time/<experiment>__{rounds,blank,shuffle}`), pass@1 in %:
+
+| | 0 rounds | 1 round | 2 rounds | blank output | shuffled output |
+|---|---|---|---|---|---|
+| `qwen3-4b-v1-handtuned` (earlier, for reference) | 17.8 | 47.3 | 51.8 | 12.8 | 47.4 |
+| `qwen3-4b-v2-demo-s2` | 32.3 | 64.9 | 69.2 | 58.5 | 65.2 |
+| `qwen3-4b-v2-zeroshot-s2` | 64.5 | 68.4 | 70.7 | 65.5 | 59.8 |
+| `gemma4-e4b-v2-zeroshot-s0-cont` | 69.0 | 70.2 | 70.2 | 70.1 | 56.8 |
+
+Reading: the demo-trained policies depend on execution; the zero-shot policies mostly do not, but they act on what
+the tool prints, so falsified output costs them more than a blank one.
+
+*Prompt wording and token budget* (holdout3, paired against the policy's own 768-token evaluation):
+
+| | holdout3 | discordant (lost / gained) | p | 95% interval (pp) |
+|---|---|---|---|---|
+| `qwen3-4b-v2-zeroshot-s2`, `r1zero_tool_p1` | 696 | 64 / 61 | 0.86 | −2.5 to +1.9 |
+| `qwen3-4b-v2-zeroshot-s2`, `r1zero_tool_p2` | 666 | 90 / 57 | 0.008 | −5.6 to −0.9 |
+| `qwen3-4b-v2-zeroshot-s2`, 1,536 tokens | 695 | 54 / 50 | 0.77 | −2.4 to +1.6 |
+| `qwen3-4b-v2-demo-s2`, 1,536 tokens | 690 | 55 / 64 | 0.46 | −1.3 to +3.0 |
+
+*Seed comparison points:* `qwen3-4b-v2-zeroshot-s2` b90 582, `qwen3-4b-v2-demo-s2` b90 571 (section 5).
+
+*Paired bootstrap intervals* for the main holdout3 differences, in pp (10,000 resamples, seed 0):
+
+| Comparison | difference | 95% interval | McNemar p |
+|---|---|---|---|
+| v2 demo (681) − v1 seed 2 (498) | +18.3 | +15.1 to +21.5 | 3e-28 |
+| v2 demo, Qwen3-4B (681) − v1, Qwen3-8B (557) | +12.4 | +9.4 to +15.5 | 4e-15 |
+| v1 seed 2 (498) − v1 seed 1 (512) | −1.4 | −4.0 to +1.2 | 0.33 |
+| v2 zero-shot (699) − v2 demo (681) | +1.8 | −0.9 to +4.5 | 0.23 |
+| v2 zero-shot +45 (705) − v2 demo +45 (682) | +2.3 | −0.6 to +5.1 | 0.13 |
+| v2 zero-shot +45 (705) − v2 zero-shot (699) | +0.6 | −1.9 to +3.0 | 0.69 |
+| v2 demo +45 (682) − v2 demo (681) | +0.1 | −2.4 to +2.7 | 1.00 |
+| Gemma-4-E4B +100 (681) − Gemma-4-E4B (605) | +7.6 | +5.2 to +10.0 | 1e-9 |
+| Gemma-4-E2B demo b32 (163) − Gemma-4-E2B zero-shot (44) | +11.9 | +9.9 to +14.0 | 1e-33 |
+
+None of these changes a recorded verdict. The second rewording is the one result that qualifies a claim in REPORT:
+the zero-shot policy is robust to rephrasing, but not perfectly.
+
 ## 9. Known gaps
 
 - **Lost log steps:** resuming on a fresh VM used to overwrite the start of `train_log.jsonl` (fixed in `rl/grpo.py`
@@ -308,5 +381,7 @@ Evaluations run on the workstation and on a second local GPU (RTX A4000, CUDA, s
 
   Checkpoints, validation passes and evaluations are unaffected.
 - **Phase a logs of the hand-tuned lineage:** the per-step log of phase a was not kept.
+- **Seeds under v2:** each v2 arm has one completed seed (seed 2). Seed 1 tripped the length guard under both
+  prompts (demo at b49, zero-shot at b13), so v2's end-of-training variance is not measured.
 - **Test set reuse:** the 1,000-problem test set informed early v1 decisions and has been run on many checkpoints.
   Use holdout3 for comparisons.
